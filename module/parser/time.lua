@@ -2,7 +2,7 @@
 -- This module parses time info
 --------------------------------------------------------------------------------
 
-local function calculate_hour_diff( a, b )
+local function get_hour_diff( a, b )
   local diff = a - b
   diff = diff < -12 and 24 + diff or diff > 12 and diff - 24 or diff
   return diff
@@ -13,8 +13,9 @@ local function parse_line_1( _, t )
   time.month = cntonumber( t[ 3 ] )
   time.day = cntonumber( t[ 4 ] )
   local new_hour = ( CN_HOUR[ t[ 5 ] ] + ( CN_QUARTER[ t[ 6 ] ] or 0 ) ) % 24
-  time.hour = ( not time.calibrated or math.abs( calculate_hour_diff( time.hour, new_hour ) ) > 0.5 ) and new_hour or time.hour
-  time.updated, player.time_updated = os.time(), os.time()
+  time.hour = time.get_current_hour()
+  time.hour = ( not time.calibrate_time or math.abs( get_hour_diff( time.hour, new_hour ) ) > 0.5 ) and new_hour or time.hour
+  time.update_time, player.time_update_time = os.time(), os.time()
   trigger.enable_group 'time'
 end
 
@@ -57,9 +58,9 @@ local function parse_calibration( _, t )
   else
     local old_hour = time.get_current_hour()
 
-    message.debug( '时间校正：' .. ( time.calibrated and '上次校正时间为 ' .. os.time() - time.calibrated .. ' 秒前' or '这是第一次校正时间' ) .. '，当前时间数据偏差 ' .. calculate_hour_diff( old_hour, new_hour ) .. ' 个小时，校正为 ' .. new_hour .. ' 时' )
+    message.debug( '时间校正：' .. ( time.calibrate_time and '上次校正时间为 ' .. os.time() - time.calibrate_time .. ' 秒前' or '这是第一次校正时间' ) .. '，当前时间数据偏差 ' .. get_hour_diff( old_hour, new_hour ) .. ' 个小时，校正为 ' .. new_hour .. ' 时' )
   end
-  time.hour, time.calibrated, time.updated, player.time_updated = new_hour, os.time(), os.time(), os.time()
+  time.hour, time.calibrate_time, time.update_time, player.time_update_time = new_hour, os.time(), os.time(), os.time()
 end
 
 trigger.new{ name = 'time1', text = '^(> )*现在是书剑(\\S+)年(\\S+)月(\\S+)日(\\S+)时(\\S*)。', func = parse_line_1, enabled = true }

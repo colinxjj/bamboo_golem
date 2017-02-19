@@ -10,7 +10,7 @@ task.class = 'prototype'
 local function initialize_instance( class, instance )
   instance = instance or {}
   instance.priority = instance.priority or class.priority or 5
-  instance.added = os.time()
+  instance.add_time = os.time()
   instance.status = 'suspended'
   instance.class = class.class
   setmetatable( instance, class )

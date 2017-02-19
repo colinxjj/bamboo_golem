@@ -240,7 +240,8 @@ trigger.new{ name = 'thd_sail_progress', group = 'step_handler.thd_sail', text =
 trigger.new{ name = 'thd_sail_cord', group = 'step_handler.thd_sail', text = '^艄公看了看海图，说道：我们现在的位置是\\((\\d+)\\,(\\d+)\\)。$', func = handler.thd_sail_cord }
 
 -- 绝情谷小溪
--- make sure player doesn't have weapon equipped
+-- TODO make sure player doesn't have weapon equipped
+-- TODO if boat is temporarily unavailable, then need to try again
 function handler:gyz_river( t )
 	self:send{ t.cmd }
 end
@@ -304,7 +305,7 @@ local simple_path_tbl = {
 	['铁掌山松树林#1'] = { 'e', 's', 'w' },
 	['铁掌山松树林#2'] = { 'n', 'w', 'n' },
 	['明教秘道出口'] = { 'w', 's', 'e', 's', 'w', 'n' },
-	['苏州城杏子林#2'] = { 'e', 'n', 'w', 'n', 'e', 'w', 'n' },
+	['丐帮杏子林#2'] = { 'e', 'n', 'w', 'n', 'e', 'w', 'n' },
 }
 function handler:simple_path( t )
   t.pos = t.pos and t.pos + 1 or 1
@@ -1005,7 +1006,7 @@ function handler:thd_mudao( t )
 		-- reset vars
 		t.is_fail_known, t.round = nil, 1
 		-- adjust time accordingly
-		time.hour, time.calibrated, time.updated, player.time_updated = math.ceil( time.get_current_hour() ), os.time(), os.time(), os.time()
+		time.hour, time.calibrate_time, time.update_time, player.time_update_time = math.ceil( time.get_current_hour() ), os.time(), os.time(), os.time()
 		-- go down again
 		self:send{ 'd' }
 		return
@@ -1037,8 +1038,8 @@ end
 function handler:thd_liangyi( t )
 	t = self.step
 	if not t.has_time then -- update time info
-		t.has_time = true -- TODO force a time update
-		self:newsub{ class = 'getinfo', time = true, complete_func = handler.thd_liangyi }
+		t.has_time = true
+		self:newsub{ class = 'getinfo', time = 'forced', complete_func = handler.thd_liangyi }
 		return
 	end
 	local room = map.get_current_room()

@@ -8,70 +8,79 @@ local cmd = {}
 -- a list to store all commands (queue and history)
 local list, list_startpos, list_endpos, list_curpos = {}, 0, 0, 1
 
--- commands that fire a event if succeeded
-local cmd_success_event = {
-  hp = 'hp', score = 'score', skills = 'skills', enable = 'enable',
-  inventory = 'inventory', i = 'inventory',
-  place = 'place',  time = 'time',
-  l = 'room', look = 'room',
-  w = 'room', e = 'room', n = 'room', s = 'room',
-  nw = 'room', ne = 'room', sw = 'room', se = 'room',
-  nu = 'room', nd = 'room', su = 'room', sd = 'room',
-  wu = 'room', wd = 'room', eu = 'room', ed = 'room',
-  enter = 'room', out = 'room', u = 'room', d = 'room',
-}
-
 -- a list of messages for parsing command results
-local cmd_result_message = {
-  failure_busy = '你正忙着',
-  failure_move_busy = '你的动作还没有完成，不能移动。',
-  failure_move_combat_busy = '你逃跑失败。',
-  failure_no_jingli = '你太累了，休息一下再走吧。',
-  failure_no_exit = '这个方向没有出路。',
-  failure_halt_busy = '你现在很忙，停不下来。',
-  failure_ask_busy = '您先歇口气再说话吧。',
-  failure_quit_busy = '你现在正忙着做其他事，不能退出游戏！',
-  failure_transact_busy = '哟，抱歉啊，我这儿正忙着呢……您请稍候。',
-  failure_yun_busy = '( 你上一个动作还没有完成，不能施用内功。)',
+local cmd_busy_message = {
+  busy = '你正忙着',
+  move_busy = '你的动作还没有完成，不能移动。',
+  move_combat_busy = '你逃跑失败。',
+  ask_busy = '您先歇口气再说话吧。',
+  quit_busy = '你现在正忙着做其他事，不能退出游戏！',
+  transact_busy = '哟，抱歉啊，我这儿正忙着呢……您请稍候。',
+  yun_busy = '( 你上一个动作还没有完成，不能施用内功。)',
 
-  success_not_busy = '你现在不忙。',
-  success_not_hurt = '你并没有受伤！',
-  success_ask = '你向\\S+打听有关『.+』的消息。',
-  success_drop = '你丢下\\S+。',
+  asked = '你向\\S+打听有关『.+』的消息。',
+
+  halt_busy = '你现在很忙，停不下来。',
+  halt_ok = '你现在不忙。',
 }
 
 -- extract the core command. e.g. the core command for 'ask di about 神照经' is 'ask'
-do
-  local core_patt = lpeg.C( ( lpeg.R 'az' + '#' )^1 ) * ( lpeg.P ' ' + -1 )
+local core_patt = lpeg.C( ( lpeg.R 'az' + '#' )^1 ) * ( lpeg.P ' ' + -1 )
 
-  function cmd.extract_core( s )
-    return core_patt:match( s ) or s
-  end
+function cmd.extract_core( s )
+  return core_patt:match( s ) or s
 end
 
--- split command tables and command strings such as 'w;#3 n;#wa 2000;jump down' to individual tables that the plugin can work with
-local sc_patt = upto ';'^0 * lpeg.C( any_but ';'^1 )
-local rep_patt = lpeg.P '#' * lpeg.C( lpeg.R '09'^1 ) * ' ' * lpeg.C( lpeg.P( 1 )^1 ) * -1
+--------------------------------------------------------------------------------
+-- convert commands such as 'w;#3 n;#wa 2000;jump down' to units like 'w|n|n|n', '#wa 2000', 'jump down' that work with ado
 
-local function split_cmd( t )
-  local result = {}
-  for _, c in ipairs( t ) do -- handle each seperate piece in the array part
-    if type( c ) == 'string' then -- only accepts string values
-      local temp = { sc_patt:match( c ) }
-      t.__index = t -- prepare the orignal table for inheritance
-      for _, c1 in pairs( temp ) do
-        local times, c2 = rep_patt:match( c1 )
-        times, c2 = times or 1, c2 or c1
-        for i = 1, times do
-          local nt = { cmd = c2, core = cmd.extract_core( c2 ), status = 'pending' } -- every command get its own table
-          setmetatable( nt, t ) -- new tables inherit values from the original table
-          table.insert( result, nt )
-        end
-      end
-    end
+-- pattern used to replace repeating ';' such as ';;' to a single ';'
+local sep = lpeg.P ';'
+local dup_patt = lpeg.Cs( ( ( sep ^ 2 / ';' ) + 1 )^1 )
+
+-- pattern used to expand repetitions like '#5 w' to 'w;w;w;w;w'
+local num = lpeg.C( lpeg.R '09'^1 )
+local c = lpeg.C( any_but( ';' )^1 )
+local endp = lpeg.P( -1 ) + ';'
+local patt = lpeg.P '#' * num * ' ' * c * endp
+local repl = function ( num, c )
+  return string.rep( c .. ';', num )
+end
+local rep_patt = lpeg.Cs( ( patt / repl + 1 )^0 )
+
+-- pattern used to remove leading ';' and substitute ';' with '|'
+local nonsep = 1 - sep
+local sep_patt = sep^0 * lpeg.Cs( ( nonsep^1 * ( sep / '|' + -1 ) )^1 )
+
+-- pattern used to split commands into units, #wa and ask commands get their standalone units because they cause delay to subsequent commands
+local waitp = lpeg.C( lpeg.P '#wa' * ' ' * lpeg.R '09'^1 )
+local askp = lpeg.C( lpeg.P 'ask ' * any_but( '|' )^1 )
+local cmdp = lpeg.C( ( 1 - lpeg.P '#wa' - 'ask' )^1 )
+local unit_patt = ( waitp + askp + cmdp )^1
+
+-- pattern used to remove leading and trailing '|'
+local nsep = lpeg.P '|'
+local extra_sep_patt = lpeg.Cs( nsep^-1 / '' * ( ( ( nsep * -1 ) / '' ) + 1 )^1 )
+
+-- pattern used to determine if a string contains '|' or not
+local has_sep = ( 1 - nsep )^0 * nsep
+
+local function convert_to_unit( t )
+  t.__index = t -- prepare the orignal table for inheritance
+  local s = table.concat( t, ';' ) -- first concat all commands into a single string
+  s = dup_patt:match( s ) -- correct repeating ';' such as ';;'
+  s = rep_patt:match( s ) -- expand repetitions like '#5 w' to 'w;w;w;w;w'
+  s = sep_patt:match( s ) -- remove leading ';' and substitute ';' with '|'
+  local result = { unit_patt:match( s ) } -- split commands into units
+  for i, unit in pairs( result ) do
+    unit = extra_sep_patt:match( unit ) -- remove leading and trailing '|'
+    local type = has_sep:match( unit ) and 'batch' or cmd.extract_core( unit )
+    result[ i ] = { cmd = unit, status = 'pending', type = type }
+    setmetatable( result[ i ], t ) -- units inherit values from the original table, .e.g add_time, ignore_result
   end
   return result
 end
+--------------------------------------------------------------------------------
 
 -- add command to list
 local function add_to_list( c )
@@ -86,16 +95,16 @@ end
 
 -- add new commands, don't execute them right away (that'll be handled by the heartbeats)
 --[[ usage: cmd.new{
-  'kiss;#2 kick;kill', 'haha;#wa 2000;hehe'; -- a series of commands to send. can be distributed across multiple varargs in the array part, and seperated by colons (;) in each arg. zmud style #wa / #wait are also supported. (required)
+  'kiss;#2 kick;kill', 'haha;#wa 2000;hehe'; -- a series of commands to send. can be distributed across multiple varargs in the array part, and seperated by colons (;) in each arg. zmud style #wa are also supported. (required)
   task = a_task_instance, -- the task instance the commands belongs to. commands from dead tasks will be discarded (optional)
 } ]]
 function cmd.new( c )
   assert( type( c ) == 'table', 'cmd.new - parameter must be a table' )
   assert( type( c[ 1 ] ) == 'string', 'cmd.new - table must contain at least one cmd string' )
 
-  c.added = os.time()
+  c.add_time = os.time()
 
-  c = split_cmd( c ) -- split the table, one table for each command
+  c = convert_to_unit( c ) -- convert command(s) to unit(s)
 
   for _, v in pairs( c ) do
     add_to_list( v )
@@ -104,53 +113,28 @@ end
 
 -- get the last command from history
 function cmd.get_last()
-  return list[ list_curpos ] and list[ list_curpos ].cmd or list[ list_curpos - 1 ] and list[ list_curpos - 1 ].cmd
+  return list[ list_curpos ] or list[ list_curpos - 1 ]
 end
 
--- check if last command succeeded or failed
-local function is_last_cmd_successful()
-  local c = list[ list_curpos ]
-
-  if c.ignore_result then c.is_successful = true end
-
-  if c.is_successful == nil and cmd_success_event[ c.core ] then -- evaluate based on events since last prompt if is_successful field is not populated TODO if cmd has a special 'event' field, then check this event for success state
-    for e in event.since_last_prompt() do
-      if cmd_success_event[ c.core ] == e.event then c.is_successful = true; break end
-    end
-  end
-
-  event.update_history_promptpos()
-  --message.debug( 'CMD 模块判断命令' .. ( ( c.is_successful == true and '成功：' ) or ( is_successful == false and '失败：' ) or '”结果不明确：' ) .. c.cmd )
-  return c.is_successful ~= false -- default to success TODO different cmds should have different defaults
-end
+local is_possibly_still_busy
 
 -- send a command
 local function send( c )
-  if c.core == '#wa' or c.core == '#wait' then
-    c.duration = tonumber( ( string.gsub( c.cmd, '#wai?t? ', '' ) ) )
+  if c.type == '#wa' then
+    c.duration = tonumber( ( string.gsub( c.cmd, '#wa ', '' ) ) )
     c.hbcount = c.duration / ( HEARTBEAT_INTERVAL * 1000 ) -- convert duration to number of heartbeats
-    message.debug( 'CMD 模块按照 #wa/#wait 命令等待 ' .. c.duration .. ' 毫秒 / ' .. c.hbcount .. ' 次心跳' )
+    -- message.debug( 'CMD 模块按照 #wa 命令等待 ' .. c.duration .. ' 毫秒 / ' .. c.hbcount .. ' 次心跳' )
     c.target_hbcount = get_heartbeat_count() + c.hbcount
     c.status = 'waiting'
+  elseif is_possibly_still_busy and c.type == 'batch' then -- try halting first if might still be in busy and next command is a batch
+    if is_possibly_still_busy == true then
+      is_possibly_still_busy = 'halt_sent'
+      world.Send( 'halt' )
+    end
   else
     trigger.enable_group 'cmd'
-    c.status = 'sent'
-    world.Send( c.cmd )
-  end
-end
-
--- handle failed commands
-local function handle_failed_cmd( c )
-  message.debug( '命令失败，原因: ' .. ( c.fail_reason or '未知' ) )
-  if string.find( c.fail_reason, 'busy' ) then
-    c.status, c.is_successful = 'pending', nil
-    c.target_hbcount = get_heartbeat_count() + 10 -- wait for 10 heartbeats
-  elseif c.fail_reason == 'no_jingli' then
-    -- TODO add a new task to restore jingli
-  elseif c.fail_reason == 'no_exit' then
-    -- TODO mark the task as failed
-  elseif c.fail_reason == 'in_lasting_action' then
-    -- TODO try halting
+    c.status = c.ignore_result and 'completed' or 'sent'
+    world.Send( c.type == 'batch' and 'ado ' .. c.cmd or c.cmd )
   end
 end
 
@@ -169,50 +153,47 @@ function cmd.dispatch( source )
     -- if we're waiting, then wait until the target heartbeat count is reached
     if c.target_hbcount and c.target_hbcount > get_heartbeat_count() then return end
 
-    local moveon = true -- move on to next command by default
-    if c.status == 'sent' then -- check result of last command and decide if move on
-      -- ignore other sources when waiting for prompt
-      if source ~= 'prompt' and not c.ignore_result then return end
+    event.update_history_promptpos()
 
-      moveon = is_last_cmd_successful() -- move on to next command?
-      c.status = moveon and 'completed' or 'pending'
-      list_curpos = moveon and list_curpos + 1 or list_curpos
-    elseif c.status == 'waiting' then -- move on from a #wait session
-      c.status = 'completed'
-      list_curpos = list_curpos + 1
-    end
+    -- commands encountered busy?
+    if c.status == 'encountered_busy' and not c.ignore_result then -- reset status and wait for next dispatch (which will not immediately resend the commands because of the set busy)
+      c.status = 'pending'
+    else
+      if c.status == 'sent' and source ~= 'prompt' then return end -- ignore other sources when waiting for prompt
 
-    if player.is_busy then return end -- if player is busy then return
+      -- move on to next command
+      if c.status ~= 'pending' then
+        c.status = 'completed'
+        list_curpos = list_curpos + 1
+      end
 
-    if moveon then
+      if player.is_busy then is_possibly_still_busy = true; return end -- wait if player is busy
+
       c = list[ list_curpos ]
       if not c then return end -- return if no further commands
+
       send( c )
       return true -- let heartbeat know that a cmd was processed
-    else
-      handle_failed_cmd( c )
     end
   end
 end
 
 -- parse cmd results
-function cmd.parse_result( name )
+function cmd.parse_busy( name )
   local c = list[ list_curpos ]
   if not c then return end
 
-  if name == 'cmd_success_ask' then addbusy( 2 ) end
-
-  if string.find( name, 'cmd_success_' ) then
-    c.is_successful = true
-  else
-    name = string.gsub( name, 'cmd_failure_', '' )
-    c.is_successful, c.fail_count, c.fail_reason = false, c.fail_count and c.fail_count + 1 or 1, name
+  if name == 'cmd_asked' then addbusy( 2 ) end -- add 2 seconds of busy after successful 'ask' command
+  if name == 'cmd_halt_ok' then is_possibly_still_busy = nil end -- halt ok, no longer need to try halting
+  if string.find( name, 'busy' ) then
+    c.status = 'encountered_busy'
+    addbusy( 2 )
   end
 end
 
 -- add command parsing triggers
-for name, msg in pairs( cmd_result_message ) do
-  trigger.new{ name = 'cmd_' .. name, text = '^(> )*' .. msg, func = cmd.parse_result, group = 'cmd', enabled = false, keep_eval = true, sequence = 50 }
+for name, msg in pairs( cmd_busy_message ) do
+  trigger.new{ name = 'cmd_' .. name, text = '^(> )*' .. msg, func = cmd.parse_busy, group = 'cmd', enabled = false, keep_eval = true, sequence = 90 }
 end
 
 --------------------------------------------------------------------------------

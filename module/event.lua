@@ -132,6 +132,7 @@ local function process_next_event()
     if listener.keep_eval == false then break end -- if keep_eval is false then stop processing remaining listeners
   end
   for _, listener in pairs( exec_list ) do
+    -- message.debug( evt.event .. ' > ' .. listener.id )
     if listener.task then
       listener.func( listener.task, evt ) -- pass the task and/or event data as argument(s)
     else

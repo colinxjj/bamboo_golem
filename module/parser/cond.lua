@@ -20,14 +20,14 @@ end
 
 local function parse_footer()
   player.cond, cache = cache, false -- move cache data to player.status and clear cache
-  player.cond_updated = os.time()
+  player.cond_update_time = os.time()
   trigger.disable_group 'cond'
   event.new 'cond'
 end
 
 local function parse_empty()
   player.cond = {}
-  player.cond_updated = os.time()
+  player.cond_update_time = os.time()
   event.new 'cond'
 end
 

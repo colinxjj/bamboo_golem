@@ -14,7 +14,7 @@ local function parse_prompt()
     end
   end
   player.inventory, cache = cache, false -- move cache data to player.inventory and clear cache
-  player.inventory_updated = os.time()
+  player.inventory_update_time = os.time()
   trigger.disable 'inventory2'
   event.new 'inventory'
 end
@@ -39,6 +39,7 @@ end
 
 trigger.new{ name = 'inventory1', text = '^(> )*你身上(带着(\\S+)件|带著下列这些)东西\\(负重\\s*(\\S+)%\\)：$', func = parse_header, enabled = true }
 trigger.new{ name = 'inventory2', text = '^(□|  )([^ (]+)\\(([\\w\\s\\\'-]+)\\)$', func = parse_content }
+
 
 --------------------------------------------------------------------------------
 -- End of module

@@ -37,7 +37,7 @@ local function parse_line_5( _, t )
   player.water = tonumber( t[ 1 ] )
   player.exp = tonumber( ( string.gsub( t[ 2 ], ',', '' ) ) )
   player.exp_perc = tonumber( t[ 3 ] )
-  player.hp_updated = os.time()
+  player.hp_update_time = os.time()
   trigger.disable_group 'hp'
   event.new 'hp'
 end

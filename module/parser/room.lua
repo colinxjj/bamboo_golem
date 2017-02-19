@@ -4,12 +4,21 @@
 
 local cache
 
+-- a blacklist with rooms for which we should not process look info. The reason is that they contain 'left' and 'right' directions and the symbol for the latter '〉' can cause troubles with room names like 小岛边 and result in locating failure.
+local look_blacklist = {
+  ['华山山洞'] = true,
+  ['华山密洞'] = true,
+  ['华山密道'] = true,
+  ['华山山洞'] = true,
+  ['蝴蝶谷山壁'] = true,
+}
+
 local sp = lpeg.P ' '^0
-local nondash = lpeg.C( any_but( ' ', '-', '→', '←', '〈', '〉' )^1 )
-local dash = lpeg.C( lpeg.P '-' + '→' + '←' + '〈' + '〉' ) * lpeg.P '-'^0
+local nondash = lpeg.C( any_but( ' ', '-', '→', '←' )^1 )
+local dash = lpeg.C( lpeg.P '-' + '→' + '←' ) * lpeg.P '-'^0
 local patt = ( sp * ( dash + nondash ) )^1
-local look_dir_upper = { ['↖'] = 'nw', ['↗'] = 'ne', ['↓'] = 'nd', ['↑'] = 'nu', ['｜'] = 'n', ['〓'] = 'u', ['∧'] = 'enter', ['←'] = 'wu', ['→'] = 'wd', ['-'] = 'w', ['〈'] = 'left' }
-local look_dir_lower = { ['←'] = 'ed', ['→'] = 'eu', ['-'] = 'e', ['↘'] = 'se', ['↙'] = 'sw', ['↓'] = 'su', ['↑'] = 'sd', ['｜'] = 's', ['〓'] = 'd', ['∨'] = 'out', ['〉'] = 'right' }
+local look_dir_upper = { ['↖'] = 'nw', ['↗'] = 'ne', ['↓'] = 'nd', ['↑'] = 'nu', ['｜'] = 'n', ['〓'] = 'u', ['∧'] = 'enter', ['←'] = 'wu', ['→'] = 'wd', ['-'] = 'w', }
+local look_dir_lower = { ['←'] = 'ed', ['→'] = 'eu', ['-'] = 'e', ['↘'] = 'se', ['↙'] = 'sw', ['↓'] = 'su', ['↑'] = 'sd', ['｜'] = 's', ['〓'] = 'd', ['∨'] = 'out', }
 
 local function parse_look_header( _, t )
   cache = { look = {}, area = t[ 2 ], exit = {} }
@@ -21,6 +30,7 @@ local function parse_look_content( _, t )
 end
 
 local function process_look()
+  if cache and cache.name and look_blacklist[ cache.name ] then return end -- ignore rooms in blacklist
   local dir, room, upperhalf, t = {}, {}, true
   for ln, line in ipairs( cache.look ) do
     t = { patt:match( line ) }
@@ -43,8 +53,8 @@ end
 
 local function parse_header( _, t )
   cache = cache or {}
-  if cache.look then process_look() end
   cache.name, cache.desc = t[ 2 ], ''
+  if cache.look then process_look() end
   trigger.disable 'room_look_content'
   trigger.enable_group 'room'
 end
@@ -80,7 +90,7 @@ local function parse_end()
   for name, object in pairs( cache.object ) do
     event.new{ event = 'room_object', name = name, object = object }
   end
-  --tprint( cache )
+  -- tprint( cache )
   cache = nil
 end
 

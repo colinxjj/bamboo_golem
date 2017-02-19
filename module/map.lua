@@ -27,8 +27,7 @@ for id, room in pairs( index ) do
   end
 end
 
-
--- helper redirector
+-- helper redirectors
 function map.serialize_room( room )
   return helper.serialize_room( room )
 end
@@ -36,7 +35,7 @@ function map.list_all_potentially_no_exit()
   return helper.list_all_potentially_no_exit( index )
 end
 
-
+-- generate room name indices
 -- index by room name like 北大街
 local name_index = helper.generate_name_index( index )
 -- index by long room names like 长安城北大街
@@ -64,7 +63,7 @@ local function is_dest_by_room( dest )
   end
 end
 
--- get path from one room to another. the 2nd param is a func to decide whether we've reached the / a dest
+-- get path from one room to another. the 2nd param is a func to decide whether we've reached the/a dest
 local function genpath( from, is_dest )
   local list, list_pos, cost, prev, path, rev_path, max_cost, to, dest, new_cost = { from }, 1, { [ from ] = 0 }, {}, {}, {}
   while list[ list_pos ] do
@@ -97,7 +96,7 @@ local function genpath( from, is_dest )
     path[ #path + 1 ] = rev_path[ i ]
   end
 
-  --[[]]
+  --[[
   local s = 'MAP 模块分析了 ' .. #list .. ' 个房间，成功找到路径，共 ' .. #path .. ' 步：'
   for _, room in pairs( path ) do
     s = s .. room.id .. ' > '
@@ -224,12 +223,13 @@ function map.locate( room )
     end
   end
 
-  if #adjacent_list > 1 and cmd.get_last() then -- narrow down the scope based on last command sent
+  local c = cmd.get_last()
+  if #adjacent_list > 1 and c and c.type ~= 'batch' then -- narrow down the scope based on last non-batch command sent
     local i, map_room = 1
     while i <= #adjacent_list do
       map_room = adjacent_list[ i ]
-      -- message.debug( '检查是否可从之前的位置以 ' .. cmd.get_last() .. ' 命令到达' .. map_room.id )
-      if not locator.is_reachable_from_prev_location_with_cmd( map_room, cmd.get_last() ) then
+      -- message.debug( '检查是否可从之前的位置以 ' .. c.cmd .. ' 命令到达' .. map_room.id )
+      if not locator.is_reachable_from_prev_location_with_cmd( map_room, c.cmd ) then
         table.remove( adjacent_list, i )
       else
         i = i + 1
@@ -248,23 +248,24 @@ end
 function map.auto_locate( evt )
   current_room = evt.data
   local result = map.locate( current_room )
-  if #result ~= 1 then
+  if #result == 0 then message.warning '自动定位失败' end
+  --[[
+  if #result > 1 then
     local s = '自动定位：' .. #result .. ' 个可能结果'
-    if #result > 0 then
-      s = s .. '：'
-      for _, loc in pairs( result ) do
-        s = s .. loc.id .. '、'
-      end
-      s = string.gsub( s, '、$', '' )
+    s = s .. '：'
+    for _, loc in pairs( result ) do
+      s = s .. loc.id .. '、'
     end
+    s = string.gsub( s, '、$', '' )
     message.debug( s )
   end
+  --]]
   history.insert( result )
   event.new 'located'
 end
 
-event.listen{ event = 'room', func = map.auto_locate, persistent = true, id = 'map.locate' }
-event.listen{ event = 'place', func = map.auto_locate, persistent = true, id = 'map.locate' }
+event.listen{ event = 'room', func = map.auto_locate, persistent = true, id = 'map.auto_locate' }
+event.listen{ event = 'place', func = map.auto_locate, persistent = true, id = 'map.auto_locate' }
 
 --------------------------------------------------------------------------------
 -- End of module

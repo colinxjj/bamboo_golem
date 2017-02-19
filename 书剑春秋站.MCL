@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE muclient>
-<!-- Saved on Friday, February 17, 2017, 9:28 PM -->
+<!-- Saved on Sunday, February 19, 2017, 2:02 PM -->
 <!-- MuClient version 5.05 -->
 <!-- Written by Nick Gammon -->
 <!-- Home Page: http://www.mushclient.com/ -->
@@ -8,7 +8,7 @@
 <world
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-17 21:28:21"
+   date_saved="2017-02-19 14:02:50"
 
    auto_say_override_prefix="-"
    auto_say_string="say "
@@ -136,7 +136,7 @@
 <triggers
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-17 21:28:21"
+   date_saved="2017-02-19 14:02:50"
   >
 </triggers>
 
@@ -145,7 +145,7 @@
 <aliases
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-17 21:28:21"
+   date_saved="2017-02-19 14:02:50"
   >
   <alias
    match="rl"
@@ -173,7 +173,7 @@ end</send>
 <timers
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-17 21:28:21"
+   date_saved="2017-02-19 14:02:50"
   >
 </timers>
 
@@ -182,7 +182,7 @@ end</send>
 <macros
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-17 21:28:21"
+   date_saved="2017-02-19 14:02:50"
   >
 
   <macro name="up" type="send_now" >
@@ -276,7 +276,7 @@ end</send>
 <variables
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-17 21:28:21"
+   date_saved="2017-02-19 14:02:50"
   >
 </variables>
 
@@ -285,7 +285,7 @@ end</send>
 <colours
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-17 21:28:21"
+   date_saved="2017-02-19 14:02:50"
   >
 
 <ansi>
@@ -342,7 +342,7 @@ end</send>
 <keypad
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-17 21:28:21"
+   date_saved="2017-02-19 14:02:50"
   >
 
   <key name="0" >
@@ -456,7 +456,7 @@ end</send>
 <printing
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-17 21:28:21"
+   date_saved="2017-02-19 14:02:50"
   >
 
 <ansi>
@@ -481,5 +481,5 @@ end</send>
 </printing>
 
 <!-- plugins -->
-<include name="C:\Soft\MUSHclient\worlds\BambooGolem\BambooGolem.xml" plugin="y" />
+<include name="C:\Users\HK\Documents\GitHub\bamboo-golem\BambooGolem.xml" plugin="y" />
 </muclient>

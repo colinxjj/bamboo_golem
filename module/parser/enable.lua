@@ -3,7 +3,7 @@
 --------------------------------------------------------------------------------
 
 local function parse_prompt()
-  player.enable_updated = os.time()
+  player.enable_update_time = os.time()
   trigger.disable 'enable2'
   event.new 'enable'
 end
@@ -23,7 +23,7 @@ end
 
 local function parse_empty()
   player.enable = {}
-  player.enable_updated = os.time()
+  player.enable_update_time = os.time()
   event.new 'enable'
 end
 

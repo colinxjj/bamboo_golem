@@ -6,6 +6,7 @@ local task = {}
 --[[----------------------------------------------------------------------------
 Params:
 one or more of the info types (see info_type below) set to non-false values
+hp/time/etc. = 'forced': force an update of the corresponding info type
 room = true: get info for current room
      = 'e': get info for room in that direction to the current room
      = 'surrounding': get info for all rooms surrounding the current room
@@ -58,9 +59,10 @@ function task:_resume( evt )
       if type == 'room' then
         self:get_room_info()
         return
-      elseif ( type == 'inventory' and ( not player.inventory_updated or os.time() - player.inventory_updated > 180 ) ) or -- update inventory info at most once every 3 min
-      ( type == 'hp' and ( not player.hp_updated or os.time() - player.hp_updated > 180 ) ) or -- update hp info at most once every 3 min
-      not player[ type .. '_updated' ] then -- get score, skills, enable, and time info only once
+      elseif self[ type ] == 'forced' -- if update is forced, then always do
+          or ( type == 'inventory' and ( not player.inventory_update_time or os.time() - player.inventory_update_time > 180 ) ) -- update inventory info at most once every 3 min
+          or ( type == 'hp' and ( not player.hp_update_time or os.time() - player.hp_update_time > 180 ) )  -- update hp info at most once every 3 min
+          or not player[ type .. '_update_time' ] then -- get score, skills, enable, and time info only once
         self[ type ] = false -- to avoid repetition
         self:listen{ event = type, func = self.resume, id = 'task.getinfo' }
         self:send{ type }

@@ -79,7 +79,7 @@ end
 
 local function parse_line_12()
   player.is_bonze = check_bonze()
-  player.score_updated = os.time()
+  player.score_update_time = os.time()
   SetTitle( GetAlphaOption( 'name' ) .. '-' .. player.id ) -- update window title to include player id
   trigger.disable_group 'score'
   event.new 'score'

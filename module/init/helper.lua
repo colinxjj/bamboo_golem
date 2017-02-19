@@ -23,10 +23,10 @@ end
 
 -- calculate current time in game based on info in the 'time' table
 function time.get_current_hour()
-  if not time.updated or not time.hour then return end
-  local hour_passed = math.floor( ( os.time() - time.updated ) / 60 * 10 ) / 10
+  if not time.update_time or not time.hour then return end
+  local hour_passed = math.floor( ( os.time() - time.update_time ) / 60 * 10 ) / 10
   local new_hour = ( time.hour + hour_passed ) % 24
-  -- message.debug( '距离上次更新时间信息已过 ' .. os.time() - time.updated .. ' 秒，游戏时间应当已过 ' .. hour_passed .. ' 小时，估计当前时刻为 ' .. new_hour .. ' 时' )
+  -- message.debug( '距离上次更新时间信息已过 ' .. os.time() - time.update_time .. ' 秒，游戏时间应当已过 ' .. hour_passed .. ' 小时，估计当前时刻为 ' .. new_hour .. ' 时' )
   return new_hour
 end
 
@@ -36,8 +36,11 @@ local nonsp = lpeg.C ( ( 1 - ( lpeg.P ' ' + '」' ) )^1 )
 local patt = ( nonsp * sp_or_end )^1
 
 function extract_name( s )
+	if string.find( s, '骸骨' ) then return s end -- a workaround to fix the issue where 骸骨 can be interpreted to '」' followed by a garbage character
 	local t = { patt:match( s ) }
-	return t[ #t ]
+	local name = t[ #t ]
+	if #name % 2 ~= 0 then message.warning( 'extract_name: extracting name from "' .. s .. '" results in: ' .. name ) end
+	return name
 end
 
 -- extract object name and count from text such as 两位官兵 or 三百枚铜钱
@@ -47,6 +50,7 @@ function extract_name_count( text )
 	local count = num:match( text )
 	local name = count and string.sub( text, #count + 3, -1 ) or text
 	count = count and cntonumber( count ) or 1
+	if #name % 2 ~= 0 then message.warning( 'extract_name_count: extracting name from "' .. s .. '" results in: ' .. name ) end
 	return name, count
 end
 
@@ -56,6 +60,7 @@ function extract_name_id( s )
 	if not pos then error 'extract_name_id - invalid string format' end
 	local name = string.sub( s, 1, pos - 1 )
 	local id = string.lower( string.sub( s, pos + 1, -2 ) )
+	if #name % 2 ~= 0 then message.warning( 'extract_name_id: extracting name from "' .. s .. '" results in: ' .. name ) end
 	return name, id
 end
 

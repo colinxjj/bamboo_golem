@@ -7,7 +7,7 @@ local cache
 
 local function parse_footer()
   player.skill, cache = cache, nil -- move cache data to player.skill and clear cache
-  player.skills_updated = os.time()
+  player.skills_update_time = os.time()
   trigger.disable_group 'skills'
   event.remove_listener_by_id 'parser.skills'
   event.new 'skills'
@@ -57,7 +57,7 @@ end
 local function parse_empty()
   cache = {}
   cache.count = 0
-  cache.fully_updated = os.time()
+  cache.full_update_time = os.time()
   player.skill, cache = cache, false -- move cache data to player.skill and clear cache
   event.new 'skills'
 end
