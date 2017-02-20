@@ -64,8 +64,9 @@ function task:_resume( evt )
           or ( type == 'hp' and ( not player.hp_update_time or os.time() - player.hp_update_time > 180 ) )  -- update hp info at most once every 3 min
           or not player[ type .. '_update_time' ] then -- get score, skills, enable, and time info only once
         self[ type ] = false -- to avoid repetition
+        gag.once( type )
         self:listen{ event = type, func = self.resume, id = 'task.getinfo' }
-        self:send{ type }
+        self:send{ type, no_echo = true }
         return
       end
     end

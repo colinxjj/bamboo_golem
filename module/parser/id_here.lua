@@ -29,8 +29,8 @@ local function parse_content( _, t )
   item.alternate_id = ids
 end
 
-trigger.new{ name = 'id_here1', text = '^(> )*在这个房间中, 生物及物品的\\(英文\\)名称如下：$', func = parse_header, enabled = true }
-trigger.new{ name = 'id_here2', text = '^(\\S+) = ([\\w\\s\',-]+)$', func = parse_content }
+trigger.new{ name = 'id_here1', match = '^(> )*在这个房间中, 生物及物品的\\(英文\\)名称如下：$', func = parse_header, enabled = true }
+trigger.new{ name = 'id_here2', match = '^(\\S+) = ([\\w\\s\',-]+)$', func = parse_content }
 
 --------------------------------------------------------------------------------
 -- End of module

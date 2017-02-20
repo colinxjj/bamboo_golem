@@ -42,11 +42,11 @@ local function parse_line_5( _, t )
   event.new 'hp'
 end
 
-trigger.new{ name = 'hp1', text = '^·精血·\\s*(\\d+)\\s*/\\s*(\\d+)\\s*\\(\\s*(\\d+)%\\)\\s*·精力·\\s*(\\d+)\\s*/\\s*(\\d+)\\s*\\((\\d+)\\)$', func = parse_line_1, enabled = true }
-trigger.new{ name = 'hp2', text = '^·气血·\\s*(\\d+)\\s*/\\s*(\\d+)\\s*\\(\\s*(\\d+)%\\)\\s*·内力·\\s*(\\d+)\\s*/\\s*(\\d+)\\s*\\(\\+(\\d+)\\)$', func = parse_line_2, group = 'hp' }
-trigger.new{ name = 'hp3', text = '^·(正|戾)气·\\s*(\\S+)\\s*·内力上限·\\s*(\\d+)\\s*/\\s*(\\d+)$', func = parse_line_3, group = 'hp' }
-trigger.new{ name = 'hp4', text = '^·食物·\\s+(\\d+)\\.\\d+%\\s+·潜能·\\s*(\\d+)\\s*/\\s*(\\d+)$', func = parse_line_4, group = 'hp' }
-trigger.new{ name = 'hp5', text = '^·饮水·\\s+(\\d+)\\.\\d+%\\s+·经验·\\s*(\\S+)\\s*\\((\\d+)\\.\\d+%\\)$', func = parse_line_5, group = 'hp' }
+trigger.new{ name = 'hp1', match = '^·精血·\\s*(\\d+)\\s*/\\s*(\\d+)\\s*\\(\\s*(\\d+)%\\)\\s*·精力·\\s*(\\d+)\\s*/\\s*(\\d+)\\s*\\((\\d+)\\)$', func = parse_line_1, enabled = true }
+trigger.new{ name = 'hp2', match = '^·气血·\\s*(\\d+)\\s*/\\s*(\\d+)\\s*\\(\\s*(\\d+)%\\)\\s*·内力·\\s*(\\d+)\\s*/\\s*(\\d+)\\s*\\(\\+(\\d+)\\)$', func = parse_line_2, group = 'hp' }
+trigger.new{ name = 'hp3', match = '^·(正|戾)气·\\s*(\\S+)\\s*·内力上限·\\s*(\\d+)\\s*/\\s*(\\d+)$', func = parse_line_3, group = 'hp' }
+trigger.new{ name = 'hp4', match = '^·食物·\\s+(\\d+)\\.\\d+%\\s+·潜能·\\s*(\\d+)\\s*/\\s*(\\d+)$', func = parse_line_4, group = 'hp' }
+trigger.new{ name = 'hp5', match = '^·饮水·\\s+(\\d+)\\.\\d+%\\s+·经验·\\s*(\\S+)\\s*\\((\\d+)\\.\\d+%\\)$', func = parse_line_5, group = 'hp' }
 
 --------------------------------------------------------------------------------
 -- End of module

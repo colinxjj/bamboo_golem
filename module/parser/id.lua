@@ -39,8 +39,8 @@ local function parse_content( _, t )
   item.alternate_id = ids
 end
 
-trigger.new{ name = 'id1', text = '^(> )*你身上携带物品的别称如下\\(右方\\)：$', func = parse_header, enabled = true }
-trigger.new{ name = 'id2', text = '^\\d+: (\\S+) = ([\\w\\s\',-]+)$', func = parse_content }
+trigger.new{ name = 'id1', match = '^(> )*你身上携带物品的别称如下\\(右方\\)：$', func = parse_header, enabled = true }
+trigger.new{ name = 'id2', match = '^\\d+: (\\S+) = ([\\w\\s\',-]+)$', func = parse_content }
 
 --------------------------------------------------------------------------------
 -- End of module

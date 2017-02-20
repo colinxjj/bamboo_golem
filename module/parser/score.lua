@@ -85,18 +85,18 @@ local function parse_line_12()
   event.new 'score'
 end
 
-trigger.new{ name = 'score1', text = '^┃称    谓：【(.+)】\\s*┃体  重：「(\\S+)斤」', func = parse_line_1, enabled = true }
-trigger.new{ name = 'score2', text = '^┃头    衔：(\\S+)\\s*┃膂  力：「\\s*(\\d+)\\s*/\\s*(\\d+)\\s*」\\s*根  骨：「\\s*(\\d+)\\s*/\\s*(\\d+)', func = parse_line_2, group = 'score' }
-trigger.new{ name = 'score3', text = '^┃姓    名：(\\S+)\\s*┃身  法：「\\s*(\\d+)\\s*/\\s*(\\d+)\\s*」\\s*悟  性：「\\s*(\\d+)\\s*/\\s*(\\d+)', func = parse_line_3, group = 'score' }
-trigger.new{ name = 'score4', text = '^┃年    龄：(\\S+)岁(又(\\S+)个月)?', func = parse_line_4, group = 'score' }
-trigger.new{ name = 'score5', text = '^┃性    别：(\\S+)\\s+攻：(.{8}) 躲：(.{8}) 架：(.{8})', func = parse_line_5, group = 'score' }
-trigger.new{ name = 'score6', text = '^┃钱庄存款：(很少|(\\S+)锭黄金)\\s*师    承：【(.{4,8})】(【(.+)】)?', func = parse_line_6, group = 'score' }
-trigger.new{ name = 'score7', text = '^┃书剑通宝：(无|(\\S+)个)', func = parse_line_7, group = 'score' }
-trigger.new{ name = 'score8', text = '^┃(婚姻|夫君|娇妻)：(\\S+)\\s*(正|戾)气：(\\d+)\\s*综合评价：(\\d+)', func = parse_line_8, group = 'score' }
-trigger.new{ name = 'score9', text = '^┃注册：(贵宾|普通)玩家(\\S*)\\s*叛师：(\\S+)\\s*犯    规：(\\S+)', func = parse_line_9, group = 'score' }
-trigger.new{ name = 'score10', text = '^┃杀人：(无|(\\S+))\\s*玩家：(\\S+)\\s*正当防卫：(\\S+)', func = parse_line_10, group = 'score' }
-trigger.new{ name = 'score11', text = '^┃死亡：(无|(\\S+)次)\\s*有效：(\\S+)\\s*打造机会：(无|(\\S+)次)', func = parse_line_11, group = 'score' }
-trigger.new{ name = 'score12', text = '^┃上次遇害：', func = parse_line_12, group = 'score' }
+trigger.new{ name = 'score1', match = '^┃称    谓：【(.+)】\\s*┃体  重：「(\\S+)斤」', func = parse_line_1, enabled = true }
+trigger.new{ name = 'score2', match = '^┃头    衔：(\\S+)\\s*┃膂  力：「\\s*(\\d+)\\s*/\\s*(\\d+)\\s*」\\s*根  骨：「\\s*(\\d+)\\s*/\\s*(\\d+)', func = parse_line_2, group = 'score' }
+trigger.new{ name = 'score3', match = '^┃姓    名：(\\S+)\\s*┃身  法：「\\s*(\\d+)\\s*/\\s*(\\d+)\\s*」\\s*悟  性：「\\s*(\\d+)\\s*/\\s*(\\d+)', func = parse_line_3, group = 'score' }
+trigger.new{ name = 'score4', match = '^┃年    龄：(\\S+)岁(又(\\S+)个月)?', func = parse_line_4, group = 'score' }
+trigger.new{ name = 'score5', match = '^┃性    别：(\\S+)\\s+攻：(.{8}) 躲：(.{8}) 架：(.{8})', func = parse_line_5, group = 'score' }
+trigger.new{ name = 'score6', match = '^┃钱庄存款：(很少|(\\S+)锭黄金)\\s*师    承：【(.{4,8})】(【(.+)】)?', func = parse_line_6, group = 'score' }
+trigger.new{ name = 'score7', match = '^┃书剑通宝：(无|(\\S+)个)', func = parse_line_7, group = 'score' }
+trigger.new{ name = 'score8', match = '^┃(婚姻|夫君|娇妻)：(\\S+)\\s*(正|戾)气：(\\d+)\\s*综合评价：(\\d+)', func = parse_line_8, group = 'score' }
+trigger.new{ name = 'score9', match = '^┃注册：(贵宾|普通)玩家(\\S*)\\s*叛师：(\\S+)\\s*犯    规：(\\S+)', func = parse_line_9, group = 'score' }
+trigger.new{ name = 'score10', match = '^┃杀人：(无|(\\S+))\\s*玩家：(\\S+)\\s*正当防卫：(\\S+)', func = parse_line_10, group = 'score' }
+trigger.new{ name = 'score11', match = '^┃死亡：(无|(\\S+)次)\\s*有效：(\\S+)\\s*打造机会：(无|(\\S+)次)', func = parse_line_11, group = 'score' }
+trigger.new{ name = 'score12', match = '^┃上次遇害：', func = parse_line_12, group = 'score' }
 
 
 --------------------------------------------------------------------------------

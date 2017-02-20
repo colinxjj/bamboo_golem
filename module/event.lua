@@ -41,7 +41,7 @@ function event.new( evt )
   evt = type( evt ) == 'string' and { event = evt } or evt
   add_to_history( evt )
   table.insert( event_to_process, evt )
-  if not gag_event[ evt.event ] then message.debug( '触发新事件：' .. evt.event ) end
+  --if not gag_event[ evt.event ] then message.debug( '触发新事件：' .. evt.event ) end
   if not is_dispatching then event.dispatch() end -- delay processing events if is dispatching
 end
 

@@ -92,8 +92,8 @@ function handler:fly_done()
 	self:disable_trigger_group 'step_handler.fly'
 	addbusy( 6 )
 end
-trigger.new{ name = 'fly_wait', group = 'step_handler.fly', text = '^(> )*(峭壁实在太陡了|江面太宽了|河面太宽了|有竹篓就坐上去吧|有船不坐)', func = handler.fly_wait }
-trigger.new{ name = 'fly_done', group = 'step_handler.fly', text = '^(> )*你在(江中渡船|黄河中渡船|河中渡船|崖间竹篓)上轻轻一点', func = handler.fly_done }
+trigger.new{ name = 'fly_wait', group = 'step_handler.fly', match = '^(> )*(峭壁实在太陡了|江面太宽了|河面太宽了|有竹篓就坐上去吧|有船不坐)', func = handler.fly_wait }
+trigger.new{ name = 'fly_done', group = 'step_handler.fly', match = '^(> )*你在(江中渡船|黄河中渡船|河中渡船|崖间竹篓)上轻轻一点', func = handler.fly_done }
 
 -- 乘坐渡船。黄河、长江、汉水、黑木崖猩猩滩、大雪山绞盘等
 -- TODO make sure have silver
@@ -123,8 +123,8 @@ function handler:emei_move_stone( name )
 	if name == 'emei_move_stone_succeed' then self:send{ 'nd' }
 	else self:send{ 'move stone' } end
 end
-trigger.new{ name = 'emei_move_stone_fail', group = 'step_handler.emei_move_stone', text = '^(> )*你使尽了吃奶的力气，也没搬开大石头。', func = handler.emei_move_stone }
-trigger.new{ name = 'emei_move_stone_succeed', group = 'step_handler.emei_move_stone', text = '^(> )*你双膀较劲，搬开了大石头。', func = handler.emei_move_stone }
+trigger.new{ name = 'emei_move_stone_fail', group = 'step_handler.emei_move_stone', match = '^(> )*你使尽了吃奶的力气，也没搬开大石头。', func = handler.emei_move_stone }
+trigger.new{ name = 'emei_move_stone_succeed', group = 'step_handler.emei_move_stone', match = '^(> )*你双膀较劲，搬开了大石头。', func = handler.emei_move_stone }
 
 -- 黑木崖石门
 hmy_shimen_tbl = {
@@ -149,8 +149,8 @@ function handler:hmy_shimen( name )
 		self:send{ c }
 	end
 end
-trigger.new{ name = 'hmy_shimen_fail', group = 'step_handler.hmy_shimen', text = '^贾布听后，眉头紧缩，没有说话。$', func = handler.hmy_shimen }
-trigger.new{ name = 'hmy_shimen_succeed', group = 'step_handler.hmy_shimen', text = '^只听贾布说了声：嗯。。是本教兄弟吧？请进来吧。$', func = handler.hmy_shimen }
+trigger.new{ name = 'hmy_shimen_fail', group = 'step_handler.hmy_shimen', match = '^贾布听后，眉头紧缩，没有说话。$', func = handler.hmy_shimen }
+trigger.new{ name = 'hmy_shimen_succeed', group = 'step_handler.hmy_shimen', match = '^只听贾布说了声：嗯。。是本教兄弟吧？请进来吧。$', func = handler.hmy_shimen }
 
 -- 嵩山松林圣僧塔
 local sl_fota_tbl = {
@@ -175,8 +175,8 @@ end
 function handler:sl_fota_succeed()
 	self.step.succeed = true
 end
-trigger.new{ name = 'sl_fota_fushi', group = 'step_handler.sl_fota', text = '^你突然有一种出掌的冲动，便想一掌击出。$', func = handler.sl_fota_succeed }
-trigger.new{ name = 'sl_fota_canchan', group = 'step_handler.sl_fota', text = '^你在虚空中，感觉大师座下打开了一个小门。$', func = handler.sl_fota_succeed }
+trigger.new{ name = 'sl_fota_fushi', group = 'step_handler.sl_fota', match = '^你突然有一种出掌的冲动，便想一掌击出。$', func = handler.sl_fota_succeed }
+trigger.new{ name = 'sl_fota_canchan', group = 'step_handler.sl_fota', match = '^你在虚空中，感觉大师座下打开了一个小门。$', func = handler.sl_fota_succeed }
 
 -- 归云庄小河
 -- TODO check if old man is actually there
@@ -205,7 +205,7 @@ function handler:thd_onboard_got_cord( _, t )
 	handler.data.thd_sail = { x = tonumber( t[ 2 ] ), y = tonumber( t[ 3 ] ) }
 	handler.thd_onboard( self )
 end
-trigger.new{ name = 'thd_onboard_got_cord', group = 'step_handler.thd_onboard', text = '^(> )*你用劲打开了箱子，发现里面竟藏有着无数的大内密宝。而在珠宝的下面，有一张发黄的海图。中间的一个地方用粗笔画了个圆圈，旁边用潦草的字迹写着\\((\\d+),(\\d+)\\)的字样。$', func = handler.thd_onboard_got_cord }
+trigger.new{ name = 'thd_onboard_got_cord', group = 'step_handler.thd_onboard', match = '^(> )*你用劲打开了箱子，发现里面竟藏有着无数的大内密宝。而在珠宝的下面，有一张发黄的海图。中间的一个地方用粗笔画了个圆圈，旁边用潦草的字迹写着\\((\\d+),(\\d+)\\)的字样。$', func = handler.thd_onboard_got_cord }
 -- 航海到桃花岛
 function handler:thd_sail( t )
 	t.x, t.y = 1, 1
@@ -236,8 +236,8 @@ function handler:thd_sail_cord( _, t )
 	self.step.x = tonumber( t[ 1 ] )
 	self.step.y = tonumber( t[ 2 ] )
 end
-trigger.new{ name = 'thd_sail_progress', group = 'step_handler.thd_sail', text = '^(> )*小船正向着(\\S+)方前进。$', func = handler.thd_sail_progress }
-trigger.new{ name = 'thd_sail_cord', group = 'step_handler.thd_sail', text = '^艄公看了看海图，说道：我们现在的位置是\\((\\d+)\\,(\\d+)\\)。$', func = handler.thd_sail_cord }
+trigger.new{ name = 'thd_sail_progress', group = 'step_handler.thd_sail', match = '^(> )*小船正向着(\\S+)方前进。$', func = handler.thd_sail_progress }
+trigger.new{ name = 'thd_sail_cord', group = 'step_handler.thd_sail', match = '^艄公看了看海图，说道：我们现在的位置是\\((\\d+)\\,(\\d+)\\)。$', func = handler.thd_sail_cord }
 
 -- 绝情谷小溪
 -- TODO make sure player doesn't have weapon equipped
@@ -651,7 +651,7 @@ end
 function handler:gyz_jiugong_exited()
 	self.step.exited = true
 end
-trigger.new{ name = 'gyz_jiugong_exited', group = 'step_handler.gyz_jiugong', text = '^桃花阵中忽然发出一阵“轧轧”的声音，随后现出一条道路，你赶忙走了出去。$', func = handler.gyz_jiugong_exited }
+trigger.new{ name = 'gyz_jiugong_exited', group = 'step_handler.gyz_jiugong', match = '^桃花阵中忽然发出一阵“轧轧”的声音，随后现出一条道路，你赶忙走了出去。$', func = handler.gyz_jiugong_exited }
 
 -- 桃花岛桃花阵, from 桃花岛绿竹林 to 桃花岛河塘
 -- TODO make sure have enough number of marker items
@@ -807,7 +807,7 @@ function handler:breadcrumb( t )
 		if t.expected == 0 or expected_room.is_reliable == false then
 			action.adjust_item_to_new_unique = true
 		end
-	elseif t.map[ t.prev ].is_reliable and expected_room.is_reliable then
+	elseif t.map[ t.prev ].is_reliable and t.expected > 0 and expected_room.is_reliable then
 		if t.prev ~= t.expected then t.map[ t.prev ].is_reliable = nil end -- remove prev room's reliable tag since after initial set up it could cause problems (e.g. other rooms with same item count). This would result in a single room still has the tag but that should be no problem.
 		action.adjust_item_to_expected = true
 	elseif item_count == 0 then
@@ -956,7 +956,7 @@ function handler:thd_bagua( t )
 		end
 		return
 	end
-	if loc.id == '桃花岛山冈' then
+	if loc.id == '桃花岛山冈' or loc.id == '桃花岛小院' then
 		local c = string.sub( handler.data.thd_bagua, 1, 1 ) == '1' and 'e' or 'w'
 		self:send{ c }
 	elseif loc.id == '桃花岛八卦桃花阵' then
@@ -964,7 +964,6 @@ function handler:thd_bagua( t )
 		local prev = string.sub( handler.data.thd_bagua, t.step_num, t.step_num )
 		t.step_num = t.step_num + 1
 		local c = string.sub( handler.data.thd_bagua, t.step_num, t.step_num )
-		if t.step_num == 24 then handler.data.thd_bagua = nil end -- clear bagua sequence upon exit
 		c = prev == c and 's' or 'e'
 		self:send{ c }
 	else
@@ -984,7 +983,12 @@ function handler:thd_bagua_parse( _, t )
 	handler.data.thd_bagua = s
 	handler.thd_bagua( self, self.step )
 end
-trigger.new{ name = 'thd_bagua', group = 'step_handler.thd_bagua', text = '^一个奇怪的铁八卦，上面按顺时针顺序排列着：(\\S+)。$', func = handler.thd_bagua_parse }
+function handler:thd_bagua_blocked()
+	handler.data.thd_bagua = nil
+	handler.thd_bagua( self, self.step )
+end
+trigger.new{ name = 'thd_bagua', group = 'step_handler.thd_bagua', match = '^一个奇怪的铁八卦，上面按顺时针顺序排列着：(\\S+)。$', func = handler.thd_bagua_parse }
+trigger.new{ name = 'thd_bagua_blocked', group = 'step_handler.thd_bagua', match = '^(> )*你感觉这个桃花阵中暗藏八卦，隐隐生出阻力，将你推了回来！$', func = handler.thd_bagua_blocked }
 
 -- 桃花岛墓道
 local thd_mudao_tbl = {

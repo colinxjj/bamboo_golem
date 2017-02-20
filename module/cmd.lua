@@ -40,8 +40,8 @@ local dup_patt = lpeg.Cs( ( ( sep ^ 2 / ';' ) + 1 )^1 )
 
 -- pattern used to expand repetitions like '#5 w' to 'w;w;w;w;w'
 local num = lpeg.C( lpeg.R '09'^1 )
-local c = lpeg.C( any_but( ';' )^1 )
-local endp = lpeg.P( -1 ) + ';'
+local c = lpeg.C( any_but( sep )^1 )
+local endp = lpeg.P( -1 ) + sep
 local patt = lpeg.P '#' * num * ' ' * c * endp
 local repl = function ( num, c )
   return string.rep( c .. ';', num )
@@ -53,13 +53,13 @@ local nonsep = 1 - sep
 local sep_patt = sep^0 * lpeg.Cs( ( nonsep^1 * ( sep / '|' + -1 ) )^1 )
 
 -- pattern used to split commands into units, #wa and ask commands get their standalone units because they cause delay to subsequent commands
-local waitp = lpeg.C( lpeg.P '#wa' * ' ' * lpeg.R '09'^1 )
-local askp = lpeg.C( lpeg.P 'ask ' * any_but( '|' )^1 )
+local nsep = lpeg.P '|'
+local waitp = lpeg.C( lpeg.P '#wa' * ' ' * lpeg.R '09'^1 * ( nsep + -1 ) )
+local askp = lpeg.C( lpeg.P 'ask ' * any_but( nsep )^1 * ( nsep + -1 ) )
 local cmdp = lpeg.C( ( 1 - lpeg.P '#wa' - 'ask' )^1 )
 local unit_patt = ( waitp + askp + cmdp )^1
 
 -- pattern used to remove leading and trailing '|'
-local nsep = lpeg.P '|'
 local extra_sep_patt = lpeg.Cs( nsep^-1 / '' * ( ( ( nsep * -1 ) / '' ) + 1 )^1 )
 
 -- pattern used to determine if a string contains '|' or not
@@ -75,6 +75,7 @@ local function convert_to_unit( t )
   for i, unit in pairs( result ) do
     unit = extra_sep_patt:match( unit ) -- remove leading and trailing '|'
     local type = has_sep:match( unit ) and 'batch' or cmd.extract_core( unit )
+    unit = type == 'batch' and ( 'ado ' .. unit ) or unit
     result[ i ] = { cmd = unit, status = 'pending', type = type }
     setmetatable( result[ i ], t ) -- units inherit values from the original table, .e.g add_time, ignore_result
   end
@@ -132,9 +133,14 @@ local function send( c )
       world.Send( 'halt' )
     end
   else
+    is_possibly_still_busy = nil
     trigger.enable_group 'cmd'
     c.status = c.ignore_result and 'completed' or 'sent'
-    world.Send( c.type == 'batch' and 'ado ' .. c.cmd or c.cmd )
+    if c.no_echo then
+      world.SendNoEcho( c.cmd )
+    else
+      world.Send( c.cmd )
+    end
   end
 end
 
@@ -193,7 +199,7 @@ end
 
 -- add command parsing triggers
 for name, msg in pairs( cmd_busy_message ) do
-  trigger.new{ name = 'cmd_' .. name, text = '^(> )*' .. msg, func = cmd.parse_busy, group = 'cmd', enabled = false, keep_eval = true, sequence = 90 }
+  trigger.new{ name = 'cmd_' .. name, match = '^(> )*' .. msg, func = cmd.parse_busy, group = 'cmd', enabled = false, keep_eval = true, sequence = 90 }
 end
 
 --------------------------------------------------------------------------------

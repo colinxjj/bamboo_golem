@@ -30,13 +30,15 @@ dofile( CWD .. 'data/default_config.txt' )
 player, time = {}, {}
 player.flag = {}
 
+-- load message module
+message = require 'module.message'
+
 -- set up useful helper functions
 dofile( CWD .. 'module/init/helper.lua' )
 
 -- load modules
 event = require 'module.event'
 trigger = require 'module.trigger'
-message = require 'module.message'
 cmd = require 'module.cmd'
 cli = require 'module.cli'
 log = require 'module.log'
@@ -44,6 +46,7 @@ timer = require 'module.timer'
 map = require 'module.map'
 taskmaster = require 'module.taskmaster'
 bigword = require 'module.bigword'
+gag = require 'module.gag'
 
 -- load parsers
 require 'module.parser.hp'
@@ -61,7 +64,7 @@ require 'module.parser.place'
 dofile( CWD .. 'task/_init.lua' )
 
 -- load the core
-dofile( CWD .. 'module/init/main.lua' )
+dofile( CWD .. 'module/_main.lua' )
 
 --------------------------------------------------------------------------------
 -- initial task set up

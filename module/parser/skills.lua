@@ -74,13 +74,13 @@ local function parse_levelup( _, t )
   sk.exp  = 0
 end
 
-trigger.new{ name = 'skills1', text = '^(> )*【你的技能表】：总共(\\S+)项技能', func = parse_header, enabled = true }
-trigger.new{ name = 'skills2', text = '^│(.+)$', func = parse_content, group = 'skills' }
-trigger.new{ name = 'skills3', text = '^└', func = parse_footer, group = 'skills' }
+trigger.new{ name = 'skills1', match = '^(> )*【你的技能表】：总共(\\S+)项技能', func = parse_header, enabled = true }
+trigger.new{ name = 'skills2', match = '^│(.+)$', func = parse_content, group = 'skills' }
+trigger.new{ name = 'skills3', match = '^└', func = parse_footer, group = 'skills' }
 
-trigger.new{ name = 'skills0', text = '^(> )*你目前并没有学会任何技能。', func = parse_empty, enabled = true }
+trigger.new{ name = 'skills0', match = '^(> )*你目前并没有学会任何技能。', func = parse_empty, enabled = true }
 
-trigger.new{ name = 'skillsu', text = '^(> )*你的「(\\S+)」进步了！', func = parse_levelup, enabled = true }
+trigger.new{ name = 'skillsu', match = '^(> )*你的「(\\S+)」进步了！', func = parse_levelup, enabled = true }
 
 --------------------------------------------------------------------------------
 -- End of module

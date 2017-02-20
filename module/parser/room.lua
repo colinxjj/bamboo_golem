@@ -161,28 +161,28 @@ local function parse_ferry_departed()
   end
 end
 
-trigger.new{ name = 'room_header', text = '^(> )*(\\S+) - $', func = parse_header, enabled = true }
-trigger.new{ name = 'room_desc', text = '^.+$', func = parse_desc, group = 'room' }
-trigger.new{ name = 'room_nature', text = '^　　这是一个\\S{4}(\\S{4})?的', func = parse_nature, group = 'room', sequence = 99 } -- higher sequence to block desc trigger
-trigger.new{ name = 'room_exit', text = '^    这里((没有|看不见)任何明显的出路|(明显的|唯一的|看得见的唯一|看得清的)出口是 (.+))。', func = parse_exit, group = 'room', sequence = 99 }
-trigger.new{ name = 'room_object', text = '^  ([^(]+)\\(([\\w\\s\\\'-]+)\\)(\\<\\S+\\>)?', func = parse_object }
-trigger.new{ name = 'room_end', text = '^\\S', func = parse_end, sequence = 99, keep_eval = true }
+trigger.new{ name = 'room_header', match = '^(> )*(\\S+) - $', func = parse_header, enabled = true }
+trigger.new{ name = 'room_desc', match = '^.+$', func = parse_desc, group = 'room' }
+trigger.new{ name = 'room_nature', match = '^　　这是一个\\S{4}(\\S{4})?的', func = parse_nature, group = 'room', sequence = 99 } -- higher sequence to block desc trigger
+trigger.new{ name = 'room_exit', match = '^    这里((没有|看不见)任何明显的出路|(明显的|唯一的|看得见的唯一|看得清的)出口是 (.+))。', func = parse_exit, group = 'room', sequence = 99 }
+trigger.new{ name = 'room_object', match = '^  ([^(]+)\\(([\\w\\s\\\'-]+)\\)(\\<\\S+\\>)?', func = parse_object }
+trigger.new{ name = 'room_end', match = '^\\S', func = parse_end, sequence = 99, keep_eval = true }
 
-trigger.new{ name = 'room_brief', text = '^(> )*(\\S+) - (\\S+)$', func = parse_brief, enabled = true }
+trigger.new{ name = 'room_brief', match = '^(> )*(\\S+) - (\\S+)$', func = parse_brief, enabled = true }
 
-trigger.new{ name = 'room_look_header', text = '^(> )*【你现在正处于(\\S+)】$', func = parse_look_header, enabled = true }
-trigger.new{ name = 'room_look_content', text = '^.+$', func = parse_look_content, sequence  = 101 }
+trigger.new{ name = 'room_look_header', match = '^(> )*【你现在正处于(\\S+)】$', func = parse_look_header, enabled = true }
+trigger.new{ name = 'room_look_content', match = '^.+$', func = parse_look_content, sequence  = 101 }
 
-trigger.new{ name = 'room_ferry_came', text = '^(> )*(一叶扁舟缓缓地驶了过来|一艘渡船缓缓地驶了过来|番僧把麻绳理顺|一条粗大的绳索坠着个大藤筐|一个大竹篓缓缓地降了下来)', func = parse_ferry_came, enabled = true }
-trigger.new{ name = 'room_ferry_left', text = '^(> )*(艄公们把踏脚板收|艄公把踏脚板收|日月教众喊了一声“坐稳喽”|绳索一紧，藤筐左右摇晃振动了几下|番僧用力一推，将藤筐推离平台)', func = parse_ferry_left, enabled = true, keep_eval = true }
-trigger.new{ name = 'room_ferry_arrived', text = '^(> )*(艄公说“到啦，上岸吧”|艄公将一块踏脚板搭上堤岸|渡船猛地一震|竹篓晃了几下|又划出三四里|藤筐离地面越来越近|一个番僧用沙哑的声音道|终于到了小岛边|终于到了岸边|船夫把小舟靠在岸边)', func = parse_ferry_arrived, enabled = true }
-trigger.new{ name = 'room_ferry_departed', text = '^(> )*(艄公们把踏脚板收|艄公把踏脚板收|铜锣三响，崖顶的绞盘开始转动|绳索一紧，藤筐左右摇晃振动了几下|番僧用力一推，将藤筐推离平台)', func = parse_ferry_departed, enabled = true, keep_eval = true }
+trigger.new{ name = 'room_ferry_came', match = '^(> )*(一叶扁舟缓缓地驶了过来|一艘渡船缓缓地驶了过来|番僧把麻绳理顺|一条粗大的绳索坠着个大藤筐|一个大竹篓缓缓地降了下来)', func = parse_ferry_came, enabled = true }
+trigger.new{ name = 'room_ferry_left', match = '^(> )*(艄公们把踏脚板收|艄公把踏脚板收|日月教众喊了一声“坐稳喽”|绳索一紧，藤筐左右摇晃振动了几下|番僧用力一推，将藤筐推离平台)', func = parse_ferry_left, enabled = true, keep_eval = true }
+trigger.new{ name = 'room_ferry_arrived', match = '^(> )*(艄公说“到啦，上岸吧”|艄公将一块踏脚板搭上堤岸|渡船猛地一震|竹篓晃了几下|又划出三四里|藤筐离地面越来越近|一个番僧用沙哑的声音道|终于到了小岛边|终于到了岸边|船夫把小舟靠在岸边)', func = parse_ferry_arrived, enabled = true }
+trigger.new{ name = 'room_ferry_departed', match = '^(> )*(艄公们把踏脚板收|艄公把踏脚板收|铜锣三响，崖顶的绞盘开始转动|绳索一紧，藤筐左右摇晃振动了几下|番僧用力一推，将藤筐推离平台)', func = parse_ferry_departed, enabled = true, keep_eval = true }
 
 -- add triggers for rooms that have no exits sometimes, resulting in no trailing dash after the room name
 local no_exit_room_list = map.list_all_potentially_no_exit()
 local i = 1
 for roomname in pairs( no_exit_room_list ) do
-  trigger.new{ name = 'room_ne' .. i, text = '^(> )*(' .. roomname .. ')$', group = 'room_ne',func = parse_brief, enabled = true }
+  trigger.new{ name = 'room_ne' .. i, match = '^(> )*(' .. roomname .. ')$', group = 'room_ne',func = parse_brief, enabled = true }
   i = i + 1
 end
 

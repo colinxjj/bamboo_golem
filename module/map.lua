@@ -170,6 +170,7 @@ function map.is_current_location( room )
   end
 end
 
+--[[
 function map.ignore_room()
   mesage.debug 'MAP 模块：忽略了一个房间'
 end
@@ -178,6 +179,7 @@ function map.ignore_next_room()
   mesage.debug 'MAP 模块：收到忽略下一个房间的请求'
   event.listen{ event = 'room', func = map.ignore_room, id = 'map.ignore_room', sequence = 90, keep_eval = false }
 end
+--]]
 
 -- locate the player based on the current room data
 function map.locate( room )

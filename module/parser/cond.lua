@@ -31,11 +31,11 @@ local function parse_empty()
   event.new 'cond'
 end
 
-trigger.new{ name = 'cond1', text = '^│状态名称', func = parse_header, enabled = true }
-trigger.new{ name = 'cond2', text = '^│(\\S+)\\s*　\\s*(\\S+)\\s*　\\s*(\\S+)\\s*│', func = parse_content, group = 'cond' }
-trigger.new{ name = 'cond3', text = '^└', func = parse_footer, group = 'cond' }
+trigger.new{ name = 'cond1', match = '^│状态名称', func = parse_header, enabled = true }
+trigger.new{ name = 'cond2', match = '^│(\\S+)\\s*　\\s*(\\S+)\\s*　\\s*(\\S+)\\s*│', func = parse_content, group = 'cond' }
+trigger.new{ name = 'cond3', match = '^└', func = parse_footer, group = 'cond' }
 
-trigger.new{ name = 'cond0', text = '^(> )*你身上没有包括任何特殊状态。', func = parse_empty, enabled = true }
+trigger.new{ name = 'cond0', match = '^(> )*你身上没有包括任何特殊状态。', func = parse_empty, enabled = true }
 
 --------------------------------------------------------------------------------
 -- End of module

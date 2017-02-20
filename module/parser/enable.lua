@@ -27,10 +27,10 @@ local function parse_empty()
   event.new 'enable'
 end
 
-trigger.new{ name = 'enable1', text = '^(> )*以下是你目前使用中的特殊技能。$', func = parse_header, enabled = true }
-trigger.new{ name = 'enable2', text = '^  \\S+ \\((\\w+)\\)\\s*：\\s*(\\S+)\\s*有效等级：\\s*(\\d+)$', func = parse_content }
+trigger.new{ name = 'enable1', match = '^(> )*以下是你目前使用中的特殊技能。$', func = parse_header, enabled = true }
+trigger.new{ name = 'enable2', match = '^  \\S+ \\((\\w+)\\)\\s*：\\s*(\\S+)\\s*有效等级：\\s*(\\d+)$', func = parse_content }
 
-trigger.new{ name = 'enable0', text = '^(> )*你现在没有使用任何特殊技能。$', func = parse_empty, enabled = true }
+trigger.new{ name = 'enable0', match = '^(> )*你现在没有使用任何特殊技能。$', func = parse_empty, enabled = true }
 
 --------------------------------------------------------------------------------
 -- End of module

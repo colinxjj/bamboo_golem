@@ -2,6 +2,27 @@
 -- This file defines some useful heper functions
 --------------------------------------------------------------------------------
 
+-- create a lpeg pattern matches up to a string and captures all until string
+function upto( s )
+	return lpeg.C( ( lpeg.P( 1 ) - s )^0 ) * s
+end
+
+-- create a lpeg pattern matches anything but a set of strings
+function any_but( ... )
+	local t, p = { ... }, lpeg.P( 1 )
+	for _, s in pairs( t ) do
+		p = p - s
+	end
+	return p
+end
+
+-- remove all spaces from a string
+local patt_sp = lpeg.Cs( ( lpeg.P' ' / '' + 1 )^0 )
+
+function remove_space( s )
+	return patt_sp:match( s )
+end
+
 -- convert chinese numbers to arabic ones
 local num = lpeg.Cg( lpeg.P '一' + '二' + '三' + '四' + '五' + '六' + '七' + '八' + '九', 'num' )
 local unit = lpeg.Cg( lpeg.P '十' + '百' + '千' + '万' + '亿' + '零', 'unit' )
@@ -21,25 +42,20 @@ function cntonumber( text )
 	return result
 end
 
--- calculate current time in game based on info in the 'time' table
-function time.get_current_hour()
-  if not time.update_time or not time.hour then return end
-  local hour_passed = math.floor( ( os.time() - time.update_time ) / 60 * 10 ) / 10
-  local new_hour = ( time.hour + hour_passed ) % 24
-  -- message.debug( '距离上次更新时间信息已过 ' .. os.time() - time.update_time .. ' 秒，游戏时间应当已过 ' .. hour_passed .. ' 小时，估计当前时刻为 ' .. new_hour .. ' 时' )
-  return new_hour
-end
-
 -- extract name from strings like 丐帮第十九代弟子 何师我
-local sp_or_end = lpeg.P ' ' + '」' + -1
-local nonsp = lpeg.C ( ( 1 - ( lpeg.P ' ' + '」' ) )^1 )
-local patt = ( nonsp * sp_or_end )^1
+local ansi = lpeg.R( '09', 'az', 'AZ' ) + lpeg.S ',.?!-/:-@%[\\%]^_`{|}~()'
+local remove_ansi = lpeg.Cs( ( ansi / '' + 1 )^1 )
+local crop_to_sp = lpeg.Cs( ( any_but( ' ' )^0 * ' ' / '' )^1 * any_but( ' ' )^1 )
 
 function extract_name( s )
-	if string.find( s, '骸骨' ) then return s end -- a workaround to fix the issue where 骸骨 can be interpreted to '」' followed by a garbage character
-	local t = { patt:match( s ) }
-	local name = t[ #t ]
+	local name = remove_ansi:match( s ) or s
+	name = crop_to_sp:match( name ) or name
 	if #name % 2 ~= 0 then message.warning( 'extract_name: extracting name from "' .. s .. '" results in: ' .. name ) end
+	for i = 1, #name / 2 do
+		if string.sub( name, i * 2 - 1, i * 2 ) == '」' then
+			name = string.sub( name, i * 2 + 1 )
+		end
+	end
 	return name
 end
 
@@ -68,13 +84,6 @@ end
 function extract_gender( s )
 	local gender = ( string.find( s, '男' ) and 'male' ) or ( string.find( s, '女' ) and 'female' ) or 'other'
 	return gender
-end
-
--- remove all spaces from a string
-local patt_sp = lpeg.Cs( ( lpeg.P' ' / '' + 1 )^0 )
-
-function remove_space( s )
-	return patt_sp:match( s )
 end
 
 -- translate numeric error codes to meaningful error info
@@ -107,20 +116,6 @@ function cn_timelen_to_sec( text )
 		result = result + cntonumber( v[ 1 ] ) * unit_to_sec[ v[ 2 ] ]
 	end
 	return result
-end
-
--- create a lpeg pattern matches up to a string and captures all until string
-function upto( s )
-	return lpeg.C( ( lpeg.P( 1 ) - s )^0 ) * s
-end
-
--- create a lpeg pattern matches anything but a set of strings
-function any_but( ... )
-	local t, p = { ... }, lpeg.P( 1 )
-	for _, s in pairs( t ) do
-		p = p - s
-	end
-	return p
 end
 
 -- a function to print tables, copied from MUSHclient's implementation

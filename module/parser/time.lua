@@ -27,7 +27,6 @@ local function parse_line_2( _, t )
   end
 end
 
-
 local patt1 = lpeg.P '已经使用' * upto ','
 local patt2 = upto '本周还可以使用' * upto '。'
 
@@ -63,11 +62,11 @@ local function parse_calibration( _, t )
   time.hour, time.calibrate_time, time.update_time, player.time_update_time = new_hour, os.time(), os.time(), os.time()
 end
 
-trigger.new{ name = 'time1', text = '^(> )*现在是书剑(\\S+)年(\\S+)月(\\S+)日(\\S+)时(\\S*)。', func = parse_line_1, enabled = true }
-trigger.new{ name = 'time2', text = '^(贵宾剩余时间|贵宾系统提示)：(\\S+)。', func = parse_line_2, group = 'time' }
-trigger.new{ name = 'time3', text = '^鬼谷算术状态：(\\S+)', func = parse_line_3, group = 'time' }
+trigger.new{ name = 'time1', match = '^(> )*现在是书剑(\\S+)年(\\S+)月(\\S+)日(\\S+)时(\\S*)。', func = parse_line_1, enabled = true }
+trigger.new{ name = 'time2', match = '^(贵宾剩余时间|贵宾系统提示)：(\\S+)。', func = parse_line_2, group = 'time' }
+trigger.new{ name = 'time3', match = '^鬼谷算术状态：(\\S+)', func = parse_line_3, group = 'time' }
 
-trigger.new{ name = 'timec', text = '^(> )*已经是(正午|午夜)了', func = parse_calibration, enabled = true }
+trigger.new{ name = 'timec', match = '^(> )*已经是(正午|午夜)了', func = parse_calibration, enabled = true }
 
 --------------------------------------------------------------------------------
 -- End of module

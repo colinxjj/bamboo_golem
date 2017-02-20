@@ -11,6 +11,7 @@ local prompt_fired_on_this_line
 local PROMPT = '^' .. PROMPT
 
 function world.OnPluginPartialLine( text )
+	gag.check( text ) -- check if the line should be gagged
 	if string.find( text, PROMPT ) and not prompt_fired_on_this_line then
 		prompt_fired_on_this_line = true
 		event.new 'prompt'
@@ -73,6 +74,17 @@ function busy_expire()
 	end
 end
 
+--------------------------------------------------------------------------------
+-- other stuff
+
+-- calculate current time in game based on info in the 'time' table
+function time.get_current_hour()
+  if not time.update_time or not time.hour then return end
+  local hour_passed = math.floor( ( os.time() - time.update_time ) / 60 * 10 ) / 10
+  local new_hour = ( time.hour + hour_passed ) % 24
+  -- message.debug( '距离上次更新时间信息已过 ' .. os.time() - time.update_time .. ' 秒，游戏时间应当已过 ' .. hour_passed .. ' 小时，估计当前时刻为 ' .. new_hour .. ' 时' )
+  return new_hour
+end
 
 
 --------------------------------------------------------------------------------

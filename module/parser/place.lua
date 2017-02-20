@@ -28,11 +28,11 @@ local function parse_footer()
   room = nil
 end
 
-trigger.new{ name = 'place1', text = '^这里是(\\S+)，共有\\S+个出口，分别通往：', func = parse_header, enabled = true }
-trigger.new{ name = 'place2', text = '^.+$', func = parse_content, group = 'place' }
-trigger.new{ name = 'place3', text = '^━━━━━━━━━━━━━━━━━━━━━━━━━━ SJ ━━$', func = parse_footer, group = 'place', sequence = 99 }
+trigger.new{ name = 'place1', match = '^这里是(\\S+)，共有\\S+个出口，分别通往：', func = parse_header, enabled = true }
+trigger.new{ name = 'place2', match = '^.+$', func = parse_content, group = 'place' }
+trigger.new{ name = 'place3', match = '^━━━━━━━━━━━━━━━━━━━━━━━━━━ SJ ━━$', func = parse_footer, group = 'place', sequence = 99 }
 
-trigger.new{ name = 'place0', text = '^(> )*这里没有任何明显的出路。$', func = parse_footer, enabled = true }
+trigger.new{ name = 'place0', match = '^(> )*这里没有任何明显的出路。$', func = parse_footer, enabled = true }
 
 --------------------------------------------------------------------------------
 -- End of module
