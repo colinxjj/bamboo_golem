@@ -1006,11 +1006,18 @@ function handler:thd_mudao( t )
 	-- returned to 桃花岛墓道#1?
 	if room.exit.out then
 		-- ignore first room because of repetition bug
-		if not t.is_fail_known then t.is_fail_known = true; return end
+		if not t.is_fail_known and t.offset ~= 'reset_done' then t.is_fail_known = true; return end
 		-- reset vars
 		t.is_fail_known, t.round = nil, 1
-		-- adjust time accordingly
-		time.hour, time.calibrate_time, time.update_time, player.time_update_time = math.ceil( time.get_current_hour() ), os.time(), os.time(), os.time()
+		t.offset = not t.offset and 'later'
+						or ( t.offset == 'later' and 'earlier' )
+						or ( t.offset == 'earlier' and 'reset' )
+						or nil
+		if t.offset == 'reset' then -- get time again if tried three hour variations
+			t.offset = 'reset_done'
+			self:newsub{ class = 'getinfo', time = 'forced', complete_func = handler.thd_mudao }
+			return
+		end
 		-- go down again
 		self:send{ 'd' }
 		return
@@ -1023,7 +1030,10 @@ function handler:thd_mudao( t )
 		return
 	end
 	hour = math.floor( hour )
-	hour = hour > 12 and hour - 12 or hour
+	hour = ( t.offset == 'later' and hour + 1 )
+			or ( t.offset == 'earlier' and hour - 1 )
+			or hour
+	hour = hour > 12 and hour - 12 or ( hour < 1 and 12 ) or hour
 	-- otherwise move to next room
 	t.round = t.round or 1
 	self:send{ thd_mudao_tbl[ t.round ][ hour ] }
@@ -1032,6 +1042,7 @@ end
 -- from 桃花岛墓道#2 to 桃花岛墓道#M
 function handler:thd_mudao_up( t )
 	local room = map.get_current_room()
+	if os.time() - room.time > 5 then self:send{ 'l' }; return end -- refresh room data if stale
 	for _, dir in pairs( DIR_ALL ) do
 		if dir ~= 'd' and room.exit[ dir ] then self:send{ dir }; return end
 	end

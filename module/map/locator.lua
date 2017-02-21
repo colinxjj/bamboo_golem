@@ -54,7 +54,7 @@ function locator.is_adjacent_to_prev_location( map_room, range )
   local prev_loc, is_found = map.get_current_location()
   if not prev_loc then return end
   for _, loc in pairs( prev_loc ) do
-    is_found = map.find_room_within_range( loc, map_room, range )
+    is_found = map.is_room_within_range( loc, map_room, range )
     if is_found then break end
   end
   return is_found

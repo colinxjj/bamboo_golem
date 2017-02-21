@@ -16,6 +16,8 @@ local task_class = {
   'locate', -- 定位
   'getinfo', -- 获取信息
   'killtime', -- 混时间
+  'find', -- 找人
+  'traverse', -- 遍历
 
   'job.wuguan', -- 襄阳武馆
 }

@@ -12,7 +12,7 @@ dev_mode = true
 do
 	local _, _, path = string.find( package.path, ';([^;]+);' )
 	MCPATH = string.sub( path, 1, string.find( path, '\\lua' ) )
-	PPATH = MCPATH .. 'worlds\\BambooGolem\\'
+	PPATH = MCPATH .. 'BambooGolem\\'
 	package.path = package.path .. ';' .. PPATH .. '\?.lua'
 end
 
@@ -21,9 +21,11 @@ end
 
 -- load data
 dofile( CWD .. 'data/constant.lua' )
-dofile( CWD .. 'data/kungfu.lua' )
-dofile( CWD .. 'data/item.lua' )
-dofile( CWD .. 'data/npc.lua' )
+kungfu = require 'data.kungfu'
+item = require  'data.item'
+npc = require  'data.npc'
+
+-- load default config
 dofile( CWD .. 'data/default_config.txt' )
 
 -- setup necessary tables
@@ -81,7 +83,8 @@ dofile( CWD .. 'module/init/cli_default.lua' )
 --------------------------------------------------------------------------------
 -- set up some saner-than-default world options, just in case
 
-world.SetOption( 'wrap_column', 140 )
+world.SetOption( 'auto_pause', 1 )
+world.SetOption( 'unpause_on_send', 1 )
 world.SetOption( 'enable_command_stack', 1 )
 world.SetOption( 'auto_repeat', 1 )
 world.SetOption( 'arrow_recalls_partial', 1 )
@@ -100,6 +103,7 @@ world.SetOption( 'script_errors_to_output_window', 1 )
 world.SetOption( 'play_sounds_in_background', 1 )
 world.SetOption( 'send_echo', 1 )
 world.SetOption( 'show_bold', 0 )
+world.SetOption( 'save_world_automatically', 1 )
 
 --------------------------------------------------------------------------------
 -- some tweaks to the MC GUI
@@ -107,6 +111,7 @@ world.SetOption( 'show_bold', 0 )
 -- make the MC window a little bit transparent
 world.Transparency( -1, 245 )
 
+-- set command window height
 SetCommandWindowHeight( 36 )
 
 --------------------------------------------------------------------------------

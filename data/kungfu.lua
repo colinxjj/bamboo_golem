@@ -1,4 +1,4 @@
-kungfu = {
+local kungfu = {
 
 ['¸òó¡¹¦'] = {
 	type = 'force',
@@ -208,3 +208,5 @@ kungfu = {
 },
 
 }
+
+return kungfu

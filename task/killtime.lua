@@ -23,10 +23,12 @@ function task:_resume()
 
   -- task complete if end time is passed
   if self.timer_set then
+    message.debug( 'killtime 任务：已度过 ' .. self.duration .. ' 秒时间' )
     if os.time() - self.end_time >= -1 then self:complete(); return end
   end
 
   -- TODO for now just use a timer to idle
+  message.debug( 'killtime 任务：开始度过 ' .. self.duration .. ' 秒时间' )
   self.timer_set = true
   self:timer{ id = 'killtime_timer', duration = self.duration, func = self.resume }
 end

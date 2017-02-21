@@ -1,4 +1,4 @@
-npc = {
+local npc = {
 
 ['ЭѕГјзг'] = {
   id = 'wang chuzi',
@@ -56,3 +56,5 @@ npc = {
   label = {},
 },
 }
+
+return npc

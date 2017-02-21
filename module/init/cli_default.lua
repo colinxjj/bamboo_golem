@@ -5,6 +5,9 @@
 cli.register{ cmd = 'help', desc = '显示插件命令帮助', func = cli.help }
 cli.register{ cmd = 'auto', desc = '控制自动模式。auto start：开始自动模式，auto stop：停止自动模式', func = cli.help, no_prefix = true }
 
+--------------------------------------------------------------------------------
+-- g
+
 local option
 
 local function start_go_task( dest )
@@ -41,11 +44,17 @@ end
 
 cli.register{ cmd = 'g', desc = '前往指定地点。例如：g 扬州城中央广场', func = parse_g, no_prefix = true }
 
+--------------------------------------------------------------------------------
+-- loc
+
 local function parse_loc()
   taskmaster.current_manual_task:newsub{ class = 'locate' }
 end
 
 cli.register{ cmd = 'loc', desc = '定位当前位置。', func = parse_loc, no_prefix = true }
+
+--------------------------------------------------------------------------------
+-- dev
 
 local function parse_dev()
   if dev_mode then
@@ -59,17 +68,26 @@ end
 
 cli.register{ cmd = 'dev', desc = '切换开发模式。', func = parse_dev, no_prefix = true }
 
+--------------------------------------------------------------------------------
+-- ct
+
 local function parse_ct()
   print( time.get_current_hour() or '时间未知' )
 end
 
 cli.register{ cmd = 'ct', desc = '显示当前时辰。', func = parse_ct, no_prefix = true }
 
+--------------------------------------------------------------------------------
+-- ll
+
 local function parse_ll()
   taskmaster.current_manual_task:newsub{ class = 'getinfo', room = 'surrounding' }
 end
 
 cli.register{ cmd = 'll', desc = '查看所有周边房间。', func = parse_ll, no_prefix = true }
+
+--------------------------------------------------------------------------------
+-- mm
 
 local parse_mm
 parse_mm = function()
@@ -84,3 +102,5 @@ parse_mm = function()
 end
 
 cli.register{ cmd = 'mm', desc = '序列化当前房间数据。', func = parse_mm, no_prefix = true }
+
+--------------------------------------------------------------------------------

@@ -56,7 +56,7 @@ function map.get_room_by_id( id )
   return index[ id ]
 end
 
--- a function to check if reached dest by directly comparing rooms (tables)
+-- return a function to check if reached dest by directly comparing tables of rooms
 local function is_dest_by_room( dest )
   return function( room )
     return room == dest
@@ -108,7 +108,8 @@ local function genpath( from, is_dest )
   return path
 end
 
--- get the path between two rooms, accepts room id's and room tables as arguments
+-- get the path between two rooms
+-- params can be ids or tables of the rooms
 function map.getpath( from, to )
   from = type( from ) == 'string' and index[ from ] or from
   to = type( to ) == 'string' and index[ to ] or to
@@ -119,23 +120,90 @@ function map.getpath( from, to )
 end
 
 -- check if a room can be found within X range from the starting room
-function map.find_room_within_range( start_room, room_to_find, range )
-  local list, list_pos, distance, new_distance, from, to, found = { start_room }, 1, { [ start_room ] = 0 }
+-- both room params must be the tables of the rooms
+function map.is_room_within_range( start_room, room_to_find, range )
+  local list, list_pos, distance, new_distance, from, to, is_found = { start_room }, 1, { [ start_room ] = 0 }
   while list[ list_pos ] do
     from = list[ list_pos ]
-    if from == room_to_find then found = true; break end
+    if from == room_to_find then is_found = true; break end
     for _, exit in pairs( from.exit ) do
       to = index[ exit.to ]
       new_distance = distance[ from ] + 1
       if to and new_distance <= range and not distance[ to ] then -- add new node
-        distance[ to ] =  new_distance
+        distance[ to ] = new_distance
         list[ #list + 1 ] = to
       end
     end
     list_pos = list_pos + 1 -- move to next node
   end
 
-  return found
+  return is_found
+end
+
+-- return a list of rooms within the range from the base location
+-- the loc param can be the long name, id, or table of a room
+function map.expand_loc( loc, range )
+  -- get a list of rooms matching the loc
+  local base_list = longname_index[ loc ] or { map.get_room_by_id( loc ) } or { loc }
+  assert( next( base_list ), 'map.expand_loc - invalid base room list' )
+
+  local cache = {}
+  for _, start_room in pairs( base_list ) do
+    local list, list_pos, distance, new_distance, from, to = { start_room }, 1, { [ start_room ] = 0 }
+    while list[ list_pos ] do
+      from = list[ list_pos ]
+      cache[ from ] = true
+      for _, exit in pairs( from.exit ) do
+        to = index[ exit.to ]
+        new_distance = distance[ from ] + 1
+        if to and not exit.no_wander and not exit.ignore -- ignore exits with no_wander and ignore labels
+        and ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) -- respect exit cond
+        and new_distance <= range and not distance[ to ] then -- add new node
+          distance[ to ] = new_distance
+          list[ #list + 1 ] = to
+          cache[ to ] = true -- add the room to cache list
+        end
+      end
+      list_pos = list_pos + 1 -- move to next node
+    end
+  end
+
+  -- generate result list
+  local result = {}
+  for room in pairs( cache ) do
+    result[ #result + 1 ] = room
+  end
+  return result
+end
+
+-- find the nearest room that meets the criteria
+-- the 1st param must be the id/table of a room, the 2nd a function to check if a room is one that we want
+function map.find_nearest( from, is_dest )
+  from = type( from ) == 'string' and index[ from ] or from
+  assert( from and from.id, 'map.find_nearest - can\'t parse the from param' )
+
+  local list, list_pos, cost, max_cost, to, dest, new_cost = { from }, 1, { [ from ] = 0 }
+  while list[ list_pos ] do
+    from = list[ list_pos ]
+    if is_dest( from ) and
+    ( max_cost and cost[ from ] < max_cost or not max_cost ) then -- set dest
+      max_cost, dest = cost[ from ], from
+    end
+    for _, exit in pairs( from.exit ) do
+      to = index[ exit.to ]
+      new_cost = cost[ from ] + ( exit.cost or 1 )
+      if to and from ~= to and not exit.ignore and
+      --( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) and
+      ( max_cost and new_cost < max_cost or not max_cost ) and
+      ( not cost[ to ] or new_cost < cost[ to ] ) then -- add new node
+        cost[ to ] =  new_cost
+        list[ #list + 1 ] = to
+      end
+    end
+    list_pos = list_pos + 1 -- move to next node
+  end
+
+  return dest
 end
 
 function map.get_step_cmd( from, to )

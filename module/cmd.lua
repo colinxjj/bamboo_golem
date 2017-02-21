@@ -127,7 +127,7 @@ local function send( c )
     -- message.debug( 'CMD 模块按照 #wa 命令等待 ' .. c.duration .. ' 毫秒 / ' .. c.hbcount .. ' 次心跳' )
     c.target_hbcount = get_heartbeat_count() + c.hbcount
     c.status = 'waiting'
-  elseif is_possibly_still_busy and c.type == 'batch' then -- try halting first if might still be in busy and next command is a batch
+  elseif is_possibly_still_busy and c.type == 'batch' and not c.ignore_result then -- try halting first if might still be in busy and next command is a batch
     if is_possibly_still_busy == true then
       is_possibly_still_busy = 'halt_sent'
       world.Send( 'halt' )

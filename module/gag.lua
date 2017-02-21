@@ -2,7 +2,7 @@
 local gag = {}
 
 --------------------------------------------------------------------------------
--- This module handles gagging (mostly for predefined groups)
+-- This module handles gagging (for predefined groups only)
 --------------------------------------------------------------------------------
 
 local list = {}
@@ -64,10 +64,10 @@ function gag.check( text )
   end
 end
 
-function gag.blackhole( _, t )
+function gag.blackhole()
 end
 
-trigger.new{ name = 'gag', match = '.+', func = gag.blackhole, sequence = 50, keep_eval = true, omit = true }
+trigger.new{ name = 'gag', match = '.', func = gag.blackhole, sequence = 50, keep_eval = true, omit = true }
 
 --------------------------------------------------------------------------------
 -- End of module

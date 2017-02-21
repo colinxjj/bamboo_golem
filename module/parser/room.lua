@@ -86,6 +86,7 @@ local function parse_end()
   trigger.disable 'room_end'
   event.remove_listener_by_id 'parser.room'
   timer.remove_by_id 'parser.room'
+  cache.time = os.time() -- add a time stamp to room data
   event.new{ event = 'room', data = cache }
   for name, object in pairs( cache.object ) do
     event.new{ event = 'room_object', name = name, object = object }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE muclient>
-<!-- Saved on Monday, February 20, 2017, 10:15 PM -->
+<!-- Saved on Tuesday, February 21, 2017, 9:36 PM -->
 <!-- MuClient version 5.05 -->
 <!-- Written by Nick Gammon -->
 <!-- Home Page: http://www.mushclient.com/ -->
@@ -8,13 +8,13 @@
 <world
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-20 22:15:01"
+   date_saved="2017-02-21 21:36:22"
 
    auto_say_override_prefix="-"
    auto_say_string="say "
    chat_name="Name-not-set"
    command_stack_character=";"
-   id="255d668f968a5ff933479321"
+   id="2bc0865b668b290c8f968e5f"
    input_font_name="ÐÂËÎÌå"
    mapping_failure="Alas, you cannot go that way."
    name="Êé½£´ºÇïÕ¾"
@@ -112,6 +112,7 @@
    wrap_column="140"
    write_world_name_to_log="y"
    > <!-- end of general world attributes -->
+  <connect_text>/LoadPlugin 'BambooGolem.xml'</connect_text>
   <log_file_postamble>&lt;/font&gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;/body&gt;
 &lt;/html&gt;
@@ -136,7 +137,7 @@
 <triggers
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-20 22:15:01"
+   date_saved="2017-02-21 21:36:22"
   >
 </triggers>
 
@@ -145,7 +146,7 @@
 <aliases
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-20 22:15:01"
+   date_saved="2017-02-21 21:36:22"
   >
   <alias
    match="rl"
@@ -156,9 +157,6 @@
   <send>local ok = ReloadPlugin 'cddc96494cbb52527cc03dbf' == error_code.eOK
 if not ok then
   ok = LoadPlugin 'BambooGolem.xml' == error_code.eOK
-  if not ok then
-    ok = LoadPlugin 'worlds/BambooGolem/BambooGolem.xml' == error_code.eOK
-  end
 end
 if ok then 
   ColourNote( 'white', 'green', 'ÓñÖñ¿þÀÜ¡¤ÖØÐÂÔØÈëÍê³É' )
@@ -173,7 +171,7 @@ end</send>
 <timers
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-20 22:15:01"
+   date_saved="2017-02-21 21:36:22"
   >
 </timers>
 
@@ -182,7 +180,7 @@ end</send>
 <macros
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-20 22:15:01"
+   date_saved="2017-02-21 21:36:22"
   >
 
   <macro name="up" type="send_now" >
@@ -276,7 +274,7 @@ end</send>
 <variables
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-20 22:15:01"
+   date_saved="2017-02-21 21:36:22"
   >
 </variables>
 
@@ -285,7 +283,7 @@ end</send>
 <colours
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-20 22:15:01"
+   date_saved="2017-02-21 21:36:22"
   >
 
 <ansi>
@@ -342,7 +340,7 @@ end</send>
 <keypad
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-20 22:15:01"
+   date_saved="2017-02-21 21:36:22"
   >
 
   <key name="0" >
@@ -456,7 +454,7 @@ end</send>
 <printing
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-20 22:15:01"
+   date_saved="2017-02-21 21:36:22"
   >
 
 <ansi>

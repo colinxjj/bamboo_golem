@@ -26,7 +26,7 @@ CWD = ''
 do
   local f = io.open 'module/init/init.lua'
   if not f then
-    CWD = 'worlds/BambooGolem/'
+    CWD = 'BambooGolem/'
   else
     f:close()
   end
