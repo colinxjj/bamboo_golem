@@ -13,7 +13,7 @@ do
 	local _, _, path = string.find( package.path, ';([^;]+);' )
 	MCPATH = string.sub( path, 1, string.find( path, '\\lua' ) )
 	PPATH = MCPATH .. 'BambooGolem\\'
-	package.path = package.path .. ';' .. PPATH .. '\?.lua'
+	package.path = package.path .. ';' .. PPATH .. '?.lua'
 end
 
 --------------------------------------------------------------------------------
@@ -22,8 +22,8 @@ end
 -- load data
 dofile( CWD .. 'data/constant.lua' )
 kungfu = require 'data.kungfu'
-item = require  'data.item'
-npc = require  'data.npc'
+item = require 'data.item'
+npc = require 'data.npc'
 
 -- load default config
 dofile( CWD .. 'data/default_config.txt' )

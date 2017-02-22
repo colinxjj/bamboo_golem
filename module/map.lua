@@ -109,14 +109,15 @@ local function genpath( from, is_dest )
 end
 
 -- get the path between two rooms
--- params can be ids or tables of the rooms
+-- params can be ids or tables of the rooms, the 'to' param can also be a function for is_dest check
 function map.getpath( from, to )
   from = type( from ) == 'string' and index[ from ] or from
   to = type( to ) == 'string' and index[ to ] or to
   assert( from and from.id, 'map.getpath - can\'t parse the from param' )
-  assert( to and to.id, 'map.getpath - can\'t parse the to param' )
+  assert( type( to ) == 'table' and to.id or type( to ) == 'function', 'map.getpath - can\'t parse the to param' )
 
-  return genpath( from, is_dest_by_room( to ) )
+  to = type( to ) == 'table' and is_dest_by_room( to ) or to
+  return genpath( from, to )
 end
 
 -- check if a room can be found within X range from the starting room
@@ -147,54 +148,50 @@ function map.expand_loc( loc, range )
   local base_list = longname_index[ loc ] or { map.get_room_by_id( loc ) } or { loc }
   assert( next( base_list ), 'map.expand_loc - invalid base room list' )
 
-  local cache = {}
+  local result = {}
   for _, start_room in pairs( base_list ) do
     local list, list_pos, distance, new_distance, from, to = { start_room }, 1, { [ start_room ] = 0 }
     while list[ list_pos ] do
       from = list[ list_pos ]
-      cache[ from ] = true
+      result[ from ] = true
       for _, exit in pairs( from.exit ) do
         to = index[ exit.to ]
         new_distance = distance[ from ] + 1
-        if to and not exit.no_wander and not exit.ignore -- ignore exits with no_wander and ignore labels
-        and ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) -- respect exit cond
+        if to and not exit.no_wander and not exit.ignore
+        and ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond )
         and new_distance <= range and not distance[ to ] then -- add new node
           distance[ to ] = new_distance
           list[ #list + 1 ] = to
-          cache[ to ] = true -- add the room to cache list
+          result[ to ] = true -- add the room to result list
         end
       end
       list_pos = list_pos + 1 -- move to next node
     end
   end
-
-  -- generate result list
-  local result = {}
-  for room in pairs( cache ) do
-    result[ #result + 1 ] = room
-  end
   return result
 end
 
--- find the nearest room that meets the criteria
--- the 1st param must be the id/table of a room, the 2nd a function to check if a room is one that we want
-function map.find_nearest( from, is_dest )
-  from = type( from ) == 'string' and index[ from ] or from
-  assert( from and from.id, 'map.find_nearest - can\'t parse the from param' )
-
+local function find_room( from, is_dest, prefer_furthest )
   local list, list_pos, cost, max_cost, to, dest, new_cost = { from }, 1, { [ from ] = 0 }
+  local cost_ok = function( new_cost, max_cost )
+    if not max_cost then return true end
+    if prefer_furthest then
+      return new_cost > max_cost
+    else
+      return new_cost < max_cost
+    end
+  end
   while list[ list_pos ] do
     from = list[ list_pos ]
-    if is_dest( from ) and
-    ( max_cost and cost[ from ] < max_cost or not max_cost ) then -- set dest
+    if is_dest( from ) and cost_ok( cost[ from ], max_cost ) then -- set dest
       max_cost, dest = cost[ from ], from
     end
     for _, exit in pairs( from.exit ) do
       to = index[ exit.to ]
       new_cost = cost[ from ] + ( exit.cost or 1 )
       if to and from ~= to and not exit.ignore and
-      --( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) and
-      ( max_cost and new_cost < max_cost or not max_cost ) and
+      ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) and
+      ( prefer_furthest or cost_ok( new_cost, max_cost ) ) and
       ( not cost[ to ] or new_cost < cost[ to ] ) then -- add new node
         cost[ to ] =  new_cost
         list[ #list + 1 ] = to
@@ -204,6 +201,26 @@ function map.find_nearest( from, is_dest )
   end
 
   return dest
+end
+
+-- find the nearest room that meets the criteria
+-- the 1st param must be the id/table of a room, the 2nd a function to check if a room is one that we want
+function map.find_nearest( from, is_dest )
+  from = type( from ) == 'string' and index[ from ] or from
+  assert( from and from.id, 'map.find_nearest - can\'t parse the from param' )
+
+  local room = find_room( from, is_dest )
+  return room
+end
+
+-- find the furthest room that meets the criteria
+-- the 1st param must be the id/table of a room, the 2nd a function to check if a room is one that we want
+function map.find_furthest( from, is_dest )
+  from = type( from ) == 'string' and index[ from ] or from
+  assert( from and from.id, 'map.find_furthest - can\'t parse the from param' )
+
+  local room = find_room( from, is_dest, true )
+  return room
 end
 
 function map.get_step_cmd( from, to )

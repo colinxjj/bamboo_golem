@@ -104,3 +104,10 @@ end
 cli.register{ cmd = 'mm', desc = '序列化当前房间数据。', func = parse_mm, no_prefix = true }
 
 --------------------------------------------------------------------------------
+-- tv
+
+local function parse_tv()
+  taskmaster.current_manual_task:newsub{ class = 'traverse', loc = '嵩山少林香炉', range = 10 }
+end
+
+cli.register{ cmd = 'tv', desc = '测试遍历。', func = parse_tv, no_prefix = true }

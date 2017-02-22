@@ -152,7 +152,7 @@ end
 trigger.new{ name = 'hmy_shimen_fail', group = 'step_handler.hmy_shimen', match = '^贾布听后，眉头紧缩，没有说话。$', func = handler.hmy_shimen }
 trigger.new{ name = 'hmy_shimen_succeed', group = 'step_handler.hmy_shimen', match = '^只听贾布说了声：嗯。。是本教兄弟吧？请进来吧。$', func = handler.hmy_shimen }
 
--- 嵩山松林圣僧塔
+-- 嵩山少林圣僧塔
 local sl_fota_tbl = {
 	['嵩山少林无色台'] = 'say 今日大欢喜，舍却危脆身;sheshen',
 	['嵩山少林无相牌'] = 'fushi pai',
@@ -206,6 +206,7 @@ function handler:thd_onboard_got_cord( _, t )
 	handler.thd_onboard( self )
 end
 trigger.new{ name = 'thd_onboard_got_cord', group = 'step_handler.thd_onboard', match = '^(> )*你用劲打开了箱子，发现里面竟藏有着无数的大内密宝。而在珠宝的下面，有一张发黄的海图。中间的一个地方用粗笔画了个圆圈，旁边用潦草的字迹写着\\((\\d+),(\\d+)\\)的字样。$', func = handler.thd_onboard_got_cord }
+
 -- 航海到桃花岛
 function handler:thd_sail( t )
 	t.x, t.y = 1, 1
@@ -275,7 +276,7 @@ end
 -- TODO 如果门派不是天龙寺，那么晚8点到早5点之间需要杀掉npc
 
 -- 昆仑山洞天福地
--- TODO hide 九阳真经 behind before leave
+-- TODO hide 九阳真经 before leave
 
 -- 明教密室
 -- TODO make sure wielded axe
@@ -707,9 +708,7 @@ local function findpath_to( target, t )
 		-- evaluate rooms linked from this one
     for _, dir in pairs( DIR4 ) do
 			to = t.map[ from ][ dir ]
-      if to
-			and to ~= 'a' -- ignore exits to alt maze exits (to 积翠亭 or 草地)
-			and from ~= to -- ignore exit to same room
+      if to and to ~= 'a' and from ~= to -- ignore exit to alt maze exits (to 积翠亭 or 草地) or to the same room
 			and not processed[ to ] -- only add per room once
 			and ( t.map[ to ].is_reliable ~= false or target == 'unsure' ) -- ignore unreliable room if target isn't 'unsure'
 			and ( not t.map[ to ].is_bad or target == 'bad' ) then -- ignore bad room if target isn't 'bad'
@@ -894,7 +893,7 @@ function handler:breadcrumb_look( t )
 	elseif t.alt_exit then -- then, if got alternate exit, then go this dir
 		move( self, t.alt_exit )
 		t.alt_exit = nil
-	else -- otherwise, walk to a room that has an exit leading to an unknown or empty room, or is marked unreliable
+	else -- otherwise, walk to a room that has an exit leading to an unknown or empty room, or is marked unreliable, or is marked as bad
 		t.path = findpath_to( 'unknown', t ) or findpath_to( 'unsure', t ) or findpath_to( 'bad', t )
 		if t.path then
 			local dir = table.remove( t.path, 1 )

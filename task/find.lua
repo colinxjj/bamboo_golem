@@ -6,6 +6,8 @@ local task = {}
 --[[----------------------------------------------------------------------------
 Params:
 object = 'ºúì³': name of the object/person to find (required)
+person = 'ºúì³': an alias for the 'object' param (alias)
+item = 'Ð¡Ê÷Ö¦': an alias for the 'object' param (alias)
 at = '»ÆºÓÁìÓòÄ¹µØ': long name or id of the location of the object, if not specified, predefined npc/item data will be used to locate it (optional)
 range = 2: the range of steps in number that the object might wander off the specified / predefined location (optional, default: 0)
 is_unique = true: if true, if the object is seen anywhere (even outside the range), it will be deemed as found (optional, default: false)
@@ -22,12 +24,14 @@ function task:get_id()
 end
 
 function task:_resume()
+  self.object = self.object or self.person or self.item
+
   if not self.at then
     local char = npc[ object ] or item[ object ]
     -- TODO handle objects with predefined locations
   end
 
-  self:listen{ event = 'room_object', id = 'task.find', func = task.check }
+  self:listen{ event = 'room_object', id = 'task.find', func = task.check, persistent = true }
 
   self:newweaksub{ class = 'traverse', loc = self.at, range = self.range }
 end
