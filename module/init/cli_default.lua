@@ -106,8 +106,11 @@ cli.register{ cmd = 'mm', desc = '序列化当前房间数据。', func = parse_mm, no_pre
 --------------------------------------------------------------------------------
 -- tv
 
-local function parse_tv()
-  taskmaster.current_manual_task:newsub{ class = 'traverse', loc = '嵩山少林香炉', range = 10 }
+local sp = lpeg.P ' '
+local patt = lpeg.C( any_but( sp )^1 ) * sp^1 * ( ( any_but( sp )^1 ) / tonumber )
+local function parse_tv( _, input )
+  local loc, range = patt:match( input )
+  taskmaster.current_manual_task:newsub{ class = 'traverse', loc = loc or input, range = range or 2 }
 end
 
 cli.register{ cmd = 'tv', desc = '测试遍历。', func = parse_tv, no_prefix = true }

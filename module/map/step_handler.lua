@@ -290,34 +290,47 @@ end
 --------------------------------------------------------------------------------
 -- Maze handlers
 
--- 嵩山少林塔林、嵩山少林竹林、嵩山少林松树林、华山松树林、杭州城长廊、武馆竹林、桃花岛绿竹林、铁掌山松树林、明教密道、苏州城杏子林
--- TODO store position info in such cases for later use
+-- 嵩山少林塔林、嵩山少林竹林、嵩山少林松树林、杭州城长廊、武馆竹林、桃花岛绿竹林、铁掌山松树林、明教密道、苏州城杏子林
+local simple_path_pos_tbl = { ['嵩山少林塔林#N'] = 10, ['嵩山少林松树林#2'] = 8, ['铁掌山松树林#2'] = 4 }
+	function handler:simple_path_set_pos( t )
+		handler.data[ t.to.id ] = simple_path_pos_tbl[ t.from.id ] or 0
+		self:send{ t.cmd }
+	end
 local simple_path_tbl = {
-	['嵩山少林舍利院'] = { 'ne', 'se', 'n', 'e', 'sw', 'e', 'ne', 'se', 's', 'se', 'e', 'nw', 'w' },
-	['嵩山少林古佛舍利塔'] = { 'ne', 'n', 'nw', 'sw', 'w', 'ne', 'w', 's', 'nw', 'sw', 'n', 'se', 'e' },
-	['嵩山少林竹林#4'] = { 'n', 's', 'w', 'e', 'w', 'e', 'e', 's', 'w', 'n', },
-	['嵩山少林山路#8'] = { 'e', 'n', 'e', 's', 'n', 'e', 'w', 's' },
-	['嵩山少林青云坪'] = { 'e', 's', 'e', 'n', 'n', 'e', 'w', 's' },
-	['华山石屋'] = { 'n', 'e', 'e', 'e', 'n', 'e', 'e', 'e', 'w' },
-	['杭州城黄龙洞'] = { 'n', 's', 'e', 'w' },
-	['武馆假山'] = { 'e', 'n', 'n', 'w' },
-	['桃花岛积翠亭'] = { 'n', 's', 'w', 'e', 'n', 'n', 's', 'e', 'w', 'n', 's' },
-	['桃花岛草地'] = { 's', 's', 'w', 'n', 's' },
-	['铁掌山松树林#1'] = { 'e', 's', 'w' },
-	['铁掌山松树林#2'] = { 'n', 'w', 'n' },
-	['明教秘道出口'] = { 'w', 's', 'e', 's', 'w', 'n' },
+	['嵩山少林塔林#S'] = { 'se', 's', 'se', 'ne', 'e', 'sw', 'e', 'n', 'se'; is_reverse = true },
+	['嵩山少林塔林#N'] = { 'n', 'nw', 'sw', 'w', 'ne', 'w', 's', 'nw', 'sw'; has_reverse = true },
+	['嵩山少林松树林#1'] = { 'w', 'e', 'n', 's', 'e', 'n', 'e'; is_reverse = true },
+	['嵩山少林松树林#2'] = { 'e', 's', 'e', 'n', 'n', 'e', 'w'; has_reverse = true },
+	['铁掌山松树林#1'] = { 'w', 's', 'e'; is_reverse = true },
+	['铁掌山松树林#2'] = { 'n', 'w', 'n'; has_reverse = true },
+
+	['嵩山少林竹林#4'] = { 'n', 's', 'w', 'e', 'w', 'e', 'e', 's', 'w', 'n' },
+	['杭州城长廊#E'] = { 'n', 's', 'e' },
+	['武馆竹林#E'] = { 'e', 'n', 'n' },
+	['桃花岛积翠亭'] = { 'n', 's', 'w', 'e', 'n', 'n', 's', 'e', 'w', 'n', 's' }, -- TODO split exit room?
+	['桃花岛草地'] = { 's', 's', 'w', 'n', 's' }, -- TODO split exit room?
+	['明教秘道出口'] = { 'w', 's', 'e', 's', 'w', 'n' }, -- TODO split exit room?
 	['丐帮杏子林#2'] = { 'e', 'n', 'w', 'n', 'e', 'w', 'n' },
+
+	['华山石屋'] = { 'n', 'e', 'e', 'e', 'n', 'e', 'e', 'e', 'w' }, -- TODO this should be moved to a seperate handler since there's no guarantee that we can exit the maze when the path ends
 }
 function handler:simple_path( t )
-  t.pos = t.pos and t.pos + 1 or 1
 	t.path = t.path or simple_path_tbl[ t.to.id ]
-  local cmd = t.path[ t.pos ]
-  if cmd then -- next step
-    self:send{ cmd }
-  else -- reset to a random step
-    t.pos = math.random( #t.path ) - 1
-    self:step_handler( t )
-  end
+	local pos = handler.data[ t.from.id ]
+	if pos then
+		pos = t.path.is_reverse and pos - 1 or pos + 1
+	  local cmd = t.path[ pos ]
+		-- if this isn't the last step, tell self.check_step that we're not yet out of the maze
+		if ( t.path.is_reverse and pos == 1 ) or ( not t.path.is_reverse and pos == #t.path ) then
+			self.is_still_in_step, handler.data[ t.from.id ] = nil
+		else
+			handler.data[ t.from.id ] = pos
+			self.is_still_in_step = true
+		end
+	  self:send{ cmd }
+	else -- handle situation where we don't have pos info (resort to random walk)
+		-- TODO
+	end
 end
 
 -- 大理城东山间小路、长安城长街、长安城柏树林、星宿海、兰州城沙漠、星宿海大沙漠、回疆草原边缘、归云庄湖滨小路、杭州城柳林、华山菜地
@@ -325,23 +338,32 @@ function handler:go_straight( t )
 	self:send{ t.cmd }
 end
 
--- 天龙寺松树林、慕容地下迷宫
+-- 天龙寺松树林、终南山黑林、慕容地下迷宫
+function handler:reset_data( t )
+	handler.data[ t.to.id ] = nil
+	self:send{ t.cmd }
+end
 local cord_tbl = {
 	['天龙寺小洞天'] = { x = 6, y = 7 }, -- 需要随机先天智力大于20
 	['天龙寺龙树院'] = { x = -5, y = 6 },
-	['天龙寺石板路#NE'] = { x = 0, y = -30 },
+	['天龙寺石板路#NE'] = { x = 0, y = -50 },
 	['姑苏慕容库房'] = { x = 6, y = 7 }, -- 需要随机先天智力大于20
 	['姑苏慕容正堂'] = { x = -5, y = 6 },
-	['姑苏慕容地道#3'] = { x = 0, y = -30 },
+	['姑苏慕容地道#3'] = { x = 0, y = -50 },
+	['终南山灌木丛'] = { x = 6, y = 4 },
+	['终南山树林'] = { x = -6, y = 4 },
 }
 function handler:cord( t )
 	t.dest = t.dest or cord_tbl[ t.to.id ]
-	t.x, t.y = t.x or 0, t.y or 0
-	if t.dest.x > t.x then self:send{ 'e' }; t.x = t.x + 1; return end
-	if t.dest.x < t.x then self:send{ 'w' }; t.x = t.x - 1; return end
-	if t.dest.y > t.y then self:send{ 'n' }; t.y = t.y + 1; return end
-	if t.dest.y < t.y then self:send{ 's' }; t.y = t.y - 1; return end
-	self:send{ 'e' }; t.x = t.x + 1
+	handler.data[ t.from.id ] = handler.data[ t.from.id ] or {}
+	local d = handler.data[ t.from.id ]
+	d.x, d.y = d.x or 0, d.y or 0
+	if t.dest.y > d.y then self:send{ 'n' }; d.y = d.y + 1; return end
+	if t.dest.y < d.y then self:send{ 's' }; d.y = d.y - 1; return end
+	-- handle x only after y is done, to avoid premature exit in 终南山黑林
+	if t.dest.x > d.x then self:send{ 'e' }; d.x = d.x + 1; return end
+	if t.dest.x < d.x then self:send{ 'w' }; d.x = d.x - 1; return end
+	self:send{ 'e' }; d.x = d.x + 1
 end
 
 -- from 天龙寺松树林#2 to 天龙寺松树林#M，峨嵋山古德林
@@ -350,7 +372,8 @@ local alt_step_tbl = {
 	['天龙寺松树林#M'] = { 'n', 'w' },
 }
 function handler:alternate_step( t )
-	self.step_need_desc = true -- with this approach we can get room desc before step_ok is checked, but when the handler is called for the 1st time, it won't try to get room desc for the current room
+	self.is_step_need_desc = true -- with this approach we can get room desc before step_ok is checked, but when the handler is called for the 1st time, it won't try to get room desc for the current room
+	handler.data[ t.to.id ] = nil -- a workaround to reset cord data for 天龙寺松树林#M
 	local step = alt_step_tbl[ t.to.id ]
 	t.cmd = t.cmd == step[ 1 ] and step[ 2 ] or step[ 1 ]
 	self:send{ t.cmd }
@@ -368,32 +391,34 @@ local twisted_cord_tbl = {
 }
 function handler:twisted_cord( t )
 	t.dest = t.dest or twisted_cord_tbl[ t.to.id ]
-	t.x, t.y = t.x or 0, t.y or 0
-	if t.dest.x > t.x then self:send{ 'n' }; t.x = t.x + 1; return end
-	if t.dest.x < t.x then self:send{ 'e' }; t.x = t.x - 1; return end
-	if t.dest.y > t.y then self:send{ 's' }; t.y = t.y + 1; return end
-	if t.dest.y < t.y then self:send{ 'w' }; t.y = t.y - 1; return end
+	handler.data[ t.from.id ] = handler.data[ t.from.id ] or {}
+	local d = handler.data[ t.from.id ]
+	d.x, d.y = d.x or 0, d.y or 0
+	if t.dest.x > d.x then self:send{ 'n' }; d.x = d.x + 1; return end
+	if t.dest.x < d.x then self:send{ 'e' }; d.x = d.x - 1; return end
+	if t.dest.y > d.y then self:send{ 's' }; d.y = d.y + 1; return end
+	if t.dest.y < d.y then self:send{ 'w' }; d.y = d.y - 1; return end
 	if t.dest.z then self:send{ t.dest.z }; return end
 end
 
--- 回疆针叶林、回疆大戈壁（回疆绿洲方向）、终南山黑林、峨嵋山灌木丛、终南山石室
+-- 回疆针叶林、回疆大戈壁（回疆绿洲方向）、峨嵋山灌木丛、终南山石室
 local fixed_step_tbl = {
 	['回疆针叶林#E'] = { 'n:10', 's:10', 'e:10', 'w:10' },
 	['回疆回疆绿洲'] = { 'n:11', 'w:7', 's:7', 'e:7', 'n:7' },
-	['终南山灌木丛'] = { 'n:4', 'e:6' },
-	['终南山树林'] = { 'n:4', 'w:6' },
 	['终南山石室#2D'] = { 'n:6', 'w:6', 's:6', 'e:6' },
 	['峨嵋山灌木丛#2'] = { 'ed:4', 'sw:1', 'ne:5', 'ne:5', 'ne:5', 'ne:5', 'ne:5' },
 }
 local patt = lpeg.C( lpeg.R 'az'^1 ) * ':' * ( lpeg.R'09'^1 / tonumber )
 function handler:fixed_step( t )
-	t.step, t.phase = t.step and t.step + 1 or 1, t.phase or 1
+	handler.data[ t.from.id ] = handler.data[ t.from.id ] or {}
+	local d = handler.data[ t.from.id ]
+	d.step, d.phase = d.step and d.step + 1 or 1, d.phase or 1
 	t.path = t.path or fixed_step_tbl[ t.to.id ]
-	if t.phase > #t.path then self:fail() end
-	local c, n = patt:match( t.path[ t.phase ] )
-	if t.step > n then
-		t.phase, t.step = t.phase + 1, 0
-		self:send{ 'yun jingli' } -- FIXME a temp workaround to avoid dying in 峨嵋山灌木丛
+	if d.phase > #t.path then self:fail() end
+	local c, n = patt:match( t.path[ d.phase ] )
+	if d.step > n then
+		d.phase, d.step = d.phase + 1, 0
+		self:send{ 'yun jingli' } -- TODO a temp workaround to avoid dying in 峨嵋山灌木丛
 		self:step_handler( t )
 	else
 		self:send{ c }
@@ -401,46 +426,54 @@ function handler:fixed_step( t )
 end
 
 -- 梅庄梅林
-function handler:meilin( t )
-	t.list, t.forward = t.list or {}, t.forward == nil and true or t.forward
+function handler:plum_entry( t )
+	handler.data.plum = { entry_point = t.from.id }
+	self:send{ t.cmd }
+end
+function handler:plum( t )
+	handler.data.plum = handler.data.plum or {}
+	local list = handler.data.plum
+	t.forward = list.entry_point ~= t.to.id and ( t.forward == nil and true or t.forward ) or false
 	if t.forward and not map.get_current_room().desc then self:send{ 'l' }; return end
-	if t.forward then table.insert( t.list, map.get_current_room().exit ) end
-	local node, revdir = t.list[ #t.list ], DIR_REVERSE[ t.cmd ]
+	if t.forward then table.insert( list, map.get_current_room().exit ) end
+	local node, revdir = list[ #list ], DIR_REVERSE[ t.cmd ]
 	node[ revdir ] = node[ revdir ] and 0 or nil
 	for dir, v in pairs( node ) do
 		if v ~= 0 and v ~= nil then t.cmd, t.forward = dir, true; break end
 		if v ~= nil then t.cmd, t.forward = dir, false end
 	end
 	node[ t.cmd ] = nil
-	if not next( node ) then table.remove( t.list ) end
+	if not next( node ) then table.remove( list ) end
 	self:send{ t.cmd }
 end
 
 -- 襄阳郊外树林
 local xy_shulin_path = { 'n', 'e', 'n', 'e', 'w', 's', 'n', 's', 's', 'n' }
 function handler:xy_shulin( t )
-	local room = map.get_current_room()
-	if not room.desc and not t.pos then self:send{ 'l' }; return end
-	t.pos = ( room.exit.s == '山路' and 1 )
-				or ( room.exit.n == '山路' and 8 )
-				or ( t.pos and t.pos < 10 and t.pos + 1 )
-				or ( t.pos and 1 )
-	self:send{ ( t.pos == 1 and t.to.id == '襄阳郊外山路#1' and 's' )
-					or ( t.pos == 8 and t.to.id == '襄阳郊外山路#2' and 'n' )
-					or ( t.pos and xy_shulin_path[ t.pos ] )
+	local room, pos = map.get_current_room(), handler.data[ t.from.id ]
+	if not room.desc and not pos then self:send{ 'l' }; return end
+	pos = ( room.exit.s == '山路' and 1 )
+		 or ( room.exit.n == '山路' and 8 )
+		 or ( pos and pos < 10 and pos + 1 )
+		 or ( pos and 1 )
+	handler.data[ t.from.id ] = pos
+	self:send{ ( pos == 1 and t.to.id == '襄阳郊外山路#1' and 's' )
+					or ( pos == 8 and t.to.id == '襄阳郊外山路#2' and 'n' )
+					or ( pos and xy_shulin_path[ pos ] )
 					or xy_shulin_path[ math.random( 10 ) ] }
 end
 
 -- 绝情谷竹林
 local jqg_zhulin_path = { 'n', 'w', 's', 'e', 'w' }
 function handler:jqg_zhulin( t )
-	local room = map.get_current_room()
-	t.pos = ( room.exit.su and 1 )
-				or ( t.pos and t.pos < 5 and t.pos + 1 )
+	local room, pos = map.get_current_room(), handler.data[ t.from.id ]
+	pos = ( room.exit.su and 1 )
+				or ( pos and pos < 5 and pos + 1 )
 				or ( room.exit.wd and nil )
+	handler.data[ t.from.id ] = pos
 	self:send{ ( room.exit.su and t.to.id == '绝情谷山顶平地' and 'su' )
 					or ( room.exit.wd and t.to.id == '绝情谷水塘' and 'wd' )
-					or ( t.pos and jqg_zhulin_path[ t.pos ] )
+					or ( pos and jqg_zhulin_path[ pos ] )
 					or jqg_zhulin_path[ math.random( 4 ) ] }
 end
 
@@ -452,7 +485,7 @@ function handler:look_self_dir( t )
 	end
 end
 
--- 明教紫杉林，from 福州城小岛 to 福州城沙滩#1
+-- 明教紫杉林，华山松树林，from 福州城小岛 to 福州城沙滩#1
 local look_around_cond_tbl = {
 	['明教紫杉林#5'] = { exit = function( exit ) return exit.e == '厚土旗' end },
 	['明教紫杉林#1'] = { exit = function( exit ) return string.find( exit.e, '旗' ) or string.find( exit.w, '旗' ) end },
@@ -462,10 +495,12 @@ local look_around_cond_tbl = {
 	['福州城沙滩#1'] = { exit = function( exit ) return exit.w == '小岛' and exit.n end,
 											alt_exit = function( exit ) return true end,
 											look = function( roomname ) return roomname == '沙滩' end },
+	['华山松树林#E'] = { exit = function( exit ) return exit.e == '石屋' end,
+											alt_exit = function( exit ) return exit.s ~= '空地' end, },
 }
 function handler:look_around( t )
 	if not map.get_current_room().desc then self:send{ 'l' }; return end
-	self.step_need_desc = true
+	self.is_step_need_desc = true
 	local cond = look_around_cond_tbl[ t.to.id ]
 	t.is_look_ok = cond.look or function() return true end
 	t.is_exit = cond.exit
@@ -624,13 +659,13 @@ local function get_pos( room )
 	end
 	return gyz_jiugong_tbl[ f ]
 end
-function handler:gyz_jiugong( t )
-	t = self.step
-	local room = map.get_current_room()
-	if t.exited then return end
-	t.inv_count, t.curr_pos = t.inv_count or 0, get_pos( room )
-	if not room.desc and not t[ t.curr_pos ] then self:send{ 'l' }; return end
-	local taohua_count = t[ t.curr_pos ] or get_taohua_count( room )
+function handler:gyz_jiugong()
+	handler.data.jiugong = handler.data.jiugong or {}
+	local room, t = map.get_current_room(), handler.data.jiugong
+	if t.has_exited then handler.data.jiugong = nil; return end
+	t.inv_count, t.pos = t.inv_count or 0, get_pos( room )
+	if not room.desc and not t[ t.pos ] then self:send{ 'l' }; return end
+	local taohua_count = t[ t.pos ] or get_taohua_count( room )
 	if not t.taohua_adjusted and taohua_count ~= 5 and t.inv_count >= 5 - taohua_count then
 		t.taohua_adjusted = true
 		t.inv_count = t.inv_count + taohua_count - 5
@@ -639,18 +674,19 @@ function handler:gyz_jiugong( t )
 		elseif taohua_count < 5 then
 			self:send{ 'drop ' .. 5 - taohua_count .. ' taohua' }
 		end
-		t[ t.curr_pos ] = 5
+		t[ t.pos ] = 5
 		self:listen{ event = 'prompt', func = handler.gyz_jiugong, id = 'step_handler.gyz_jiugong' }
 	else
-		t[ t.curr_pos ] = t[ t.curr_pos ] or taohua_count
+		t[ t.pos ] = t[ t.pos ] or taohua_count
 		t.taohua_adjusted = false
-		t.step_num = t.step_num or t.curr_pos - 1
+		t.step_num = t.step_num or t.pos - 1
 		t.step_num = t.step_num < 16 and t.step_num + 1 or 1
 		self:send{ gyz_jiugong_path[ t.step_num ] }
 	end
 end
 function handler:gyz_jiugong_exited()
-	self.step.exited = true
+	handler.data.jiugong = handler.data.jiugong or {}
+	handler.data.jiugong.has_exited = true
 end
 trigger.new{ name = 'gyz_jiugong_exited', group = 'step_handler.gyz_jiugong', match = '^桃花阵中忽然发出一阵“轧轧”的声音，随后现出一条道路，你赶忙走了出去。$', func = handler.gyz_jiugong_exited }
 
@@ -665,9 +701,9 @@ local function get_item_count( room )
 end
 -- check if a room has empty exit
 local function has_empty_exit( room, t )
-	local data, i  = t.map[ room ], 0
+	local room, i  = t.map[ room ], 0
 	for _, dir in pairs( DIR4 ) do
-		if data[ dir ] then i = i + 1 end
+		if room[ dir ] then i = i + 1 end
 	end
 	if i < 4 then return true end
 end
@@ -999,7 +1035,7 @@ function handler:thd_mudao( t )
 	t = self.step
 	local room = map.get_current_room()
 	-- arrived at 桃花岛墓道#2?
-	if room.exit.d and not room.exit.out then self:send{ 'l' }; return end
+	if room.exit.d and not room.exit.out then self:check_step(); return end
 	-- intercept next located event, i.e. handle failures here instead of by the standard routine
 	self:listen{ event = 'located', func = handler.thd_mudao, id = 'step_handler.thd_mudao', sequence = 99, keep_eval = false }
 	-- returned to 桃花岛墓道#1?
@@ -1117,7 +1153,7 @@ local thd_wuxing_step_tbl = {
 }
 function handler:thd_wuxing( t )
 	local room = map.get_current_room()
-	if room.name == '石坟' then self:send{ 'l' }; return end
+	if room.name == '石坟' then self:check_step(); return end
 	local dir = thd_wuxing_step_tbl[ handler.data.wuxing ][ room.name ]
 	self:listen{ event = 'located', func = handler.thd_wuxing, id = 'step_handler.thd_wuxing', sequence = 99, keep_eval = false }
 	self:send{ dir }
@@ -1133,10 +1169,11 @@ function handler:ts_longtan( t )
 end
 
 -- 无量山大松林
--- TODO limit to a certain number of steps since this maze can be a dead lock
 local wls_songlin_tbl = { { 'w', 'e' }, { 'w', 'e', 's' }, { 'w', 'n' } }
 function handler:wls_songlin( t )
 	local room = map.get_current_room()
+	t.step_count = t.step_count and t.step_count + 1 or 1
+	if t.step_count > 50 then self:fail() end -- limit to 50 steps sicne this maze can be a dead lock
 	if not room.desc then self:send{ 'l' }; return end
 	local pos = room.exit.s == '后院' and 1 or room.exit.e == '大瀑布' and 3 or 2
 	if pos == 1 and t.to.id == '无量山后院' then self:send{ 's' }; return end
@@ -1153,7 +1190,7 @@ function handler:hdg_huapu( t )
 	t = self.step
 	t.i = t.i or 1
 	local room = map.get_current_room()
-	if room.name == t.to.name then self:send{ 'l' }; return end
+	if room.name == t.to.name then self:check_step(); return end
 	if room.name == '牛棚' then self:send{ 'nd' }; return end
 	self:listen{ event = 'located', func = handler.hdg_huapu, id = 'step_handler.hdg_huapu', sequence = 99, keep_eval = false }
 	t.i = t.i + 1

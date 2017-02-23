@@ -64,7 +64,7 @@ end
 local function is_room_reachable( from, cmd, to )
   for dir, exit in pairs( from.exit ) do
     dir = string.gsub( dir, '_', '' ) -- convert dirs like out_ to out
-    if ( dir == cmd or exit.cmd == cmd ) and exit.to == to.id then
+    if ( dir == cmd or exit.cmd == cmd or exit.handler ) and exit.to == to.id then -- if  exit has a handler and links to the target room, then consider it as reachable with the cmd
       -- message.debug( string.format( '可从“%s”的 %s 出口到达“%s”', from.id, dir, to.id ) )
       return true
     end

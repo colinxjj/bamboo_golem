@@ -15,7 +15,7 @@ function task:_resume()
 
   -- complete this taswk if got unique result
   if location and #location == 1 then
-    message.debug('locate 任务：目前位于' .. location[ 1 ].id )
+    message.debug('locate 任务：目前位于“' .. location[ 1 ].id .. '”' )
     self:complete()
     return
   end

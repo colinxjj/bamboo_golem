@@ -44,6 +44,8 @@ function task:_resume()
     -- find the nearest room in the list
     local dest = map.find_nearest( from, self.is_dest )
 
+    message.verbose( '¿ªÊ¼±éÀú¡°' .. self.loc .. '¡±£¬·¶Î§£º' .. ( self.range or 0 ) )
+
     -- go to that room, then start traversing
     self.ready_to_start = true
     if dest ~= from then self:newsub{ class = 'go', to = dest }; return end
@@ -74,12 +76,12 @@ end
 -- check each step
 function task:check_step()
   -- if the step handler needs room desc to work
-  if self.step_need_desc and not map.get_current_room().desc then self:send{ 'l' }; return end
+  if self.is_step_need_desc and not map.get_current_room().desc then self:send{ 'l' }; return end
 
   local expected_room, prev_room = self.path[ self.step_num ], self.path[ self.step_num - 1 ]
 
   -- step ok?
-  if map.is_current_location( expected_room ) then
+  if map.is_current_location( expected_room ) and not self.is_still_in_step then
     self:next_step()
   else -- move on to next step
     if self.step_handler and map.is_current_location( prev_room ) then -- give control to step handler to solve the step
@@ -97,14 +99,14 @@ function task:next_step()
   self.room_list[ curr_room ] = nil -- no longer need to traverse current location
   self.step_num = self.step_num + 1
   self:disable_trigger_group( self.step_trigger_group )
-  self.step_handler, self.step_trigger_group, self.step, self.step_need_desc = nil
+  self.step_handler, self.step_trigger_group, self.step, self.is_step_need_desc, self.is_still_in_step = nil
   if not next_room then
     self:next_dest()
   else
+    self.step_count = self.step_count or 0
+    self.step_count = self.step_count + 1
     local cmd, door, handler, handler_tg = map.get_step_cmd( curr_room, next_room )
     if not handler then
-      self.step_count = self.step_count or 0
-      self.step_count = self.step_count + 1
       self:send{ door or cmd, door and cmd or nil }
     else -- got step handler function
       self.step_handler, self.step_trigger_group, self.step = handler, handler_tg, { from = curr_room, to = next_room, cmd = cmd }

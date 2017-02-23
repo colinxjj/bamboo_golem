@@ -49,11 +49,11 @@ end
 
 function task:check_step()
   -- if the step handler needs room desc to work
-  if self.step_need_desc and not map.get_current_room().desc then self:send{ 'l' }; return end
+  if self.is_step_need_desc and not map.get_current_room().desc then self:send{ 'l' }; return end
 
   local expected_room = self.path[ self.step_num ]
   -- step ok?
-  if map.is_current_location( expected_room ) then -- move on to next step
+  if map.is_current_location( expected_room ) and not self.is_still_in_step then -- move on to next step
     if self.batch_step_num and self.step_num < self.batch_step_num then
       self.step_num = self.step_num + 1
     elseif not self.batch_step_num or self.step_num >= self.batch_step_num then
@@ -68,6 +68,7 @@ function task:check_step()
     else -- otherwise, step failed, retry
       self.error_count = self.error_count + 1
       self.from = nil
+      message.warning '路径行走出错'
       self:resume()
     end
   end
@@ -95,14 +96,14 @@ function task:next_step()
     -- got a special command or handler?
     if handler or is_special_cmd then break end
     -- already have 15 commands?
-    if i - self.step_num >= 15 then cmd_list[ #cmd_list + 1 ] = '#wa 500'; break end -- up to 15 commands per batch and wait 0.5 second after per batch
+    if i - self.step_num >= 15 then cmd_list[ #cmd_list + 1 ] = '#wa 600'; break end -- up to 15 commands per batch and wait a bit after per batch
   until not self.path[ i + 1 ]
   self.step_num = self.step_num + 1
   self.batch_step_num = i
   --disable trigger group used by last step
   self:disable_trigger_group( self.step_trigger_group )
   -- clear vars from previous step
-  self.step_handler, self.step_trigger_group, self.step, self.step_need_desc = nil
+  self.step_handler, self.step_trigger_group, self.step, self.is_step_need_desc, self.is_still_in_step = nil
   -- got new handler?
   if not handler then -- send commands
     self:send( cmd_list )

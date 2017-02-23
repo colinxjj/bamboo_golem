@@ -23,6 +23,7 @@ for id, room in pairs( index ) do
   for dir, exit in pairs( room.exit ) do
     if exit.cond and not cond_checker[ exit.cond ] then
       cond_checker[ exit.cond ] = loadstring( 'return ' .. exit.cond )
+      if not cond_checker[ exit.cond ] then error( 'error compiling function for exit.cond: ' .. exit.cond ) end
     end
   end
 end
