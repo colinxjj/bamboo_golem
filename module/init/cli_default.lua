@@ -8,8 +8,6 @@ cli.register{ cmd = 'auto', desc = '控制自动模式。auto start：开始自动模式，auto
 --------------------------------------------------------------------------------
 -- g
 
-local option
-
 local function start_go_task( dest )
   dest = dest and map.get_room_by_id( dest ) or dest
   if not dest then
@@ -20,24 +18,23 @@ local function start_go_task( dest )
 end
 
 local function parse_g_response( choice )
-  local dest = option[ tonumber( choice ) or choice ]
-  start_go_task( dest )
+  start_go_task( choice )
 end
 
 local function parse_g( _, input )
   if map.get_room_by_id( input ) then
     start_go_task( input )
   else
-    option = map.get_room_by_longname( input ) or map.get_room_by_name( input ) or nil
-    if option and #option > 1 then
+    local list = map.get_room_by_longname( input ) or map.get_room_by_name( input ) or nil
+    if list and #list > 1 then
       local cli_tbl = { header = '你要前往哪个地点？', default = 1, func = parse_g_response }
-      for index, room in pairs( option ) do
+      for index, room in pairs( list ) do
         cli_tbl[ index ] = room.id
       end
       cli.new_interaction( cli_tbl )
       return
     else
-      start_go_task( option and option[ 1 ] or nil )
+      start_go_task( list and list[ 1 ] or nil )
     end
   end
 end
@@ -114,3 +111,36 @@ local function parse_tv( _, input )
 end
 
 cli.register{ cmd = 'tv', desc = '测试遍历。', func = parse_tv, no_prefix = true }
+
+--------------------------------------------------------------------------------
+-- f
+
+local function parse_f_response( choice )
+  taskmaster.current_manual_task:newsub{ class = 'find', object = choice }
+end
+
+local function parse_f( _, input )
+  if not npc[ input ] then
+    local list = {}
+    for name, person in pairs( npc ) do
+      if name == input or person.id == input then
+        list[ #list + 1] = name
+      elseif person.alternate_id then
+        for _, id in pairs( person.alternate_id ) do
+          if id == input then list[ #list + 1] = name; break end
+        end
+      end
+    end
+    if #list == 0 then message.normal '未找到对应的 NPC，请检查'; return end
+    if #list == 1 then
+      input = list[ 1 ]
+    else
+      list.header, list.default, list.func = '你要找的是谁？', 1, parse_f_response
+      cli.new_interaction( list )
+      return
+    end
+  end
+  taskmaster.current_manual_task:newsub{ class = 'find', object = input }
+end
+
+cli.register{ cmd = 'f', desc = '前往某个NPC所在处。例如：f 李半仙', func = parse_f, no_prefix = true }

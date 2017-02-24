@@ -128,14 +128,8 @@ trigger.new{ name = 'emei_move_stone_succeed', group = 'step_handler.emei_move_s
 
 -- 黑木崖石门
 hmy_shimen_tbl = {
-	'教主文成武德，一统江湖',
-	'教主千秋万载，一统江湖',
-	'属下忠心为主，万死不辞',
-	'教主令旨英明，算无遗策',
-	'教主烛照天下，造福万民',
-	'教主战无不胜，攻无不克',
-	'日月神教文成武德、仁义英明',
-	'教主中兴圣教，泽被苍生',
+	'教主文成武德，一统江湖', '教主千秋万载，一统江湖', '属下忠心为主，万死不辞', '教主令旨英明，算无遗策',
+	'教主烛照天下，造福万民', '教主战无不胜，攻无不克', '日月神教文成武德、仁义英明', '教主中兴圣教，泽被苍生',
 }
 function handler:hmy_shimen( name )
 	if map.get_current_room().exit.wu then self:send{ 'wu' }; return end
@@ -311,8 +305,6 @@ local simple_path_tbl = {
 	['桃花岛草地'] = { 's', 's', 'w', 'n', 's' }, -- TODO split exit room?
 	['明教秘道出口'] = { 'w', 's', 'e', 's', 'w', 'n' }, -- TODO split exit room?
 	['丐帮杏子林#2'] = { 'e', 'n', 'w', 'n', 'e', 'w', 'n' },
-
-	['华山石屋'] = { 'n', 'e', 'e', 'e', 'n', 'e', 'e', 'e', 'w' }, -- TODO this should be moved to a seperate handler since there's no guarantee that we can exit the maze when the path ends
 }
 function handler:simple_path( t )
 	t.path = t.path or simple_path_tbl[ t.to.id ]
@@ -329,7 +321,7 @@ function handler:simple_path( t )
 		end
 	  self:send{ cmd }
 	else -- handle situation where we don't have pos info (resort to random walk)
-		-- TODO
+		self:send{ t.path[ math.random( #t.path ) ] }
 	end
 end
 
@@ -638,7 +630,7 @@ end
 -- 萧府树林
 
 -- 归云庄九宫桃花阵
-local num = lpeg.C ( ( lpeg.P '一' + '二' + '三' + '四' + '五' + '六' + '七' + '八' + '九' + '十' )^1 )
+local num = lpeg.C( ( lpeg.P '一' + '二' + '三' + '四' + '五' + '六' + '七' + '八' + '九' + '十' )^1 )
 local patt = lpeg.P '有' * num * '株桃花('
 local spatt = any_but( patt )^0 * patt
 local gyz_jiugong_path = { 'e', 'e', 's', 'w', 'w', 's', 'e', 'e', 'w', 'w', 'n', 'e', 'e', 'n', 'w', 'w' }
@@ -869,7 +861,7 @@ function handler:breadcrumb( t )
 	end
 
 	-- adjust item count if necessary (when at exit, skip this step)
-	if ( action.adjust_item_to_new_unique or action.adjust_item_to_expected ) then
+	if action.adjust_item_to_new_unique or action.adjust_item_to_expected then
 		local new_count = t.expected
 		if action.adjust_item_to_new_unique then
 			new_count = get_new_unique_id( t )
@@ -1151,7 +1143,7 @@ local thd_wuxing_step_tbl = {
 	{ ['金'] = 'shui', ['水'] = 'mu', ['木'] = 'huo', ['火'] = 'tu', ['土'] = 'jin', },
 	{ ['金'] = 'mu', ['木'] = 'tu', ['土'] = 'shui', ['水'] = 'huo', ['火'] = 'jin', },
 }
-function handler:thd_wuxing( t )
+function handler:thd_wuxing()
 	local room = map.get_current_room()
 	if room.name == '石坟' then self:check_step(); return end
 	local dir = thd_wuxing_step_tbl[ handler.data.wuxing ][ room.name ]
@@ -1161,7 +1153,7 @@ end
 
 -- 天山山涧
 local patt = any_but '灌木'^1 * '灌木，' * lpeg.C( any_but '方'^1 ) * '方似乎能走过去'
-function handler:ts_longtan( t )
+function handler:ts_longtan()
 	local room = map.get_current_room()
 	if not room.desc then self:send{ 'l' }; return end
 	local dir = CN_DIR[ patt:match( room.desc ) ]
@@ -1173,7 +1165,7 @@ local wls_songlin_tbl = { { 'w', 'e' }, { 'w', 'e', 's' }, { 'w', 'n' } }
 function handler:wls_songlin( t )
 	local room = map.get_current_room()
 	t.step_count = t.step_count and t.step_count + 1 or 1
-	if t.step_count > 50 then self:fail() end -- limit to 50 steps sicne this maze can be a dead lock
+	if t.step_count > 50 then self:fail() end -- limit to 50 steps since this maze can be a dead lock
 	if not room.desc then self:send{ 'l' }; return end
 	local pos = room.exit.s == '后院' and 1 or room.exit.e == '大瀑布' and 3 or 2
 	if pos == 1 and t.to.id == '无量山后院' then self:send{ 's' }; return end
@@ -1199,7 +1191,7 @@ function handler:hdg_huapu( t )
 end
 
 -- 星宿海毒虫谷
-function handler:xx_duchonggu( t )
+function handler:xx_duchonggu()
 	local dir = map.get_current_room().exit.se and 'se' or 'e'
 	self:send{ dir }
 end

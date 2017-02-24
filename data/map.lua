@@ -7971,8 +7971,8 @@ local map = {
   desc = [[你曲曲折折的转出竹林，眼前出现一大片荷塘。塘中白莲盛放，清香阵阵，莲叶田田，一条小石堤穿过荷塘中央。]],
   exit = {
     n = { to = '桃花岛小石堤', },
-    s = { to = '桃花岛绿竹林#1', cond = 'player.party == "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 80 ) or ( player.party ~= "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 150 ) )', },
-    s2 = { to = '桃花岛绿竹林#3', cmd = 's', cond = 'player.party == "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 80 ) or ( player.party ~= "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 150 ) )', },
+    s = { to = '桃花岛绿竹林#1', cond = 'player.party == "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 80 ) or ( player.party ~= "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 150 ) )', handler = 'simple_path_set_pos', },
+    s2 = { to = '桃花岛绿竹林#3', cmd = 's', cond = 'player.party == "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 80 ) or ( player.party ~= "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 150 ) )', handler = 'simple_path_set_pos', },
     hidden = { to = '桃花岛积翠亭', cmd = 's', cond = 'player.party == "桃花岛" and player.skill["奇门八卦"] and player.skill["奇门八卦"].level > 80 or ( player.skill["奇门八卦"] and player.skill["奇门八卦"].level > 150 )', },
   },
 },
@@ -26560,7 +26560,7 @@ local map = {
   desc =  [[你一走进这房间，只听到玎玲玲，玎玲玲骰子落碗之声，说不出的悦耳动听。房里已聚着五六个人，都是一般的打扮，正在聚精会神的掷骰子，抬头一望有匾（ｓｉｇｎ）一块。]],
   exit = {
     e = { to = '扬州城赌场#C', },
-    d = { to = '扬州城地下黑拳市', },
+    d = { to = '扬州城地下黑拳市', no_wander = true },
     n = { to = '扬州城赛龟房', },
   },
 },

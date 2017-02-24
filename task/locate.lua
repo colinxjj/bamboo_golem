@@ -15,7 +15,7 @@ function task:_resume()
 
   -- complete this taswk if got unique result
   if location and #location == 1 then
-    message.debug('locate 任务：目前位于“' .. location[ 1 ].id .. '”' )
+    message.verbose('定位结果：目前位于“' .. location[ 1 ].id .. '”' )
     self:complete()
     return
   end
@@ -35,7 +35,11 @@ function task:_resume()
 
   -- complete this task if got multiple results
   if #location > 1 then
-    message.debug('locate 任务：当前位置有 ' .. #location .. ' 种可能' )
+    local s = '定位结果：当前位置有 ' .. #location .. ' 种可能：'
+    for _, loc in pairs( location ) do
+      s = s .. loc.id
+    end
+    message.verbose( s )
     self:complete()
     return
   end

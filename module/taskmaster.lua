@@ -209,6 +209,7 @@ dispatch = function()
 				message.debug( 'TASKMASTER 模块：忽略恢复任务“' .. task.id .. '”的请求，因为其优先级 ' .. task.priority .. ' 不高于当前任务“' .. ctask.id .. '”的 ' .. ctask.priority )
 			end
 		elseif action == 'complete' or action == 'fail' then
+			clear_sub( task )
 			if action == 'complete' then
 				if task._complete then task:_complete() end
 				task.is_successful = true
@@ -231,6 +232,7 @@ dispatch = function()
 				if task._suspend then task:_suspend() end
 				task.status = 'suspended'
 			elseif action == 'kill' then
+				clear_sub( task )
 				task.status = 'dead'
 			else
 				error( 'taskmaster.dispatch - invalid task action: ' .. action )
@@ -246,62 +248,11 @@ dispatch = function()
 	if next( queue ) then dispatch() end -- process next event in queue if any
 end
 
--- insert a new task
-function taskmaster.new( task )
-	-- message.debug( 'TASKMASTER 模块：收到新增任务“' .. task.id .. '”的请求，其优先级为 ' .. task.priority )
-	local item = { task = task, action = 'new' }
-	table.insert( queue, item )
-	if not is_dispatching then dispatch() end
-end
-
--- insert a new subtask
-function taskmaster.newsub( task, subtask )
-	-- message.debug( 'TASKMASTER 模块：收到任务“' .. task.id .. '”新建子任务“' .. subtask.id .. '”的请求' )
-	local item = { task = subtask, parent = task, action = 'newsub' }
-	table.insert( queue, item )
-	if not is_dispatching then dispatch() end
-end
-
--- insert a new subtask and keep its parent lurking in the background
-function taskmaster.newweaksub( task, subtask )
-	-- message.debug( 'TASKMASTER 模块：收到任务“' .. task.id .. '”新建弱子任务“' .. subtask.id .. '”的请求' )
-	local item = { task = subtask, parent = task, action = 'newweaksub' }
-	table.insert( queue, item )
-	if not is_dispatching then dispatch() end
-end
-
-function taskmaster.resume( task )
-	-- message.debug( 'TASKMASTER 模块：收到恢复任务“' .. task.id .. '”的请求' )
-	local item = { task = task, action = 'resume' }
-	table.insert( queue, item )
-	if not is_dispatching then dispatch() end
-end
-
-function taskmaster.suspend( task )
-	-- message.debug( 'TASKMASTER 模块：收到暂停任务“' .. task.id .. '”的请求' )
-	local item = { task = task, action = 'suspend' }
-	table.insert( queue, item )
-	if not is_dispatching then dispatch() end
-end
-
-function taskmaster.complete( task )
-	-- message.debug( 'TASKMASTER 模块：收到完成任务“' .. task.id .. '”的请求' )
-	local item = { task = task, action = 'complete' }
-	table.insert( queue, item )
-	if not is_dispatching then dispatch() end
-end
-
-function taskmaster.fail( task )
-	-- message.debug( 'TASKMASTER 模块：收到任务“' .. task.id .. '”失败的请求' )
-	local item = { task = task, action = 'fail' }
-	table.insert( queue, item )
-	if not is_dispatching then dispatch() end
-end
-
-function taskmaster.kill( task )
-	-- message.debug( 'TASKMASTER 模块：收到终止任务“' .. task.id .. '”的请求' )
-	local item = { task = task, action = 'kill' }
-	table.insert( queue, item )
+function taskmaster.operate( t )
+	assert( type( t ) == 'table', 'taskmaster.operate - the param must be a table' )
+	assert( type( t.task ) == 'table', 'taskmaster.operate - the task param must be a table' )
+	assert( type( t.action ) == 'string', 'taskmaster.operate - the action param must be a string' )
+	table.insert( queue, t )
 	if not is_dispatching then dispatch() end
 end
 

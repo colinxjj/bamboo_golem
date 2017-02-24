@@ -44,11 +44,16 @@ function task:_resume()
     -- find the nearest room in the list
     local dest = map.find_nearest( from, self.is_dest )
 
-    message.verbose( '开始遍历“' .. self.loc .. '”，范围：' .. ( self.range or 0 ) )
+    message.verbose( '准备遍历“' .. self.loc .. '”方圆 ' .. ( self.range or 0 ) .. ' 步' )
 
     -- go to that room, then start traversing
     self.ready_to_start = true
     if dest ~= from then self:newsub{ class = 'go', to = dest }; return end
+  end
+
+  if not self.start_time then
+    self.start_time = os.time()
+    message.verbose( '开始遍历“' .. self.loc .. '”方圆 ' .. ( self.range or 0 ) .. ' 步' )
   end
 
   if not self.from then
@@ -70,7 +75,7 @@ function task:_resume()
 end
 
 function task:_complete()
-  message.verbose( '完成遍历“' .. self.loc .. '”，范围：' .. ( self.range or 0 ) .. '，步数：' .. self.step_count .. '，耗时：' .. os.time() - self.add_time .. ' 秒' )
+  message.verbose( '完成遍历“' .. self.loc .. '”方圆 ' .. ( self.range or 0 ) .. ' 步，共走了 ' .. ( self.step_count or 0 ) .. ' 步，耗时 ' .. os.time() - self.start_time .. ' 秒' )
 end
 
 -- check each step

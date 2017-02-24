@@ -24,7 +24,7 @@ function world.OnPluginCommandEntered( c )
     c = not immediate_interaction[ c ] and immediate_interaction.default or c
     --message.debug( 'CLI 模块准备将用户输入的命令转发给即时互动处理程序：' .. c )
     world.SelectCommand() -- select the command in the command window
-    immediate_interaction.func( c )
+    immediate_interaction.func( immediate_interaction[ c ] )
     immediate_interaction = false -- end immediate interaction
     return '\t' -- let MC discard the command since it will be handled by the plugin
   end

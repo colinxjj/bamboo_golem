@@ -24,7 +24,7 @@ end
 } ]]
 function task:new( t )
   t = initialize_instance( self, t )
-  taskmaster.new( t )
+  taskmaster.operate{ task = t, action = 'new' }
   return t
 end
 
@@ -38,14 +38,14 @@ end
 function task:newsub( subtask )
   subtask.priority = self.priority
   subtask = initialize_instance( _G.task[ subtask.class ], subtask )
-  taskmaster.newsub( self, subtask )
+  taskmaster.operate{ task = subtask, parent = self, action = 'newsub' }
   return subtask
 end
 -- set up a new sub task and keep the parent lurking in the background
 function task:newweaksub( subtask )
   subtask.priority = self.priority
   subtask = initialize_instance( _G.task[ subtask.class ], subtask )
-  taskmaster.newweaksub( self, subtask )
+  taskmaster.operate{ task = subtask, parent = self, action = 'newweaksub' }
   return subtask
 end
 
@@ -91,24 +91,24 @@ function task:disable_trigger_group( s )
   trigger.disable_group( s )
 end
 
-function task:resume( ... )
-  taskmaster.resume( self, ... )
+function task:resume()
+  taskmaster.operate{ task = self, action = 'resume' }
 end
 
-function task:suspend( ... )
-  taskmaster.suspend( self, ... )
+function task:suspend()
+  taskmaster.operate{ task = self, action = 'suspend' }
 end
 
-function task:complete( ... )
-  taskmaster.complete( self, ... )
+function task:complete()
+  taskmaster.operate{ task = self, action = 'complete' }
 end
 
-function task:fail( ... )
-  taskmaster.fail( self, ... )
+function task:fail()
+  taskmaster.operate{ task = self, action = 'fail' }
 end
 
 function task:kill()
-  taskmaster.kill( self )
+  taskmaster.operate{ task = self, action = 'kill' }
 end
 
 --------------------------------------------------------------------------------

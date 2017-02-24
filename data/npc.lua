@@ -18,14 +18,12 @@ local npc = {
   id = 'wu kan',
   alternate_id = { 'wu', 'kan', },
   location = 'Îä¹İÎïÆ··¿',
-  label = {},
 },
 
 ['Â³À¤'] = {
   id = 'lu kun',
   alternate_id = { 'lu', 'kun', 'man', },
   location = 'Îä¹İÎä¹İ´óÌü',
-  label = {},
 },
 
 ['Îä¹İ½ÌÍ·'] = {
@@ -38,14 +36,12 @@ local npc = {
   id = 'wan zhenshan',
   alternate_id = { 'wan', 'zhenshan', 'guanzhu' },
   location = 'Îä¹İ¶¬Å¯¸ó',
-  label = {},
 },
 
 ['Æİ·¼'] = {
   id = 'qi fang',
   alternate_id = { 'qi', 'fang', 'woman' },
   location = 'Îä¹İË¯·¿',
-  label = {},
 },
 
 ['¹Ù±ø'] = {
@@ -53,8 +49,33 @@ local npc = {
   alternate_id = { 'bing', 'guanbing', 'soldier' },
   is_not_unique = true,
   location = 'Îä¹İË¯·¿',
-  label = {},
 },
+
+['Àî°ëÏÉ'] = {
+  id = 'li banxian',
+  alternate_id = { 'li', 'banxian', 'xiansheng' },
+  location = 'ÑïÖİ³Ç¶«´ó½Ö',
+  range = 2,
+},
+
+['ºúì³'] = {
+  id = 'hu fei',
+  alternate_id = { 'hu', 'fei' },
+  location = '»ÆºÓÁ÷ÓòÄ¹µØ',
+},
+
+['Ãğ¾øÊ¦Ì«'] = {
+  id = 'miejue shitai',
+  alternate_id = { 'miejue', 'shitai' },
+  location = '¶ëáÒÉ½ºóµî',
+},
+
+['¾²ÏĞÊ¦Ì«'] = {
+  id = 'jingxian shitai',
+  alternate_id = { 'jingxian', 'shitai' },
+  location = '¶ëáÒÉ½ÇåÒô¸ó',
+},
+
 }
 
 return npc

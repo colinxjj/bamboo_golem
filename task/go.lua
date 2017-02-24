@@ -44,7 +44,11 @@ function task:_resume()
 end
 
 function task:_complete()
-  message.verbose( '到达目的地：' .. self.to.id .. '，共 ' .. #self.path - 1 .. ' 步，耗时 ' .. os.time() - self.add_time .. ' 秒' )
+  message.verbose( '到达目的地“' .. self.to.id .. '”，共 ' .. #self.path - 1 .. ' 步，耗时 ' .. os.time() - self.add_time .. ' 秒' )
+end
+
+function task:_fail()
+  message.verbose( '前往“' .. self.to.id .. '”失败' )
 end
 
 function task:check_step()
@@ -68,7 +72,7 @@ function task:check_step()
     else -- otherwise, step failed, retry
       self.error_count = self.error_count + 1
       self.from = nil
-      message.warning '路径行走出错'
+      message.verbose '路径行走需要调整路线'
       self:resume()
     end
   end
