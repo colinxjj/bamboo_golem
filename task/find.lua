@@ -10,7 +10,7 @@ person = '胡斐': an alias for the 'object' param (alias)
 item = '小树枝': an alias for the 'object' param (alias)
 at = '黄河领域墓地': long name or id of the location of the object, if not specified, predefined npc/item data will be used to locate it (optional)
 range = 2: the range of steps in number that the object might wander off the specified / predefined location (optional, default: 0)
-is_unique = true: if true, if the object is seen anywhere (even outside the range), it will be deemed as found (optional, default: false)
+is_not_unique = true: if true, the object will only be deemed as found when they're seen within the speicied range from the location (optional, default: false)
 test_action = some_func: a function to run to test if we've found the right object or not ( e.g. to find the correct npc to deliver a letter ) (optional)
 ----------------------------------------------------------------------------]]--
 
@@ -33,7 +33,7 @@ function task:_resume()
       self:fail()
       return
     end
-    self.at, self.range, self.is_unique = object.location, object.range, not object.is_not_unique
+    self.at, self.range, self.is_not_unique = object.location, object.range, object.is_not_unique
   end
 
   message.verbose( '开始寻找' .. self.object )
@@ -53,7 +53,7 @@ end
 
 function task:check( obj )
   if obj.name ~= self.object then return end
-  if self.is_unique == true then self:complete() end
+  if not self.is_not_unique then self:complete() end
 
   for _, loc in pairs( map.get_current_location() ) do
     if string.find( loc.id, self.at ) then

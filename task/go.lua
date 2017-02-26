@@ -80,12 +80,12 @@ end
 
 function task:next_step()
   local cmd_list, i = {}, self.step_num
-  local from, to, cmd, door, handler, handler_tg, is_special_cmd
+  local from, to, cmd, door, handler, is_special_cmd
   -- generate command list
   repeat
     from, to = self.path[ i ], self.path[ i + 1 ]
     if not to then self:complete() return end -- complete task if no further steps
-    cmd, door, handler, handler_tg = map.get_step_cmd( from, to )
+    cmd, door, handler = map.get_step_cmd( from, to )
 
     if handler and i ~= self.step_num then handler = nil; break end -- if processed more than one step then ignore the new handler
 
@@ -112,7 +112,7 @@ function task:next_step()
   if not handler then -- send commands
     self:send( cmd_list )
   else -- hand over control to handler
-    self.step_handler, self.step_trigger_group, self.step = handler, handler_tg, { from = from, to = to, cmd = cmd }
+    self.step_handler, self.step_trigger_group, self.step = _G.task.helper.step_handler[ handler ], 'step_handler.' .. handler, { from = from, to = to, cmd = cmd }
     self:enable_trigger_group( self.step_trigger_group )
     self:step_handler( self.step )
   end

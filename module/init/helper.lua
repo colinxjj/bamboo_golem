@@ -42,6 +42,55 @@ function cntonumber( text )
 	return result
 end
 
+-- convert chinese money amount like 三千七百六十一锭黄金十二两白银九十四文铜钱 to amount in coins
+local num = lpeg.C( ( lpeg.P '一' + '二' + '三' + '四' + '五' + '六' + '七' + '八' + '九' + '十' + '百' + '千' + '万' + '亿' + '零')^1 )
+local unit = lpeg.C( lpeg.P '锭黄金'  + '两白银' + '文铜钱' ) * lpeg.P '又'^-1
+local patt = lpeg.Ct( num * unit )^1
+
+function cn_amount_to_coin( text )
+	local t, result, n, u = { patt:match( text ) }, 0, 1
+	for i = #t, 1, -1 do
+		n, u = t[ i ][ 1 ], t[ i ][ 2 ]
+		n = cntonumber( n )
+		u = u == '锭黄金' and 10000 or u == '两白银' and 100 or 1
+		n = n * u
+		result = result + n
+	end
+	return result
+end
+
+-- convert chinese money amount like 三千七百六十一锭黄金十二两白银九十四文铜钱 to amount in gold, silver, and coins
+function cn_amount_to_money( text )
+	local t, result, n, u = { patt:match( text ) }, {}, 1
+	for i = #t, 1, -1 do
+		n, u = t[ i ][ 1 ], t[ i ][ 2 ]
+		n = cntonumber( n )
+		u = string.sub( u, 3 )
+		result[ u ] = n
+	end
+	return result
+end
+
+-- convert a table of amount of gold, silver and coin to number of coins
+function money_to_coin( t )
+  local amount = 0
+  if t[ '黄金' ] and t[ '黄金' ].count then amount = amount + t[ '黄金' ].count * 10000 end
+  if t[ '白银' ] and t[ '白银' ].count then amount = amount + t[ '白银' ].count * 100 end
+  if t[ '铜钱' ] and t[ '铜钱' ].count then amount = amount + t[ '铜钱' ].count end
+  return amount
+end
+
+-- convert num of coins to a table of amount of gold, silver and coin
+function coin_to_money( amount )
+  local t = {}
+  t[ '黄金' ] = math.modf( amount / 10000 )
+  amount = amount - t[ '黄金' ] * 10000
+  t[ '白银' ] = math.modf( amount / 100 )
+  amount = amount - t[ '白银' ] * 100
+  t[ '铜钱' ] = amount
+  return t
+end
+
 -- extract name from strings like 丐帮第十九代弟子 何师我
 local ansi = lpeg.R( '09', 'az', 'AZ' ) + lpeg.S ',.?!-/:-@%[\\%]^_`{|}~()'
 local remove_ansi = lpeg.Cs( ( ansi / '' + 1 )^1 )
@@ -60,8 +109,6 @@ function extract_name( s )
 end
 
 -- extract object name and count from text such as 两位官兵 or 三百枚铜钱
-local num = lpeg.C( ( lpeg.P '一' + '二' + '三' + '四' + '五' + '六' + '七' + '八' + '九' + '十' + '百' + '千' + '万' + '亿' + '零')^1 )
-
 function extract_name_count( text )
 	local count = num:match( text )
 	local name = count and string.sub( text, #count + 3, -1 ) or text

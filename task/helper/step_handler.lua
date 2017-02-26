@@ -2,7 +2,7 @@
 local handler = {}
 
 --------------------------------------------------------------------------------
--- This module contains step handler functions for maps
+-- Special step handlers for walking and traversing
 --------------------------------------------------------------------------------
 
 -- a table to store persistent path variables
@@ -237,7 +237,7 @@ trigger.new{ name = 'thd_sail_cord', group = 'step_handler.thd_sail', match = '^
 -- 绝情谷小溪
 -- TODO make sure player doesn't have weapon equipped
 -- TODO if boat is temporarily unavailable, then need to try again
-function handler:gyz_river( t )
+function handler:jqg_river( t )
 	self:send{ t.cmd }
 end
 
@@ -280,6 +280,9 @@ end
 
 -- 华山思过崖洞口
 -- TODO get fire and sword
+
+-- from 峨嵋山后山小路 to 峨嵋山灌木丛
+-- TODO prepare sharp weapon
 
 --------------------------------------------------------------------------------
 -- Maze handlers
@@ -384,6 +387,7 @@ local twisted_cord_tbl = {
 function handler:twisted_cord( t )
 	t.dest = t.dest or twisted_cord_tbl[ t.to.id ]
 	handler.data[ t.from.id ] = handler.data[ t.from.id ] or {}
+	handler.data[ t.to.id ] = nil -- a workaround to reset data for 回疆针叶林#M
 	local d = handler.data[ t.from.id ]
 	d.x, d.y = d.x or 0, d.y or 0
 	if t.dest.x > d.x then self:send{ 'n' }; d.x = d.x + 1; return end
@@ -895,7 +899,7 @@ function handler:breadcrumb( t )
 		if t.map[ t.curr ].is_reliable then
 			for _, dir in pairs( DIR4 ) do
 				to = t.map[ t.curr ][ dir ]
-				if type( to ) == 'number' and t.map[ to ].is_reliable then reliable_dir = dir; break end
+				if type( to ) == 'number' and to ~= t.curr and t.map[ to ].is_reliable then reliable_dir = dir; break end
 			end
 		end
 		if reliable_dir then
@@ -973,6 +977,11 @@ end
 
 -- 桃花岛八卦桃花阵
 -- TODO pre-check to look bagua when passing by
+function handler:prelook_bagua( t )
+	if self.to == '桃花岛岩洞' then
+		--FIXME
+	end
+end
 function handler:thd_bagua( t )
 	local loc = map.get_current_location()[ 1 ]
 	if not handler.data.thd_bagua then

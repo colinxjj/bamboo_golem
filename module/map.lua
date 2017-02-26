@@ -12,7 +12,6 @@ local index = require 'data.map'
 local history = require 'module.map.history'
 local helper = require 'module.map.helper'
 local locator = require 'module.map.locator'
-local step_handler = require 'module.map.step_handler'
 
 -- load all exit conditions from map index as functions
 local cond_checker = {}
@@ -228,9 +227,7 @@ function map.get_step_cmd( from, to )
   for dir, exit in pairs( from.exit ) do
     if exit.to == to.id and not exit.ignore then
       local cmd = exit.cmd or ( not string.find( dir, 'hidden' ) and dir )
-      local handler = exit.handler and step_handler[ exit.handler ]
-      local handler_tg = exit.handler and 'step_handler.' .. exit.handler
-      return cmd, exit.door, handler, handler_tg
+      return cmd, exit.door, exit.handler
     end
   end
 end

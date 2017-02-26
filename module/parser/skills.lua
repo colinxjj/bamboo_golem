@@ -63,7 +63,6 @@ local function parse_empty()
 end
 
 local function parse_levelup( _, t )
-  player.skill = player.skill or {}
   local sk = player.skill[ t[ 2 ] ]
   if not sk then
     sk = {}

@@ -37,7 +37,7 @@ local function parse_line_5( _, t )
 end
 
 local function parse_line_6( _, t )
-  player.bank_balance = ( t[ 1 ] == '很少'  and 0 ) or cntonumber( t[ 2 ] )
+  player.bank_gold_balance = ( t[ 1 ] == '很少'  and 0 ) or cntonumber( t[ 2 ] )
   player.party = t[ 3 ]
   player.master = t[ 5 ] ~= '' and t[ 5 ] or nil
 end

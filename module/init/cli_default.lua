@@ -143,4 +143,22 @@ local function parse_f( _, input )
   taskmaster.current_manual_task:newsub{ class = 'find', object = input }
 end
 
-cli.register{ cmd = 'f', desc = '前往某个NPC所在处。例如：f 李半仙', func = parse_f, no_prefix = true }
+cli.register{ cmd = 'f', desc = '前往某个NPC所在处。支持中文名和 ID。例如：f 李半仙 或 f banxian', func = parse_f, no_prefix = true }
+
+--------------------------------------------------------------------------------
+-- pp
+
+local patt = lpeg.C( lpeg.R '09'^1 ) * ' ' * lpeg.C( lpeg.P( 1 )^1 )
+local function parse_pp( _, input )
+  local count, item = patt:match( input )
+  count, item = tonumber( count ), item or input
+  if not _G.item[ item ] then
+    for _, it in pairs( _G.item ) do
+      if it.id == item then item = it.name; break end
+    end
+  end
+  taskmaster.current_manual_task:newsub{ class = 'manage_inventory', action = 'prepare', item = item, count = count }
+end
+
+
+cli.register{ cmd = 'pp', desc = '获取指定的物品。支持中文名和 ID。例如：pp 500 coin 或 pp 木棉袈裟', func = parse_pp, no_prefix = true }

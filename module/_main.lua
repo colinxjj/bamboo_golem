@@ -87,9 +87,10 @@ function time.get_current_hour()
 end
 
 -- check if a person / an object is present in the current room
-function is_present( name )
+function is_present( object )
+	object = type( object ) == 'table' and object.name or object
 	local room = map.get_current_room()
-	return room.object[ name ] and true or false
+	return room.object[ object ] and true or false
 end
 
 

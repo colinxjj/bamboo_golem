@@ -15,7 +15,7 @@ local cmd_busy_message = {
   move_combat_busy = '你逃跑失败。',
   ask_busy = '您先歇口气再说话吧。',
   quit_busy = '你现在正忙着做其他事，不能退出游戏！',
-  transact_busy = '哟，抱歉啊，我这儿正忙着呢……您请稍候。',
+  transact_busy = '\\S*哟，抱歉啊，我这儿正忙着呢……您请稍候。',
   yun_busy = '( 你上一个动作还没有完成，不能施用内功。)',
 
   asked = '你向\\S+打听有关『.+』的消息。',

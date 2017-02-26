@@ -190,6 +190,7 @@ dispatch = function()
 	local task, action, parent = item.task, item.action, item.parent
 	local stack = action == 'new' and { task; priority = task.priority } or get_stack( item.parent or item.task )
 	if task.status ~= 'dead' then -- only take actions on non-dead tasks
+		-- message.debug( action .. ': ' .. task.id )
 		assert( stack, 'taskmaster.dispatch - can\'t find stack for task: ' .. task.id )
 
 		if action == 'new' then

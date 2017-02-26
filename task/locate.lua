@@ -37,7 +37,7 @@ function task:_resume()
   if #location > 1 then
     local s = '定位结果：当前位置有 ' .. #location .. ' 种可能：'
     for _, loc in pairs( location ) do
-      s = s .. loc.id
+      s = s .. loc.id .. ' '
     end
     message.verbose( s )
     self:complete()

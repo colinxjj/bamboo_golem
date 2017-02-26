@@ -110,11 +110,11 @@ function task:next_step()
   else
     self.step_count = self.step_count or 0
     self.step_count = self.step_count + 1
-    local cmd, door, handler, handler_tg = map.get_step_cmd( curr_room, next_room )
+    local cmd, door, handler = map.get_step_cmd( curr_room, next_room )
     if not handler then
       self:send{ door or cmd, door and cmd or nil }
     else -- got step handler function
-      self.step_handler, self.step_trigger_group, self.step = handler, handler_tg, { from = curr_room, to = next_room, cmd = cmd }
+      self.step_handler, self.step_trigger_group, self.step = _G.task.helper.step_handler[ handler ], 'step_handler.' .. handler, { from = curr_room, to = next_room, cmd = cmd }
       self:enable_trigger_group( self.step_trigger_group )
       self:step_handler( self.step )
     end
