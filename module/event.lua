@@ -54,6 +54,7 @@ end
   keep_eval = false, -- continue to evaluate other listeners for the same event? (optional, default: true)
   sequence = 99 -- listeners of lower sequence will be evaluated first (optional, default: 100),
   task = a_task_instance, -- the task instance this listener belongs to. listeners from dead tasks will not fire and will be removed. (optional)
+  ignore_when_lurking = true, -- when set to true, ignore the listener when the task status is lurking (optional, default: false)
 } ]]
 function event.listen( t )
   assert( type( t ) == 'table', 'event.listen - parameter must be a table' )

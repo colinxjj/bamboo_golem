@@ -34,7 +34,7 @@ function finder:money()
     local count = it and ( self.count - it.count ) or self.count
     count = count > 0 and count or 1
     self:listen{ event = 'inventory', func = self.resume, id = 'task.manage_inventory' }
-    self:send{ 'withdraw ' .. count .. ' ' .. item[ self.item ].id }
+    self:send{ 'qu ' .. count .. ' ' .. item[ self.item ].id }
   end
 end
 

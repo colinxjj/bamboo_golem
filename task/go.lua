@@ -53,11 +53,12 @@ end
 
 function task:check_step()
   -- if the step handler needs room desc to work
-  if self.is_step_need_desc and not map.get_current_room().desc then self:send{ 'l' }; return end
+  local room = map.get_current_room()
+  if self.is_step_need_desc and not room.desc then self:send{ 'l' }; return end
 
-  local expected_room = self.path[ self.step_num ]
+  local expected_room, prev_room = self.path[ self.step_num ], self.path[ self.step_num - 1 ]
   -- step ok?
-  if map.is_current_location( expected_room ) and not self.is_still_in_step then -- move on to next step
+  if map.is_current_location( expected_room ) and ( not self.is_still_in_step or ( room.name == expected_room.name and room.name ~= prev_room.name ) ) then -- move on to next step
     if self.batch_step_num and self.step_num < self.batch_step_num then
       self.step_num = self.step_num + 1
     elseif not self.batch_step_num or self.step_num >= self.batch_step_num then
@@ -65,7 +66,6 @@ function task:check_step()
       self:next_step()
     end
   else
-    local prev_room = self.path[ self.step_num - 1 ]
     -- current step has a step handler and we're still in the same location?
     if self.step_handler and map.is_current_location( prev_room ) then -- hand over control to the step handler to solve the step
       self:step_handler( self.step )
@@ -100,8 +100,10 @@ function task:next_step()
     -- got a special command or handler?
     if handler or is_special_cmd then break end
     -- already have 15 commands?
-    if i - self.step_num >= 15 then cmd_list[ #cmd_list + 1 ] = '#wa 600'; break end -- up to 15 commands per batch and wait a bit after per batch
+    if i - self.step_num >= 15 then break end -- up to 15 commands per batch
   until not self.path[ i + 1 ]
+  local count = i - self.step_num
+  if count > 4 then cmd_list[ #cmd_list + 1 ] = '#wa ' .. 40 * count end -- wait a bit after each batch
   self.step_num = self.step_num + 1
   self.batch_step_num = i
   --disable trigger group used by last step

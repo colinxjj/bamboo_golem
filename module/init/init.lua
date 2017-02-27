@@ -30,7 +30,7 @@ dofile( CWD .. 'data/default_config.txt' )
 
 -- setup necessary tables
 player, time = {}, {}
-player.flag, player.inventory, player.skill = {}, {}, {}
+player.flag, player.temp_flag, player.inventory, player.skill = {}, {}, {}, {}
 
 -- load message module
 message = require 'module.message'

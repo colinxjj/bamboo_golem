@@ -11,6 +11,10 @@ local prompt_fired_on_this_line
 local PROMPT = '^' .. PROMPT
 
 function world.OnPluginPartialLine( text )
+	if string.find( text, '^Are you using BIG5 font' ) then
+		trigger.enable_group 'connection'
+		world.Send ''
+	end
 	gag.check( text ) -- check if the line should be gagged
 	if string.find( text, PROMPT ) and not prompt_fired_on_this_line then
 		prompt_fired_on_this_line = true
@@ -88,9 +92,15 @@ end
 
 -- check if a person / an object is present in the current room
 function is_present( object )
-	object = type( object ) == 'table' and object.name or object
+	object = type( object ) == 'string' and { name = object } or object
 	local room = map.get_current_room()
-	return room.object[ object ] and true or false
+	local room_object = room.object[ object.name ]
+	return room_object and ( object.id and object.id == room_object.id or not object.id ) and true or false
+end
+
+function has_item( object )
+	object = type( object ) == 'string' and { name = object } or object
+	return ( player.inventory[ object.name ] and player.inventory[ object.name ].count >= ( object.count or 1 ) ) and true or false
 end
 
 

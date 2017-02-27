@@ -173,9 +173,13 @@ trigger.new{ name = 'sl_fota_fushi', group = 'step_handler.sl_fota', match = '^Ä
 trigger.new{ name = 'sl_fota_canchan', group = 'step_handler.sl_fota', match = '^ÄãÔÚĞé¿ÕÖĞ£¬¸Ğ¾õ´óÊ¦×ùÏÂ´ò¿ªÁËÒ»¸öĞ¡ÃÅ¡£$', func = handler.sl_fota_succeed }
 
 -- ¹éÔÆ×¯Ğ¡ºÓ
--- TODO check if old man is actually there
 function handler:gyz_river( t )
-	self:send{ t.cmd }
+	if is_present{ name = 'ÀÏÕß', id = 'lao zhe' } then
+		self:send{ t.cmd }
+	else -- leave and reenter to reset the room
+		local room = map.get_current_room()
+		self:send{ room.exit.w and 'w' or 'e' }
+	end
 end
 
 -- Å£¼Ò´åĞ¡º£¸Û×ø´¬
@@ -242,7 +246,19 @@ function handler:jqg_river( t )
 end
 
 -- ¾øÇé¹È´óÌü
--- TODO make sure ¹«ËïÖ¹ is there
+function handler:jqg_enter( t )
+	if player.temp_flag.gsz_agree then
+		self:send{ 'xian hua;zuan dao' }
+	elseif is_present( npc[ '¹«ËïÖ¹' ] ) then
+		player.temp_flag.gsz_agree = true -- only need to ask once per session
+		self:send{ t.cmd }
+	else -- wait 1 min for respawn
+		self:newsub{ class = 'killtime', duration = 60, can_move = true, complete_func = handler.look_again }
+	end
+end
+function handler:look_again()
+	self:send{ 'l' }
+end
 
 -- ¾øÇé¹ÈöùÓãÌ¶
 -- TODO kill öùÓã first and then ta corpse
@@ -259,8 +275,31 @@ end
 -- ÉñÁúµº
 -- TODO make sure have shengzi and sharp weapon
 
--- ÌúÕÆÉ½¶´Ñ¨£¨ÉÏ¹Ù½£ÄÏ£©
--- TODO ask ôÃÇ§ÕÉ about ÄÖ¹í first
+-- ÌúÕÆÉ½Ê¯ÊÒ£¨ÉÏ¹Ù½£ÄÏ£©
+function handler:pre_ask_ghost( t )
+	if self.class == 'go' and self.to.id == 'ÌúÕÆÉ½Ê¯ÊÒ' and not player.temp_flag.tz_ghost then
+		self:enable_trigger 'tz_ask_ghost'
+		self:newsub{ class = 'find', object = 'ôÃÇ§ÕÉ', action = 'ask %id about ÄÖ¹í' }
+	else
+		self:send{ t.cmd }
+	end
+end
+function handler:tz_cave( t )
+	if player.temp_flag.tz_ghost then
+		local loc = map.get_current_location()[ 1 ]
+		if loc.id ~= 'ÌúÕÆÉ½ÎŞÃû·å' then
+			self:newsub{ class = 'go', to = 'ÌúÕÆÉ½ÎŞÃû·å', complete_func = handler.tz_cave }
+		else
+			self:send{ 'move bei', t.cmd }
+		end
+	else
+		self:newsub{ class = 'find', object = 'ôÃÇ§ÕÉ', action = 'ask %id about ÄÖ¹í' }
+	end
+end
+function handler:tz_ask_ghost()
+	player.temp_flag.tz_ghost = true
+end
+trigger.new{ name = 'tz_ask_ghost', group = 'step_handler.tz_cave', match = '^ÌıÒ»Ğ©°ïÖÚËµ£¬¾­³£Ìı¼ûÎŞÃû·åÉÏµÄ·ØÄ¹ÖĞ£¬´«³öÏìÉù£¡ºÙºÙ£¡Ò»¶¨ÓĞÊ²Ã´õèõÎÔÚÀïÃæ£¡$', func = handler.tz_ask_ghost, penetrate_level = 'waiting' }
 
 -- from Ïô¸®ºóÔº to Ïô¸®Ê÷ÁÖ
 
@@ -283,6 +322,8 @@ end
 
 -- from ¶ëáÒÉ½ºóÉ½Ğ¡Â· to ¶ëáÒÉ½¹àÄ¾´Ô
 -- TODO prepare sharp weapon
+
+-- Îäµ±ºóÉ½Ã©Îİ
 
 --------------------------------------------------------------------------------
 -- Maze handlers
@@ -687,10 +728,17 @@ end
 trigger.new{ name = 'gyz_jiugong_exited', group = 'step_handler.gyz_jiugong', match = '^ÌÒ»¨ÕóÖĞºöÈ»·¢³öÒ»Õó¡°ÔşÔş¡±µÄÉùÒô£¬ËæºóÏÖ³öÒ»ÌõµÀÂ·£¬Äã¸ÏÃ¦×ßÁË³öÈ¥¡£$', func = handler.gyz_jiugong_exited }
 
 -- ÌÒ»¨µºÌÒ»¨Õó, from ÌÒ»¨µºÂÌÖñÁÖ to ÌÒ»¨µººÓÌÁ
--- TODO make sure have enough number of marker items
 -- TODO 1. support combinations of multiple types of items as identifiers of rooms (no more simple coin count as id) 2. switch between multiple types of items as necessary (based on factors like inventory item count)
-local item = 'coin'
-local cn_item = 'Í­Ç®'
+function handler:prepare_coin( t )
+	if has_item{ name = 'Í­Ç®', count = 500 } then
+		self:send{ t.cmd }
+	elseif string.find( self.to.id, 'ÌÒ»¨µº' )
+	and ( player.party == "ÌÒ»¨µº" and ( not player.skill["ÆæÃÅ°ËØÔ"] or player.skill["ÆæÃÅ°ËØÔ"].level <= 80 )
+	 or ( player.party ~= "ÌÒ»¨µº" and ( not player.skill["ÆæÃÅ°ËØÔ"] or player.skill["ÆæÃÅ°ËØÔ"].level <= 150 ) ) ) then
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = 'Í­Ç®', count = 500 }
+	end
+end
+local item, cn_item = 'coin', 'Í­Ç®'
 -- return number of items on the ground
 local function get_item_count( room )
 	return not room.object[ cn_item ] and 0 or room.object[ cn_item ].count
@@ -743,7 +791,7 @@ local function findpath_to( target, t )
       if to and to ~= 'a' and from ~= to -- ignore exit to alt maze exits (to »ı´äÍ¤ or ²İµØ) or to the same room
 			and not processed[ to ] -- only add per room once
 			and ( t.map[ to ].is_reliable ~= false or target == 'unsure' ) -- ignore unreliable room if target isn't 'unsure'
-			and ( not t.map[ to ].is_bad or target == 'bad' ) then -- ignore bad room if target isn't 'bad'
+			and ( not t.map[ to ].is_bad or target == 'bad' or target == 'exit' ) then -- ignore bad room if target isn't 'bad' or 'exit'
       	prev[ to ], list[ #list + 1 ], processed[ to ] =  from, to, true
       end
     end
@@ -833,8 +881,12 @@ function handler:breadcrumb( t )
 	-- item count evaluation
 	t.expected, t.prev = t.expected or 1, t.prev or 1
 	local expected_room, action = t.map[ t.expected ], {}
+	-- after a reliable step?
+	if t.map[ t.prev ].is_reliable and t.expected > 0 and expected_room.is_reliable then
+		if t.prev ~= t.expected then t.map[ t.prev ].is_reliable = nil end -- remove prev room's reliable tag since after initial set up it could cause problems (e.g. other rooms with same item count). This would result in a single room still has the tag but that should be no problem.
+		action.adjust_item_to_expected = true
 	-- item count match expectation?
-	if item_count == t.expected then
+	elseif item_count == t.expected then
 		if t.expected == 0 or expected_room.is_reliable == false then
 			action.adjust_item_to_new_unique = true
 		end
@@ -874,12 +926,14 @@ function handler:breadcrumb( t )
 				t.map[ t.expected ].alternate[ new_count ] = true
 			end
 		end
-		local cmd = new_count > item_count and 'drop' or 'get'
-		local num = math.abs( new_count - item_count )
-		self:send{ ( '%s %d %s' ):format( cmd, num, item ) }
-		item_count = new_count
-		t.map[ item_count ] = t.map[ item_count ] or { id = item_count }
-		t.map[ item_count ].drop_time = os.time()
+		if new_count ~= item_count then
+			local cmd = new_count > item_count and 'drop' or 'get'
+			local num = math.abs( new_count - item_count )
+			self:send{ ( '%s %d %s' ):format( cmd, num, item ) }
+			item_count = new_count
+			t.map[ item_count ] = t.map[ item_count ] or { id = item_count }
+			t.map[ item_count ].drop_time = os.time()
+		end
 	end
 
 	-- use number of items on ground as identifier of the room
@@ -976,10 +1030,13 @@ function handler:breadcrumb_look_result( result )
 end
 
 -- ÌÒ»¨µº°ËØÔÌÒ»¨Õó
--- TODO pre-check to look bagua when passing by
 function handler:prelook_bagua( t )
-	if self.to == 'ÌÒ»¨µºÑÒ¶´' then
-		--FIXME
+	if self.class == 'go' and self.to.id == 'ÌÒ»¨µºÑÒ¶´'
+	and ( not player.skill["ÆæÃÅ°ËØÔ"] or player.skill["ÆæÃÅ°ËØÔ"].level < 200 ) then
+		self:enable_trigger 'thd_bagua'
+		self:send{ 'l bagua' }
+	else
+		self:send{ t.cmd }
 	end
 end
 function handler:thd_bagua( t )

@@ -159,7 +159,7 @@ trigger.new{ name = 'inventory1', match = '^(> )*ÄãÉíÉÏ(´ø×Å(\\S+)¼ş|´øÖøÏÂÁĞÕâĞ
 trigger.new{ name = 'inventory2', match = '^(¡õ|  )([^ (]+)\\(([\\w\\s\\\'-]+)\\)$', func = parse_content }
 
 trigger.new{ name = 'inventory_withdraw', match = '^(> )*Äã´ÓÒøºÅÀïÈ¡³ö(\\S+)¡£$', func = parse_withdraw, enabled = true }
-trigger.new{ name = 'inventory_balance', match = '^\\S+¼ÇÍêÕÊ£¬¸æËßÄã£º¡°¿Û³ıÒ»·Ö°ëÊÖĞø·Ñ£¬ÄúÔÚ±×ÉÌºÅÏÖ»¹ÓĞ(\\S+)¡£¡±$', func = parse_balance }
+trigger.new{ name = 'inventory_balance', match = '^\\S+¼ÇÍêÕÊ£¬¸æËßÄã£º¡°¿Û³ı\\S+ÊÖĞø·Ñ£¬ÄúÔÚ±×ÉÌºÅÏÖ»¹ÓĞ(\\S+)¡£¡±$', func = parse_balance }
 
 trigger.new{ name = 'inventory_drop', match = '^(> )*Äã¶ªÏÂ(\\S+)¡£$', func = parse_drop, enabled = true }
 trigger.new{ name = 'inventory_get', match = '^(> )*Äã¼ñÆğ(\\S+)¡£$', func = parse_get, enabled = true }

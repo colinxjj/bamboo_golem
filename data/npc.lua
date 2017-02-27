@@ -92,6 +92,307 @@ local npc = {
   location = '峨嵋山清音阁',
 },
 
+['孤鸿子'] = {
+  name = '孤鸿子',
+  id = 'guhong zi',
+  alternate_id = { 'guhong', 'zi' },
+  location = '峨嵋山山洞',
+},
+
+--------------------------------------------------------------------------------
+-- 桃花岛
+
+['黄蓉'] = {
+  name = '黄蓉',
+  id = 'huang rong',
+  alternate_id = { 'huang', 'rong' },
+  location = '桃花岛内室#1',
+},
+
+['黄药师'] = {
+  name = '黄药师',
+  id = 'huang yaoshi',
+  alternate_id = { 'huang', 'yaoshi' },
+  location = '桃花岛积翠亭',
+},
+
+['周伯通'] = {
+  name = '周伯通',
+  id = 'zhou botong',
+  alternate_id = { 'zhou', 'botong' },
+  location = '桃花岛积翠亭',
+},
+
+--------------------------------------------------------------------------------
+-- 归云庄
+
+['陆乘风'] = {
+  name = '陆乘风',
+  id = 'lu chengfeng',
+  alternate_id = { 'lu', 'chengfeng' },
+  location = '归云庄书房',
+},
+
+['陆冠英'] = {
+  name = '陆冠英',
+  id = 'lu guanying',
+  alternate_id = { 'lu', 'guanying' },
+  location = '归云庄前厅',
+},
+
+--------------------------------------------------------------------------------
+-- 兰州城
+
+['苗人凤'] = {
+  name = '苗人凤',
+  id = 'miao renfeng',
+  alternate_id = { 'miao', 'renfeng' },
+  location = '兰州城正厅',
+},
+
+--------------------------------------------------------------------------------
+-- 武当山
+
+['宋远桥'] = {
+  name = '宋远桥',
+  id = 'song yuanqiao',
+  alternate_id = { 'song' },
+  location = '武当山三清殿',
+},
+
+['采药道长'] = {
+  name = '采药道长',
+  id = 'caiyao daozhang',
+  alternate_id = { 'caiyao', 'daozhang' },
+  location = '武当山山路#2',
+},
+
+--------------------------------------------------------------------------------
+-- 丐帮
+
+['洪七公'] = {
+  name = '洪七公',
+  id = 'hong qigong',
+  alternate_id = { 'hong', 'qigong' },
+  location = '丐帮后院',
+},
+
+['鲁有脚'] = {
+  name = '鲁有脚',
+  id = 'lu youjiao',
+  alternate_id = { 'lu', 'youjiao' },
+  location = '丐帮土地庙',
+},
+
+--------------------------------------------------------------------------------
+-- 铁掌山
+
+['上官剑南'] = {
+  name = '上官剑南',
+  id = 'shangguan jiannan',
+  alternate_id = { 'shangguan', 'jiannan' },
+  location = '铁掌山石室',
+},
+
+['裘千仞'] = {
+  name = '裘千仞',
+  id = 'qiu qianren',
+  alternate_id = { 'qiu', 'qianren' },
+  location = '铁掌山后厢房',
+},
+
+['裘千丈'] = {
+  name = '裘千丈',
+  id = 'qiu qianzhang',
+  alternate_id = { 'qiu', 'qianzhang' },
+  location = '铁掌山广场',
+  range = 2,
+},
+
+--------------------------------------------------------------------------------
+-- 牛家村
+
+['傻姑'] = {
+  name = '傻姑',
+  id = 'sha gu',
+  alternate_id = { 'shagu' },
+  location = '牛家村小酒店',
+},
+
+--------------------------------------------------------------------------------
+-- 大雪山
+
+['血刀老祖'] = {
+  name = '血刀老祖',
+  id = 'xuedao laozu',
+  alternate_id = { 'xuedaolaozu', 'laozu' },
+  location = '大雪山雪谷',
+},
+
+['狄云'] = {
+  name = '狄云',
+  id = 'di yun',
+  alternate_id = { 'di', 'yun' },
+  location = '大雪山岩石',
+},
+
+['鸠摩智'] = {
+  name = '鸠摩智',
+  id = 'jiumo zhi',
+  alternate_id = { 'jiumo', 'zhi' },
+  location = '大雪山法堂二楼',
+},
+
+['宝象'] = {
+  name = '宝象',
+  id = 'bao xiang',
+  alternate_id = { 'baoxiang', 'bao', 'xiang' },
+  location = '大雪山入幽口',
+},
+
+--------------------------------------------------------------------------------
+-- 苏州城
+
+['丁典'] = {
+  name = '丁典',
+  id = 'ding dian',
+  alternate_id = { 'ding' },
+  location = '苏州城监狱',
+},
+
+--------------------------------------------------------------------------------
+-- 昆仑山
+
+['殷离'] = {
+  name = '殷离',
+  id = 'yin li',
+  alternate_id = { 'yin', 'li' },
+  location = '昆仑山昆仑派山门',
+  range = 10,
+},
+
+--------------------------------------------------------------------------------
+-- 绝情谷
+
+['杨过'] = {
+  name = '杨过',
+  id = 'yang guo',
+  alternate_id = { 'yang', 'guo' },
+  location = '绝情谷小室',
+},
+
+['小龙女'] = {
+  name = '小龙女',
+  id = 'xiao longnv',
+  alternate_id = { 'xiao', 'longnv' },
+  location = '绝情谷大室',
+},
+
+['公孙止'] = {
+  name = '公孙止',
+  id = 'gongsun zhi',
+  alternate_id = { 'gongsun', 'zhi' },
+  location = '绝情谷大厅',
+},
+
+--------------------------------------------------------------------------------
+-- 福州城
+
+['吴长老'] = {
+  name = '吴长老',
+  id = 'wu zhanglao',
+  alternate_id = { 'wu', 'zhanglao' },
+  location = '福州城船舱',
+},
+
+['陈近南'] = {
+  name = '陈近南',
+  id = 'chen jinnan',
+  alternate_id = { 'chen', 'jinnan' },
+  location = '福州城石桥',
+  range = 3,
+},
+
+--------------------------------------------------------------------------------
+-- 嵩山少林
+
+['慕容博'] = {
+  name = '慕容博',
+  id = 'murong bo',
+  alternate_id = { 'murong', 'bo' },
+  location = '嵩山少林小屋',
+},
+
+['渡劫'] = {
+  name = '渡劫',
+  id = 'du jie',
+  alternate_id = { 'du', 'jie' },
+  location = '嵩山少林金刚伏魔圈',
+},
+
+['渡难'] = {
+  name = '渡难',
+  id = 'du nan',
+  alternate_id = { 'du', 'nan' },
+  location = '嵩山少林金刚伏魔圈',
+},
+
+['渡厄'] = {
+  name = '渡厄',
+  id = 'du e',
+  alternate_id = { 'du', 'e' },
+  location = '嵩山少林金刚伏魔圈',
+},
+
+--------------------------------------------------------------------------------
+-- 华山
+
+['岳不群'] = {
+  name = '岳不群',
+  id = 'yue buqun',
+  alternate_id = { 'yue', 'buqun' },
+  location = '华山正气堂',
+},
+
+['宁中则'] = {
+  name = '宁中则',
+  id = 'ning zhongze',
+  alternate_id = { 'ning' },
+  location = '华山正气堂',
+},
+
+['令狐冲'] = {
+  name = '令狐冲',
+  id = 'linghu chong',
+  alternate_id = { 'linghu', 'chong' },
+  location = '华山小山路#2',
+  range = 2,
+},
+
+['岳灵珊'] = {
+  name = '岳灵珊',
+  id = 'yue lingshan',
+  alternate_id = { 'yue', 'lingshan' },
+  location = '华山祭坛',
+},
+
+['穆人清'] = {
+  name = '穆人清',
+  id = 'mu renqing',
+  alternate_id = { 'mu', 'renqing' },
+  location = '华山石屋',
+},
+
+--------------------------------------------------------------------------------
+-- 华山村
+
+['巫婆'] = {
+  name = '巫婆',
+  id = 'wu po',
+  alternate_id = { 'wu', 'po' },
+  location = '华山村玄坛庙',
+},
+
 --------------------------------------------------------------------------------
 -- Banks
 
@@ -151,11 +452,11 @@ local npc = {
   label = { bank = true, },
 },
 
-['张算盘'] = {
-  name = '张算盘',
-  id = 'zhang suanpan',
-  alternate_id = { 'zhang', 'suanpan', 'pan' },
-  location = '杭州城翠合斋',
+['崔算盘'] = {
+  name = '崔算盘',
+  id = 'cui suanpan',
+  alternate_id = { 'cui', 'zhanggui' },
+  location = '杭州城金华斋',
   label = { bank = true, },
 },
 

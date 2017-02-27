@@ -107,7 +107,7 @@ local sp = lpeg.P ' '
 local patt = lpeg.C( any_but( sp )^1 ) * sp^1 * ( ( any_but( sp )^1 ) / tonumber )
 local function parse_tv( _, input )
   local loc, range = patt:match( input )
-  taskmaster.current_manual_task:newsub{ class = 'traverse', loc = loc or input, range = range or 2 }
+  taskmaster.current_manual_task:newweaksub{ class = 'traverse', loc = loc or input, range = range or 2 }
 end
 
 cli.register{ cmd = 'tv', desc = '测试遍历。', func = parse_tv, no_prefix = true }
@@ -116,7 +116,7 @@ cli.register{ cmd = 'tv', desc = '测试遍历。', func = parse_tv, no_prefix = true
 -- f
 
 local function parse_f_response( choice )
-  taskmaster.current_manual_task:newsub{ class = 'find', object = choice }
+  taskmaster.current_manual_task:newweaksub{ class = 'find', object = choice }
 end
 
 local function parse_f( _, input )
@@ -140,7 +140,7 @@ local function parse_f( _, input )
       return
     end
   end
-  taskmaster.current_manual_task:newsub{ class = 'find', object = input }
+  taskmaster.current_manual_task:newweaksub{ class = 'find', object = input }
 end
 
 cli.register{ cmd = 'f', desc = '前往某个NPC所在处。支持中文名和 ID。例如：f 李半仙 或 f banxian', func = parse_f, no_prefix = true }
@@ -157,7 +157,7 @@ local function parse_pp( _, input )
       if it.id == item then item = it.name; break end
     end
   end
-  taskmaster.current_manual_task:newsub{ class = 'manage_inventory', action = 'prepare', item = item, count = count }
+  taskmaster.current_manual_task:newweaksub{ class = 'manage_inventory', action = 'prepare', item = item, count = count }
 end
 
 
