@@ -27,12 +27,6 @@ local finder_tbl = {
 function task:_resume()
   self.count = self.count or 1
 
-  if not self.getinfo then
-    self.getinfo = true
-    self:newsub{ class = 'getinfo', hp = true, inventory = true, score = true, enable = true, skills = true, time = true }
-    return
-  end
-
   if self.action == 'prepare' then
     local it = player.inventory[ self.item ]
     if it then

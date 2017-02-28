@@ -16,12 +16,6 @@ function task:get_id()
 end
 
 function task:_resume()
-  if not self.getinfo then
-    self.getinfo = true
-    self:newsub{ class = 'getinfo', hp = true, inventory = true, score = true, enable = true, skills = true, time = true }
-    return
-  end
-
   if not self.from then
     local from = map.get_current_location()
     if not from then self:newsub{ class = 'locate' }; return end

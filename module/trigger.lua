@@ -17,7 +17,7 @@ local valid_param = {
   keep_eval = 'keep_evaluating',
   one_shot = 'one_shot',
   sequence = 'sequence',
-  penetrate_level = true,
+  penetrate = true,
 }
 
 -- a table to associate a trigger name with its details
@@ -37,7 +37,7 @@ local group = {}
   enabled = true, -- is the trigger enabled by default? (optional, default: false)
   omit = true, -- omit the line from output? (optional, default: false)
   one_shot = true, -- will the trigger only be fired once? (optional, default: false)
-  penetrate_level = 'waiting', -- the trigger fires even when the task's in 'waiting' or 'suspended' status (optional, default: nil)
+  penetrate = 'waiting', -- the trigger fires even when the task's in 'waiting' or 'suspended' status (optional, default: nil)
 } ]]
 function trigger.new( t )
   assert( type( t ) == 'table', 'trigger.new - parameter must be a table' )
@@ -84,8 +84,8 @@ function trigger.parse( name, line, ... )
   end
   if t.task then
     if t.task.status == 'running' or t.task.status == 'lurking'
-    or ( t.task.status == 'waiting' and t.penetrate_level )
-    or ( t.task.status == 'suspended' and t.penetrate_level == 'suspended' ) then
+    or ( t.task.status == 'waiting' and t.penetrate )
+    or ( t.task.status == 'suspended' and t.penetrate == 'suspended' ) then
       t.func( t.task, t.name, ... )
     end
   else

@@ -18,12 +18,6 @@ function task:get_id()
 end
 
 function task:_resume()
-  if not self.getinfo then
-    self.getinfo = true
-    self:newsub{ class = 'getinfo', hp = true, inventory = true, score = true, enable = true, skills = true, time = true }
-    return
-  end
-
   -- get a list of rooms with range from the base location
   self.room_list = self.room_list or map.expand_loc( self.loc, self.range or 0 )
 

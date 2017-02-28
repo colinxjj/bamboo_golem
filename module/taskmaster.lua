@@ -218,11 +218,14 @@ dispatch = function()
 				if task._fail then task:_fail() end
 				task.is_successful = false
 			end
-			task.status = 'dead'
 			local parent = get_parent( task )
 			if parent then
+				task.status = 'dead'
 				handback( task, action, parent )
 			else
+				local func = task[ action .. '_func' ]
+				if func then func( task ) end
+				task.status = 'dead'
 				clear_dead()
 				local ntask
 				if task == ctask then ntask = find_next_task() end

@@ -9,7 +9,7 @@ none
 ----------------------------------------------------------------------------]]--
 
 task.class = 'manual'
-task.priority = 1 -- manual task has highest priority
+task.priority = 2 -- manual task has second highest priority
 
 function task:complete()
   -- this task never completes

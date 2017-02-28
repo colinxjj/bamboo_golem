@@ -167,6 +167,13 @@ local npc = {
   location = '武当山山路#2',
 },
 
+['张三丰'] = {
+  name = '张三丰',
+  id = 'zhang sanfeng',
+  alternate_id = { 'zhang', 'sanfeng' },
+  location = '武当山后山小院',
+},
+
 --------------------------------------------------------------------------------
 -- 丐帮
 
@@ -269,6 +276,27 @@ local npc = {
   alternate_id = { 'yin', 'li' },
   location = '昆仑山昆仑派山门',
   range = 10,
+},
+
+['何太冲'] = {
+  name = '何太冲',
+  id = 'he taichong',
+  alternate_id = { 'he' },
+  location = '昆仑山铁琴居',
+},
+
+['班淑娴'] = {
+  name = '班淑娴',
+  id = 'ban shuxian',
+  alternate_id = { 'ban' },
+  location = '昆仑山三圣堂',
+},
+
+['何足道'] = {
+  name = '何足道',
+  id = 'he zudao',
+  alternate_id = { 'he' },
+  location = '昆仑山惊神峰',
 },
 
 --------------------------------------------------------------------------------
@@ -391,6 +419,50 @@ local npc = {
   id = 'wu po',
   alternate_id = { 'wu', 'po' },
   location = '华山村玄坛庙',
+},
+
+--------------------------------------------------------------------------------
+-- 明教
+
+['张无忌'] = {
+  name = '张无忌',
+  id = 'zhang wuji',
+  alternate_id = { 'zhang', 'wuji' },
+  location = '明教圣火堂',
+},
+
+--------------------------------------------------------------------------------
+-- 大草原
+
+['金轮法王'] = {
+  name = '金轮法王',
+  id = 'jinlun fawang',
+  alternate_id = { 'jinlunfawang', 'jinlun', 'fawang' },
+  location = '大草原牛皮大帐',
+},
+
+['忽必烈'] = {
+  name = '忽必烈',
+  id = 'hu bilie',
+  alternate_id = { 'hu', 'hubilie' },
+  location = '大草原牛皮大帐',
+},
+
+--------------------------------------------------------------------------------
+-- 回疆
+
+['苏鲁克'] = {
+  name = '苏鲁克',
+  id = 'su luke',
+  alternate_id = { 'suluke', 'su' },
+  location = '回疆苏鲁克的家',
+},
+
+['计老人'] = {
+  name = '计老人',
+  id = 'ji laoren',
+  alternate_id = { 'ji' },
+  location = '回疆小屋',
 },
 
 --------------------------------------------------------------------------------

@@ -299,7 +299,7 @@ end
 function handler:tz_ask_ghost()
 	player.temp_flag.tz_ghost = true
 end
-trigger.new{ name = 'tz_ask_ghost', group = 'step_handler.tz_cave', match = '^听一些帮众说，经常听见无名峰上的坟墓中，传出响声！嘿嘿！一定有什么蹊跷在里面！$', func = handler.tz_ask_ghost, penetrate_level = 'waiting' }
+trigger.new{ name = 'tz_ask_ghost', group = 'step_handler.tz_cave', match = '^听一些帮众说，经常听见无名峰上的坟墓中，传出响声！嘿嘿！一定有什么蹊跷在里面！$', func = handler.tz_ask_ghost, penetrate = 'waiting' }
 
 -- from 萧府后院 to 萧府树林
 
@@ -324,6 +324,8 @@ trigger.new{ name = 'tz_ask_ghost', group = 'step_handler.tz_cave', match = '^听
 -- TODO prepare sharp weapon
 
 -- 武当后山茅屋
+
+-- 峨嵋山洗象池
 
 --------------------------------------------------------------------------------
 -- Maze handlers
@@ -671,8 +673,27 @@ function handler:wdhs_conglin_look_result( result )
 end
 
 -- 武当山后院小径
-
--- 萧府树林
+function handler:wd_xiaojing( t )
+	t = self.step
+	if t.to.id == '武当山小径#2' then
+		self:send{ 'n' }
+	elseif handler.data.wd_xiaojing_dir then
+		self:send{ handler.data.wd_xiaojing_dir }
+		t.waited, handler.data.wd_xiaojing_dir = nil
+	elseif not t.waited then
+		t.waited = true
+		self:newweaksub{ class = 'killtime', complete_func = handler.wd_xiaojing }
+	else
+		t.waited = nil
+		self:send{ DIR4[ math.random( 4 ) ] }
+	end
+end
+function handler:wd_xiaojing_prompt( _, t )
+	handler.data.wd_xiaojing_dir = CN_DIR[ t[ 2 ] ]
+	-- interrupt killtime subtask when got direction prompt
+	if self.status == 'running' or self.status == 'lurking' then self:resume() end
+end
+trigger.new{ name = 'wd_xiaojing_prompt', group = 'step_handler.wd_xiaojing', match = '^(> )*你站在小径上，四周打量，仿佛看见(\\S+)面有些亮光。$', func = handler.wd_xiaojing_prompt, penetrate = 'suspended' } -- this trigger works even when the task is suspended, to get the prompt whenever possible
 
 -- 归云庄九宫桃花阵
 local num = lpeg.C( ( lpeg.P '一' + '二' + '三' + '四' + '五' + '六' + '七' + '八' + '九' + '十' )^1 )
@@ -730,12 +751,13 @@ trigger.new{ name = 'gyz_jiugong_exited', group = 'step_handler.gyz_jiugong', ma
 -- 桃花岛桃花阵, from 桃花岛绿竹林 to 桃花岛河塘
 -- TODO 1. support combinations of multiple types of items as identifiers of rooms (no more simple coin count as id) 2. switch between multiple types of items as necessary (based on factors like inventory item count)
 function handler:prepare_coin( t )
-	if has_item{ name = '铜钱', count = 500 } then
-		self:send{ t.cmd }
-	elseif string.find( self.to.id, '桃花岛' )
+	if string.find( self.to.id, '桃花岛' )
 	and ( player.party == "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 80 )
-	 or ( player.party ~= "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 150 ) ) ) then
+	 or ( player.party ~= "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 150 ) ) )
+	and not has_item{ name = '铜钱', count = 500 } then
 		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '铜钱', count = 500 }
+	else
+		self:send{ t.cmd }
 	end
 end
 local item, cn_item = 'coin', '铜钱'
@@ -1261,6 +1283,8 @@ function handler:xx_duchonggu()
 	local dir = map.get_current_room().exit.se and 'se' or 'e'
 	self:send{ dir }
 end
+
+-- 萧府树林
 
 -- 华山秘洞
 

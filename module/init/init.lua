@@ -49,6 +49,7 @@ map = require 'module.map'
 taskmaster = require 'module.taskmaster'
 bigword = require 'module.bigword'
 gag = require 'module.gag'
+session = require 'module.session'
 
 -- load parsers
 require 'module.parser.hp'
@@ -61,6 +62,7 @@ require 'module.parser.room'
 require 'module.parser.id'
 require 'module.parser.enable'
 require 'module.parser.place'
+require 'module.parser.connection'
 
 -- load task classes
 dofile( CWD .. 'task/_init.lua' )
@@ -147,3 +149,8 @@ end
 -- check global option
 if world.GetGlobalOption( 'WindowTabsStyle' ) ~= 2 then message.warning '建议在全局选项中选择在底部显示窗口标签页' end
 if world.GetGlobalOption( 'TimerInterval' ) ~= 0 then message.warning '请在全局选项中将计时器时间间隔设为 0，否则本插件可能无法正常工作' end
+
+--------------------------------------------------------------------------------
+-- initiate player session
+
+if world.IsConnected() then session.initiate() end
