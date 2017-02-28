@@ -36,14 +36,14 @@ end
   fail_func = another_func, -- if no complete / fail function is defined, then the parent task will resume / fail when the subtask completes / fails
 } ]]
 function task:newsub( subtask )
-  subtask.priority = self.priority
+  subtask.priority, subtask.stack, subtask.parent = self.priority, self.stack, self
   subtask = initialize_instance( _G.task[ subtask.class ], subtask )
   taskmaster.operate{ task = subtask, parent = self, action = 'newsub' }
   return subtask
 end
 -- set up a new sub task and keep the parent lurking in the background
 function task:newweaksub( subtask )
-  subtask.priority = self.priority
+  subtask.priority, subtask.stack, subtask.parent = self.priority, self.stack, self
   subtask = initialize_instance( _G.task[ subtask.class ], subtask )
   taskmaster.operate{ task = subtask, parent = self, action = 'newweaksub' }
   return subtask
