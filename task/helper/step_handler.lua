@@ -239,10 +239,21 @@ trigger.new{ name = 'thd_sail_progress', group = 'step_handler.thd_sail', match 
 trigger.new{ name = 'thd_sail_cord', group = 'step_handler.thd_sail', match = '^艄公看了看海图，说道：我们现在的位置是\\((\\d+)\\,(\\d+)\\)。$', func = handler.thd_sail_cord }
 
 -- 绝情谷小溪
--- TODO make sure player doesn't have weapon equipped
--- TODO if boat is temporarily unavailable, then need to try again
 function handler:jqg_river( t )
-	self:send{ t.cmd }
+	t = self.step
+	if player.wielded then
+		self:newsub{ class = 'manage_inventory', action = 'unwield', complete_func = handler.jqg_river }
+	elseif t.from.id == '绝情谷小溪边' then
+		local room = map.get_current_room()
+		if not room.desc then self:send{ 'l' }; return end
+		if not string.find( room.desc, '你沿岸迂回数次，发现溪中好象有艘小舟。' ) then
+			self:newsub{ class = 'killtime', complete_func = handler.look_again }
+		else
+			self:send{ t.cmd }
+		end
+	else
+		self:send{ t.cmd }
+	end
 end
 
 -- 绝情谷大厅
@@ -326,6 +337,16 @@ trigger.new{ name = 'tz_ask_ghost', group = 'step_handler.tz_cave', match = '^听
 -- 武当后山茅屋
 
 -- 峨嵋山洗象池
+
+
+-- 嵩山少林迎客亭
+function handler:unwield_weapon()
+	if player.wielded then
+		self:newsub{ class = 'manage_inventory', action = 'unwield', complete_func = handler.unwield_weapon }
+	else
+		self:send{ self.step.cmd }
+	end
+end
 
 --------------------------------------------------------------------------------
 -- Maze handlers

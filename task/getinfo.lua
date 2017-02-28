@@ -42,14 +42,18 @@ function task:get_room_info( evt )
     for dir in pairs( exit ) do
       if not self.looked[ dir ] then self:look_dir( dir ); return end
     end
-  elseif not self.looked[ target ] then self:look_dir( target ); return end
+  elseif not self.looked[ target ] and target ~= true then self:look_dir( target ); return end
   self.room = false -- mark room part as done
   self:resume()
 end
 
 function task:look_dir( dir )
-  self:listen{ event = 'room', func = self.get_room_info, id = 'task.getinfo', sequence = 99, keep_eval = false }
-  self:send{ dir == 'here' and 'l' or 'l ' .. DIR_FULL[ dir ] or dir }
+  if dir == 'here' then
+    self:send{ 'l' }
+  else
+    self:listen{ event = 'room', func = self.get_room_info, id = 'task.getinfo', sequence = 99, keep_eval = false }
+    self:send{ 'l ' .. ( DIR_FULL[ dir ] or dir ) }
+  end
   self.last_look, self.looked[ dir ] = dir, true
 end
 

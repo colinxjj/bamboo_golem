@@ -20,6 +20,9 @@ function task:get_id()
 end
 
 local finder_tbl = {
+  -- special types
+  sharp_weapon = 'sharp_weapon',
+
   ['Í­Ç®'] = 'money',   ['°×Òø'] = 'money',   ['»Æ½ð'] = 'money',
   ['Ä¾ÃÞôÂôÄ'] = 'mumian',
 }
@@ -39,8 +42,14 @@ function task:_resume()
     else
       -- simply buy at shop or pick up from ground
     end
-  elseif self.action == 'drop' then
-    -- TODO
+  elseif self.action == 'unwield' then
+    if player.wielded then
+      self:listen{ event = 'prompt', func = self.resume, id = 'task.manage_inventory' }
+      self:send{ 'unwield ' .. player.wielded.id }
+      player.wielded = nil
+    else
+      self:complete()
+    end
   end
 end
 

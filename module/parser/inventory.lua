@@ -5,10 +5,37 @@
 -- only moves data to player.inventory when info is fully parsed.
 local cache
 
+local item_type = {
+	blade = lpeg.P '刀',
+	sword = lpeg.P '剑' + '刃',
+	dagger = lpeg.P '匕首' + '匕',
+	flute = lpeg.P '笛' + '箫',
+	hook = lpeg.P '钩',
+	axe = lpeg.P '斧' + '斧头',
+	brush = lpeg.P '笔',
+	staff = lpeg.P '杖' + '杵',
+	club = lpeg.P '棍',
+	stick = lpeg.P '棒',
+	hammer = lpeg.P '轮',
+	whip = lpeg.P '鞭' + '链' + '索',
+	throwing = lpeg.P '镖',
+
+	cloth = lpeg.P '袈裟' + '衣' + '袍' + '皮' + '裳' + '衫',
+	armor = lpeg.P '甲' + '背心',
+	shoes = lpeg.P '鞋' + '靴' + '履',
+	helm = lpeg.P '盔' + '帽',
+	mantle = lpeg.P '披风',
+}
+
+-- generate actual patterns
+for type, patt in pairs( item_type ) do
+  item_type[ type ] = any_but( patt )^0 * patt * -1
+end
+
 local function parse_prompt()
   -- copy existing alternate id info
   for name, item in pairs( player.inventory ) do
-    if cache[ name ] and type( item ) == 'table' then
+    if cache[ name ] then
       cache[ name ].alternate_id = item.alternate_id
     end
   end
@@ -22,20 +49,27 @@ end
 
 local function parse_header( _, t )
   cache = {}
-  cache.count = cntonumber( t[ 3 ] )
-  cache.burden = tonumber( t[ 4 ] )
+  player.inv_count = cntonumber( t[ 3 ] )
+  player.encumbrance = tonumber( t[ 4 ] )
   trigger.enable 'inventory2'
   event.listen{ event = 'prompt', func = parse_prompt, id = 'parser.inventory' }
 end
 
 local function parse_content( _, t )
-  local name, count = extract_name_count( t[ 2 ] )
+  local name, count, type = extract_name_count( t[ 2 ] )
+  for type_name, patt in pairs( item_type ) do
+    if patt:match( name ) then type = type_name; break end
+  end
+  type = item[ name ] and item[ name ].type or type
   cache[ name ] = {
     name = name,
     id = string.lower( t[ 3 ] ),
     count = count,
     is_equiped = t[ 1 ] == '□' or nil,
+    type = type,
   }
+  local item = cache[ name ]
+  if item.is_equiped and WEAPON_TYPE[ item.type ] then player.wielded = item end
 end
 
 local function parse_withdraw( _, t )
@@ -155,6 +189,16 @@ local function parse_accept( _, t )
   event.new 'inventory'
 end
 
+local function parse_wield( _, t )
+	for name, it in pairs( player.inventory ) do
+		if t[ 2 ] == name then player.wielded = it; break end
+	end
+end
+
+local function parse_unwield()
+	player.wielded = nil
+end
+
 trigger.new{ name = 'inventory1', match = '^(> )*你身上(带着(\\S+)件|带著下列这些)东西\\(负重\\s*(\\S+)%\\)：$', func = parse_header, enabled = true }
 trigger.new{ name = 'inventory2', match = '^(□|  )([^ (]+)\\(([\\w\\s\\\'-]+)\\)$', func = parse_content }
 
@@ -172,6 +216,12 @@ trigger.new{ name = 'inventory_sell', match = '^(> )*你以(\\S+)的价格卖掉了一\\S
 trigger.new{ name = 'inventory_give', match = '^(> )*你给(\\S+)。', func = parse_give, enabled = true }
 trigger.new{ name = 'inventory_give2', match = '^(> )*你拿出(\\S+)\\(\\w+\\)给(\\S+)。', func = parse_lost, enabled = true }
 trigger.new{ name = 'inventory_accept', match = '^(> )*(\\S+)给你(\\S+)。', func = parse_accept, enabled = true }
+
+trigger.new{ name = 'inventory_dazao_wield', match = '^(> )*你将手一挥，一柄(\\S+)从身后飞出，电光一闪，已经握在了你手中。', func = parse_wield, enabled = true }
+trigger.new{ name = 'inventory_normal_wield', match = '^(> )*你「唰」的一声抽出一柄(\\S+)握在手中。', func = parse_wield, enabled = true }
+
+trigger.new{ name = 'inventory_dazao_unwield', match = '^(> )*你将手中的\\S+一弹，电光闪耀中，已不见了\\S+的踪迹。', func = parse_unwield, enabled = true }
+trigger.new{ name = 'inventory_normal_unwield', match = '^(> )*你将手中的\\S+插回\\S\\S鞘。', func = parse_unwield, enabled = true }
 
 
 --------------------------------------------------------------------------------

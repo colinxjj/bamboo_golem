@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE muclient>
-<!-- Saved on Wednesday, February 22, 2017, 5:33 PM -->
+<!-- Saved on Tuesday, February 28, 2017, 11:57 AM -->
 <!-- MuClient version 5.05 -->
 <!-- Written by Nick Gammon -->
 <!-- Home Page: http://www.mushclient.com/ -->
@@ -8,7 +8,7 @@
 <world
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-22 17:33:35"
+   date_saved="2017-02-28 11:57:46"
 
    auto_say_override_prefix="-"
    auto_say_string="say "
@@ -113,7 +113,6 @@
    wrap_column="140"
    write_world_name_to_log="y"
    > <!-- end of general world attributes -->
-  <connect_text>/LoadPlugin 'BambooGolem.xml'</connect_text>
   <log_file_postamble>&lt;/font&gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;/body&gt;
 &lt;/html&gt;
@@ -138,7 +137,7 @@
 <triggers
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-22 17:33:35"
+   date_saved="2017-02-28 11:57:46"
   >
 </triggers>
 
@@ -147,7 +146,7 @@
 <aliases
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-22 17:33:35"
+   date_saved="2017-02-28 11:57:46"
   >
   <alias
    match="rl"
@@ -172,7 +171,7 @@ end</send>
 <timers
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-22 17:33:35"
+   date_saved="2017-02-28 11:57:46"
   >
 </timers>
 
@@ -181,7 +180,7 @@ end</send>
 <macros
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-22 17:33:35"
+   date_saved="2017-02-28 11:57:46"
   >
 
   <macro name="up" type="send_now" >
@@ -275,7 +274,7 @@ end</send>
 <variables
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-22 17:33:35"
+   date_saved="2017-02-28 11:57:46"
   >
 </variables>
 
@@ -284,7 +283,7 @@ end</send>
 <colours
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-22 17:33:35"
+   date_saved="2017-02-28 11:57:46"
   >
 
 <ansi>
@@ -341,7 +340,7 @@ end</send>
 <keypad
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-22 17:33:35"
+   date_saved="2017-02-28 11:57:46"
   >
 
   <key name="0" >
@@ -455,7 +454,7 @@ end</send>
 <printing
    muclient_version="5.05"
    world_file_version="15"
-   date_saved="2017-02-22 17:33:35"
+   date_saved="2017-02-28 11:57:46"
   >
 
 <ansi>

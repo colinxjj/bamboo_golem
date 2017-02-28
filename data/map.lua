@@ -2961,7 +2961,7 @@ local map = {
   name = '迎客亭',
   desc =  [[苍松掩映之中，一座石亭赫然眼中。只见亭上匾额中龙飞凤舞的题着『迎客亭』三个大字。凡江湖人士，在此需放下随身所带的兵器，才可进入寺内。亭内有两名知客僧正在忙碌的招待来往的香客。]],
   exit = {
-    nu = { to = '嵩山少林石阶#9', },
+    nu = { to = '嵩山少林石阶#9', handler = 'unwield_weapon', },
     sd = { to = '嵩山少林石阶#8', },
   },
 },
@@ -7905,7 +7905,7 @@ local map = {
   desc =  [[你向前奔了一阵，发现了这个断崖，已无路可走。]],
   exit = {
     wd = { to = '桃花岛半山腰', },
-    hidden = { to = '桃花岛试剑峰顶', cmd = 'yue ya', cond = 'player.enable.dodge and player.enable.dodge.level >= 100 and player.inventory.burden <= 20', },
+    hidden = { to = '桃花岛试剑峰顶', cmd = 'yue ya', cond = 'player.enable.dodge and player.enable.dodge.level >= 100 and player.encumbrance <= 20', },
   },
 },
 
@@ -7915,7 +7915,7 @@ local map = {
   name = '试剑峰顶',
   desc =  [[这里就是试剑峰的峰顶，这里岩石林立，绝险之极，要想回去，又是难度之极。但俯身向下望去，整个桃花岛一览无余。]],
   exit = {
-    hidden = { to = '桃花岛断崖', cmd = 'yue ya', cond = 'player.enable.dodge and player.enable.dodge.level >= 100 and player.inventory.burden <= 20', },
+    hidden = { to = '桃花岛断崖', cmd = 'yue ya', cond = 'player.enable.dodge and player.enable.dodge.level >= 100 and player.encumbrance <= 20', },
   },
 },
 

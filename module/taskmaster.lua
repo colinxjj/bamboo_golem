@@ -67,11 +67,11 @@ local function parse_grid()
 	if current_task and current_task ~= task_to_run then
 		local func = current_task[ current_task.is_successful and 'complete_func' or 'fail_func' ]
 		if func and current_task.parent == task_to_run then
-			task_to_run.status = 'running'
+			current_task, task_to_run.status = task_to_run, 'running'
 			func( task_to_run )
 			return
 		elseif current_task.status == 'dead' then
-			if func then func( current_task ) end
+			if func then func( current_task.parent or current_task ) end
 		elseif task_to_run.parent ~= current_task then
 			current_task.status = 'suspended'
 			if current_task._suspend then current_task:_suspend() end

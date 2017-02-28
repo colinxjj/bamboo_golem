@@ -100,7 +100,15 @@ end
 
 function has_item( object )
 	object = type( object ) == 'string' and { name = object } or object
-	return ( player.inventory[ object.name ] and player.inventory[ object.name ].count >= ( object.count or 1 ) ) and true or false
+	if object.name then
+		return ( player.inventory[ object.name ] and player.inventory[ object.name ].count >= ( object.count or 1 ) ) and true or false
+	elseif object.type == 'sharp_weapon' then
+		for name, it in pairs( player.inventory ) do
+			if IS_SHARP_WEAPON[ it.type or '' ] then
+				return true
+			end
+		end
+	end
 end
 
 

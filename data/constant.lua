@@ -52,7 +52,7 @@ POWER_LEVEL = {
 	['空前绝后'] = 46, ['天人合一'] = 47, ['深藏不露'] = 48, ['深不可测'] = 49, ['返璞归真'] = 50
 }
 
-STACKABLE_ITEM = {
+IS_STACKABLE_ITEM = {
   ['黄金'] = true,
   ['白银'] = true,
   ['铜钱'] = true,
@@ -60,3 +60,11 @@ STACKABLE_ITEM = {
   ['神龙镖'] = true,
   ['甩箭'] = true,
 }
+
+WEAPON_TYPE = {
+	blade = '刀', sword = '剑', dagger = '匕首', flute = '箫', hook = '钩', axe = '斧', brush = '笔',
+	staff = '杖', club = '棍', stick = '棒', hammer = '锤', whip = '鞭', throwing = '暗器' }
+
+IS_SHARP_WEAPON = { blade = true, sword = true, dagger = true, hook = true, axe = true, }
+
+ARMOR_TYPE = { cloth = '衣服', armor = '护甲', shoes = '鞋子', helm = '头盔', mantle = '披风' }

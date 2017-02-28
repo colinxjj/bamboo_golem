@@ -71,6 +71,7 @@ local function convert_to_unit( t )
   s = dup_patt:match( s ) -- correct repeating ';' such as ';;'
   s = rep_patt:match( s ) -- expand repetitions like '#5 w' to 'w;w;w;w;w'
   s = sep_patt:match( s ) -- remove leading ';' and substitute ';' with '|'
+  if not s then return end
   local result = { unit_patt:match( s ) } -- split commands into units
   for i, unit in pairs( result ) do
     unit = extra_sep_patt:match( unit ) -- remove leading and trailing '|'
@@ -106,6 +107,8 @@ function cmd.new( c )
   c.add_time = os.time()
 
   c = convert_to_unit( c ) -- convert command(s) to unit(s)
+
+  if not c then return end
 
   for _, v in pairs( c ) do
     add_to_list( v )
