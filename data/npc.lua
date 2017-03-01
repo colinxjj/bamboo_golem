@@ -611,6 +611,103 @@ local npc = {
   catalogue = { '长剑', '钢剑', '铁甲', '钢刀', }
 },
 
+['木匠#XY'] = {
+  name = '木匠',
+  id = 'mu jiang',
+  alternate_id = { 'mujiang', 'mu', 'jiang' },
+  location = '襄阳城木匠铺',
+  label = { shop = true, },
+  catalogue = { '木剑' }
+},
+
+['小贩子#SZ'] = {
+  name = '小贩子',
+  id = 'xiao fan',
+  alternate_id = { 'xiao', 'fan' },
+  location = '苏州城宝带桥',
+  label = { shop = true, },
+  catalogue = { '清水葫芦', '竹剑', '火折', '竹棒' }
+},
+
+--------------------------------------------------------------------------------
+-- Groceries
+
+['牛老板#XY'] = {
+  name = '牛老板',
+  id = 'niu laoban',
+  alternate_id = { 'niu', 'laoban' },
+  location = '襄阳城杂货铺',
+  label = { shop = true, grocery = true, },
+  catalogue = { '火折' }
+},
+
+['刘老实'] = {
+  name = '刘老实',
+  id = 'liu laoshi',
+  alternate_id = { 'liu', 'laoshi' },
+  location = '长安城杂货铺',
+  label = { shop = true, grocery = true, },
+  catalogue = { '火折', '绣花针' }
+},
+
+['杂货铺老板#JX'] = {
+  name = '杂货铺老板',
+  id = 'lao ban',
+  alternate_id = { 'laoban' },
+  location = '嘉兴城杂货铺',
+  label = { shop = true, grocery = true, },
+  catalogue = { '清水葫芦', '竹剑', '火折', '竹棒' }
+},
+
+['李老板#HZ'] = {
+  name = '李老板',
+  id = 'li laoban',
+  alternate_id = { 'li' },
+  location = '杭州城杂货铺',
+  label = { shop = true, grocery = true, },
+  catalogue = { '长剑', '钢刀', '火折', '竹棒' }
+},
+
+['陈阿婆'] = {
+  name = '陈阿婆',
+  id = 'chen apo',
+  alternate_id = { 'chen', 'apo' },
+  location = '福州城杂货铺',
+  label = { shop = true, grocery = true, },
+  catalogue = { '绣花针' }
+},
+
+['杂货铺老板#YZ'] = {
+  name = '杂货铺老板',
+  id = 'lao ban',
+  alternate_id = { 'laoban' },
+  location = '扬州城杂货铺',
+  label = { grocery = true, },
+},
+
+['赵老板#DL'] = {
+  name = '赵老板',
+  id = 'zhao laoban',
+  alternate_id = { 'zhao', 'laoban' },
+  location = '大理城杂货铺',
+  label = { grocery = true, },
+},
+
+['小贩#HS'] = {
+  name = '小贩',
+  id = 'xiao fan',
+  location = '华山村杂货铺',
+  label = { grocery = true, },
+},
+
+['伙计#TG'] = {
+  name = '伙计',
+  id = 'huo ji',
+  alternate_id = { 'huoji' },
+  location = '塘沽城杂货铺',
+  label = { grocery = true, },
+},
+
 --------------------------------------------------------------------------------
 -- Other
 

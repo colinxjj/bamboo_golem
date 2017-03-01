@@ -2,19 +2,21 @@
 -- This module parses id info
 --------------------------------------------------------------------------------
 
+local cache
+
 local function parse_prompt()
   local inv_count = 0
   for name, cache_item in pairs( cache ) do
     inv_count = inv_count + 1
-    cache_item.count = not IS_STACKABLE_ITEM[ name ] and cache_item.count or nil
+    cache_item.count = not item.is_stackable( name ) and cache_item.count or nil
     local item = player.inventory and player.inventory[ name ]
     if item then -- copy count from existing player.inventory data, because id doesn't produce this info for stackable items like ͭǮ
       cache_item.count = cache_item.count or item.count
       cache_item.is_equiped = item.is_equiped
     end
   end
-  cache.count, cache.encumbrance = inv_count, player.inventory and player.inventory.encumbrance
-  player.inventory, cache = cache, false -- move cache data to player.inventory and clear cache
+  player.inv_count = inv_count
+  player.inventory, cache = cache, nil -- move cache data to player.inventory and clear cache
   trigger.disable 'id2'
   event.new 'id'
 end

@@ -28,33 +28,55 @@ local finder_tbl = {
 }
 
 function task:_resume()
-  self.count = self.count or 1
-
-  if self.action == 'prepare' then
-    local it = player.inventory[ self.item ]
-    if it then
-      if it.count_is == 'max' then self:newsub{ class = 'getinfo', inventory = 'forced' }; return end -- update inventory info if current count data can be higher than the actual count
-      if it.count >= self.count then self:complete(); return end -- complete the task if have enough item
-    end
-    self.item_finder = self.item_finder or _G.task.helper.item_finder[ finder_tbl[ self.item ] ]
-    if self.item_finder then
-      self:item_finder()
-    else
-      -- simply buy at shop or pick up from ground
-    end
-  elseif self.action == 'unwield' then
-    if player.wielded then
-      self:listen{ event = 'prompt', func = self.resume, id = 'task.manage_inventory' }
-      self:send{ 'unwield ' .. player.wielded.id }
-      player.wielded = nil
-    else
-      self:complete()
-    end
-  end
+  task[ self.action ]( self )
 end
 
 function task:_complete()
-  message.verbose( '成功完成物品任务' )
+  message.verbose( ( '成功完成物品任务：%s %s' ):format( self.action, ( self.count and self.count .. ' ' or '' ) .. self.item ) )
+end
+
+function task:prepare()
+  self.count = self.count or 1
+  local it = player.inventory[ self.item ]
+  if it then
+    if it.count_is == 'max' then self:newsub{ class = 'getinfo', inventory = 'forced' }; return end -- update inventory info if current count data can be higher than the actual count
+    if it.count >= self.count then self:complete(); return end -- complete the task if have enough item
+  end
+  self.item_finder = self.item_finder or _G.task.helper.item_finder[ finder_tbl[ self.item ] ]
+  if self.item_finder then
+    self:item_finder()
+  else
+    -- simply buy at shop or pick up from ground
+  end
+end
+
+function task:unwield()
+  if player.wielded then
+    self:listen{ event = 'prompt', func = self.resume, id = 'task.manage_inventory' }
+    self:send{ 'unwield ' .. player.wielded.id }
+    player.wielded = nil
+  else
+    self:complete()
+  end
+end
+
+function task:wield()
+  if player.wielded then
+    if self.item == 'sharp_weapon' and item.is_sharp_weapon( player.wielded ) or self.item == player.wielded.name then self:complete(); return end
+    self:listen{ event = 'inventory', func = self.resume, id = 'task.manage_inventory' }
+    self:send{ 'unwield ' .. player.wielded.id }
+  else
+    local id
+    if self.item == 'sharp_weapon' then
+      for _, it in pairs( player.inventory ) do
+        if item.is_sharp_weapon( it ) then id = item.get_id( it ); break end
+      end
+    else
+      id = item.get_id( self.item )
+    end
+    self:listen{ event = 'inventory', func = self.resume, id = 'task.manage_inventory' }
+    self:send{ 'wield ' .. id }
+  end
 end
 
 --------------------------------------------------------------------------------

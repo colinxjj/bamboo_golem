@@ -150,14 +150,11 @@ cli.register{ cmd = 'f', desc = 'Ç°ÍùÄ³¸öNPCËùÔÚ´¦¡£Ö§³ÖÖĞÎÄÃûºÍ ID¡£ÀıÈç£ºf Àî°
 
 local patt = lpeg.C( lpeg.R '09'^1 ) * ' ' * lpeg.C( lpeg.P( 1 )^1 )
 local function parse_pp( _, input )
-  local count, item = patt:match( input )
-  count, item = tonumber( count ), item or input
-  if not _G.item[ item ] then
-    for _, it in pairs( _G.item ) do
-      if it.id == item then item = it.name; break end
-    end
-  end
-  taskmaster.current_manual_task:newweaksub{ class = 'manage_inventory', action = 'prepare', item = item, count = count }
+  local count, it = patt:match( input )
+  count, it = tonumber( count ), it or input
+  it = item.get_item( it )
+  it = it and it.name or input
+  taskmaster.current_manual_task:newweaksub{ class = 'manage_inventory', action = 'prepare', item = it, count = count }
 end
 
 

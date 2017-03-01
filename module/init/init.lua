@@ -22,7 +22,6 @@ end
 -- load data
 dofile( CWD .. 'data/constant.lua' )
 kungfu = require 'data.kungfu'
-item = require 'data.item'
 npc = require 'data.npc'
 
 -- load default config
@@ -50,6 +49,7 @@ taskmaster = require 'module.taskmaster'
 bigword = require 'module.bigword'
 gag = require 'module.gag'
 session = require 'module.session'
+item = require 'module.item'
 
 -- load parsers
 require 'module.parser.hp'

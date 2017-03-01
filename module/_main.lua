@@ -98,20 +98,6 @@ function is_present( object )
 	return room_object and ( object.id and object.id == room_object.id or not object.id ) and true or false
 end
 
-function has_item( object )
-	object = type( object ) == 'string' and { name = object } or object
-	if object.name then
-		return ( player.inventory[ object.name ] and player.inventory[ object.name ].count >= ( object.count or 1 ) ) and true or false
-	elseif object.type == 'sharp_weapon' then
-		for name, it in pairs( player.inventory ) do
-			if IS_SHARP_WEAPON[ it.type or '' ] then
-				return true
-			end
-		end
-	end
-end
-
-
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------

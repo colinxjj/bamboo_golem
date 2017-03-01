@@ -281,7 +281,15 @@ end
 -- TODO make sure have fire
 
 -- ÃÏ…Ω∞Ÿ’…Ωß
--- TODO make sure have sharp weapon
+function handler:ts_bzjian()
+	if not item.is_carrying{ type = 'sharp_weapon' } then
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = 'sharp_weapon' }
+	elseif not player.wielded or not item.is_sharp_weapon( player.wielded ) then
+		self:newsub{ class = 'manage_inventory', action = 'wield', item = 'sharp_weapon', complete_func = handler.ts_bzjian }
+	else
+		self:send{ self.step.cmd }
+	end
+end
 
 -- …Ò¡˙µ∫
 -- TODO make sure have shengzi and sharp weapon
@@ -775,7 +783,7 @@ function handler:prepare_coin( t )
 	if string.find( self.to.id, 'Ã“ª®µ∫' )
 	and ( player.party == "Ã“ª®µ∫" and ( not player.skill["∆Ê√≈∞Àÿ‘"] or player.skill["∆Ê√≈∞Àÿ‘"].level <= 80 )
 	 or ( player.party ~= "Ã“ª®µ∫" and ( not player.skill["∆Ê√≈∞Àÿ‘"] or player.skill["∆Ê√≈∞Àÿ‘"].level <= 150 ) ) )
-	and not has_item{ name = 'Õ≠«Æ', count = 500 } then
+	and not item.is_carrying{ name = 'Õ≠«Æ', count = 500 } then
 		self:newsub{ class = 'manage_inventory', action = 'prepare', item = 'Õ≠«Æ', count = 500 }
 	else
 		self:send{ t.cmd }

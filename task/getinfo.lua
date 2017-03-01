@@ -49,6 +49,7 @@ end
 
 function task:look_dir( dir )
   if dir == 'here' then
+    self:listen{ event = 'room', func = self.get_room_info, id = 'task.getinfo' }
     self:send{ 'l' }
   else
     self:listen{ event = 'room', func = self.get_room_info, id = 'task.getinfo', sequence = 99, keep_eval = false }

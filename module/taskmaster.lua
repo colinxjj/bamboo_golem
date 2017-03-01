@@ -24,6 +24,7 @@ local function add_to_history( task )
 	-- print( 'taskmaster.add_to_history: ' .. task:get_id() .. ( task.is_successful and ' (succeeded)' or ' (failed)' ) )
 end
 
+-- kill and remove a task's subtask(s)
 local function clear_sub( task )
 	if not task.stack then return end
 	local i, t, is_found = 1
@@ -39,7 +40,8 @@ local function clear_sub( task )
 	end
 end
 
-local function parse_grid()
+local function refresh_grid()
+	-- find task to run and remove dead tasks (and their subtasks)
 	local task_to_run
 	for priority, list in ipairs( grid ) do
 		local sequence = 1
@@ -56,7 +58,7 @@ local function parse_grid()
 					i = i + 1
 				end
 			end
-			if not next( stack ) then
+			if not #stack == 0 then
 				table.remove( list, sequence )
 			else
 				task_to_run = task_to_run or last_non_dead
@@ -64,14 +66,17 @@ local function parse_grid()
 			end
 		end
 	end
+
+	-- handover from the previous running task to the new one
 	if current_task and current_task ~= task_to_run then
 		local func = current_task[ current_task.is_successful and 'complete_func' or 'fail_func' ]
+		local result = current_task.result
 		if func and current_task.parent == task_to_run then
 			current_task, task_to_run.status = task_to_run, 'running'
-			func( task_to_run )
+			func( task_to_run, result )
 			return
 		elseif current_task.status == 'dead' then
-			if func then func( current_task.parent or current_task ) end
+			if func then func( current_task.parent or current_task, result ) end
 		elseif task_to_run.parent ~= current_task then
 			current_task.status = 'suspended'
 			if current_task._suspend then current_task:_suspend() end
@@ -106,12 +111,10 @@ dispatch = function()
 					 	 or ( ( action == 'complete' or action == 'fail' or action == 'kill' ) and 'dead' )
 						 or task.status
 
-	if next( queue ) then -- process next event in queue if any
-		dispatch()
-	else
-		is_dispatching = false
-		parse_grid()
-	end
+	refresh_grid()
+
+	is_dispatching = false
+	if next( queue ) then dispatch() end -- process next event in queue if any
 end
 
 function taskmaster.operate( t )
