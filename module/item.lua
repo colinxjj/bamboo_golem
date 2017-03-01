@@ -94,7 +94,7 @@ end
 function item.is_carrying( object )
 	object = type( object ) == 'string' and { name = object } or object
 	if object.name then
-		return ( player.inventory[ object.name ] and player.inventory[ object.name ].count >= ( object.count or 1 ) ) and true or false
+		return ( player.inventory[ object.name ] and ( player.inventory[ object.name ].count or 1 ) >= ( object.count or 1 ) ) and true or false
 	elseif object.type == 'sharp_weapon' then
 		for _, it in pairs( player.inventory ) do
 			if item.is_sharp_weapon( it ) then return true end
@@ -102,7 +102,15 @@ function item.is_carrying( object )
 	end
 end
 
+function item.new( object )
+	object = type( object ) == 'string' and { name = object } or object
+	player.inventory[ object.name ] = object
+end
 
+function item.remove( object )
+	object = type( object ) == 'string' and { name = object } or object
+	player.inventory[ object.name ] = nil
+end
 
 --------------------------------------------------------------------------------
 -- End of module

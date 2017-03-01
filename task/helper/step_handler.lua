@@ -19,6 +19,10 @@ local function is_able_to_fly( cmd )
 	end
 end
 
+-- 等待
+function handler:wait()
+end
+
 -- 长江
 -- TODO make sure have silver
 local cj_layout = {
@@ -292,7 +296,53 @@ function handler:ts_bzjian()
 end
 
 -- 神龙岛
--- TODO make sure have shengzi and sharp weapon
+-- from 海滩 to 小木筏
+function handler:sld_enter()
+	if is_present '木筏' then
+		self:send{ 'zuo mufa' }
+	elseif ( item.is_carrying '粗绳子' or is_present '粗绳子' ) and is_present '大木头' then
+		self:send{ 'bang mu tou;#wa 1000;zuo mufa' }
+	elseif not item.is_carrying '粗绳子' and not is_present '粗绳子' then
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '粗绳子' }
+	elseif not item.is_carrying{ type = 'sharp_weapon' } then
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = 'sharp_weapon' }
+	elseif not player.wielded or not item.is_sharp_weapon( player.wielded ) then
+		self:newsub{ class = 'manage_inventory', action = 'wield', item = 'sharp_weapon', complete_func = handler.sld_enter }
+	else
+		self:send{ 'chop tree' }
+	end
+end
+function handler:sld_chop()
+	new_room_object '大木头'
+	handler.sld_enter( self )
+end
+trigger.new{ name = 'sld_chop', group = 'step_handler.sld_enter', match = '^只听“咔嚓”一声，周围的几棵大树已被你用\\S+砍成几截。$', func = handler.sld_chop }
+-- from 小木筏 to 渡口
+function handler:sld_mufa()
+	self:send{ 'hua mufa' }
+end
+trigger.new{ name = 'sld_mufa', group = 'step_handler.sld_mufa', match = '^(> )*小木筏顺着海风，一直向东飘去。$', func = handler.sld_mufa }
+-- from 渡口 to 小帆船
+function handler:sld_leave()
+	local loc = map.get_current_location()[ 1 ]
+	if item.is_carrying '通行令牌' then
+		if loc.id == '神龙岛渡口' then
+			self:send{ 'give ling pai to chuan fu' }
+			item.remove '通行令牌'
+		else
+			self:newsub{ class = 'go', to = '神龙岛渡口', complete_func = handler.sld_leave }
+		end
+	elseif loc.id ~= '神龙岛陆府正厅' then
+		self:newsub{ class = 'go', to = '神龙岛陆府正厅', complete_func = handler.sld_leave }
+	else
+		self:send{ 'steal 通行令牌' }
+	end
+end
+function handler:sld_steal()
+	item.new{ name = '通行令牌', id = 'ling pai' }
+	handler.sld_leave( self )
+end
+trigger.new{ name = 'sld_steal', group = 'step_handler.sld_leave', match = '^(> )*你成功地偷到了块通行令牌!$', func = handler.sld_steal }
 
 -- 铁掌山石室（上官剑南）
 function handler:pre_ask_ghost( t )

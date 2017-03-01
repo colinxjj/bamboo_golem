@@ -98,6 +98,19 @@ function is_present( object )
 	return room_object and ( object.id and object.id == room_object.id or not object.id ) and true or false
 end
 
+-- add a new object to the current room
+function new_room_object( object )
+	object = type( object ) == 'string' and { name = object } or object
+ 	local room = map.get_current_room()
+	room.object[ object.name ] = object
+end
+
+function remove_room_object( object )
+	object = type( object ) == 'string' and { name = object } or object
+	local room = map.get_current_room()
+	room.object[ object.name ] = nil
+end
+
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------

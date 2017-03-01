@@ -14573,7 +14573,7 @@ local map = {
   name = '小木筏',
   desc =  [[你坐在一个小木筏上，四周是无边无际的的茫茫大海，一阵海风轻轻吹来，小木筏“咯吱咯吱”的左右摇晃，你不由心底有些发虚，你试图去划(hua)着木筏前进。]],
   exit = {
-    hidden = { to = '神龙岛渡口', cmd = 'hua mufa', },
+    hidden = { to = '神龙岛渡口', handler = 'sld_mufa', },
   },
 },
 
@@ -14679,7 +14679,7 @@ local map = {
   name = '小帆船',
   desc =  [[这是一艘小帆船，正扬起风帆朝前疾驶，随着海浪的起伏，船身猛的左右摇晃。船尾的水手好象也有些颤颤惊惊，生怕一个不小心被大海吞没。]],
   exit = {
-    hidden = { to = '神龙岛海滩', cmd = 'order 开船', },
+    hidden = { to = '神龙岛海滩', cmd = 'order 开船', handler = 'go_straight', },
   },
 },
 
@@ -14806,7 +14806,7 @@ local map = {
   exit = {
     ne = { to = '神龙岛沙滩#E', },
     nw = { to = '神龙岛沙滩#W', },
-    hidden = { to = '神龙岛小帆船', cmd = 'give ling pai to chuan fu', },
+    hidden = { to = '神龙岛小帆船', handler = 'sld_leave', },
     n = { to = '神龙岛树林#2S', },
   },
 },
@@ -14974,7 +14974,7 @@ local map = {
   name = '海滩',
   desc =  [[这里是东海之滨的一个小海滩。放眼望去，一片无际的的茫茫大海，远处海天一线，你隐隐看到几只海鸥在海上飞翔。海滩的四周稀稀落落的有一些长得颇为茂盛的树木(tree)。]],
   exit = {
-    hidden = { to = '神龙岛小木筏', handler = 'chop tree', },
+    hidden = { to = '神龙岛小木筏', handler = 'sld_enter', },
     sw = { to = '神龙岛小路', },
   },
 },
@@ -25505,7 +25505,7 @@ local map = {
   name = '峭壁',
   desc = [[由于这里实在是太陡峭，你无法立足。玉女峰高高的在上面，思过崖时隐时现。]],
   exit = {
-    hidden = { to = '华山山涧#EU', cmd = 'wait', },
+    hidden = { to = '华山山涧#EU', handler = 'wait', },
   },
 },
 
