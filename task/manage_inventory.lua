@@ -32,7 +32,10 @@ function task:_resume()
 end
 
 function task:_complete()
-  message.verbose( ( '成功完成物品任务：%s %s' ):format( self.action, ( self.count and self.count .. ' ' or '' ) .. self.item ) )
+  local s = '成功完成物品任务：' .. self.action
+  s = self.count and ( s .. ' ' .. self.count ) or s
+  s = self.item and ( s .. ' ' .. self.item ) or s
+  message.verbose( s )
 end
 
 function task:prepare()

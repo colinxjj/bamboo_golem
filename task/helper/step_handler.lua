@@ -11,16 +11,16 @@ handler.data = {}
 --------------------------------------------------------------------------------
 -- Special step handlers
 
+-- 等待
+function handler:wait()
+end
+
 -- check if the player can fly across rivers
 local function is_able_to_fly( cmd )
 	if cmd == 'duhe' then return player.enable.dodge and player.enable.dodge.level >= 250 and player.neili_max >= 3000
 	elseif cmd == 'dujiang' then return player.enable.dodge and player.enable.dodge.level >= 270 and player.neili_max >= 3500
 	elseif cmd == 'zong' then return player.enable.dodge and player.enable.dodge.level >= 300 and player.neili_max >= 4000
 	end
-end
-
--- 等待
-function handler:wait()
 end
 
 -- 长江
@@ -104,7 +104,7 @@ trigger.new{ name = 'fly_done', group = 'step_handler.fly', match = '^(> )*你在(
 function handler:embark()
 	if map.get_current_room().exit.enter then self:send{ 'enter' }; return end
 	self:send{ self.step.cmd ~= 'enter' and self.step.cmd or 'yell boat' }
-	self:newsub{ class = 'killtime', complete_func = handler.embark }
+	self:newweaksub{ class = 'killtime', complete_func = handler.embark }
 end
 
 -- 下船。渡船、竹篓、藤筐等
@@ -162,7 +162,7 @@ function handler:sl_fota()
 	local t = self.step
 	if t.to.id ~= '嵩山少林无相牌' and t.to.id ~= '嵩山少林晦智圣座' then
 		self:send{ sl_fota_tbl[ t.to.id ] }
-	elseif t.succeed then
+	elseif t.is_successful then
 		local c = t.to.id == '嵩山少林无相牌' and 'chuzhang pai' or 'enter'
 		self:send{ c }
 	else
@@ -170,11 +170,11 @@ function handler:sl_fota()
 		self:send{ sl_fota_tbl[ t.to.id ] }
 	end
 end
-function handler:sl_fota_succeed()
-	self.step.succeed = true
+function handler:step_cmd_succeed()
+	self.step.is_successful = true
 end
-trigger.new{ name = 'sl_fota_fushi', group = 'step_handler.sl_fota', match = '^你突然有一种出掌的冲动，便想一掌击出。$', func = handler.sl_fota_succeed }
-trigger.new{ name = 'sl_fota_canchan', group = 'step_handler.sl_fota', match = '^你在虚空中，感觉大师座下打开了一个小门。$', func = handler.sl_fota_succeed }
+trigger.new{ name = 'sl_fota_fushi', group = 'step_handler.sl_fota', match = '^你突然有一种出掌的冲动，便想一掌击出。$', func = handler.step_cmd_succeed }
+trigger.new{ name = 'sl_fota_canchan', group = 'step_handler.sl_fota', match = '^你在虚空中，感觉大师座下打开了一个小门。$', func = handler.step_cmd_succeed }
 
 -- 归云庄小河
 function handler:gyz_river( t )
@@ -336,23 +336,25 @@ function handler:sld_leave()
 	elseif loc.id ~= '神龙岛陆府正厅' then
 		self:newsub{ class = 'go', to = '神龙岛陆府正厅', complete_func = handler.sld_leave }
 	else
-		self:send{ 'steal 通行令牌' }
+		local c = player.party == '神龙教' and 'ask lu gaoxuan about 通行令牌' or 'steal 通行令牌'
+		self:send{ c }
 	end
 end
-function handler:sld_steal()
+function handler:sld_got_lingpai()
 	item.new{ name = '通行令牌', id = 'ling pai' }
 	handler.sld_leave( self )
 end
-trigger.new{ name = 'sld_steal', group = 'step_handler.sld_leave', match = '^(> )*你成功地偷到了块通行令牌!$', func = handler.sld_steal }
+trigger.new{ name = 'sld_got_lingpai', group = 'step_handler.sld_leave', match = '^(> )*(你成功地偷到了块通行令牌!|既然你要出岛，我就给你块令牌吧。)$', func = handler.sld_got_lingpai }
 -- pre-steal lingpai
-function handler:sld_pre_steal( t )
+function handler:sld_preget_lingpai( t )
 	local loc = map.get_current_location()[ 1 ]
 	if not item.is_carrying '通行令牌' and self.to.area ~= '神龙岛' then
 		if loc.id ~= '神龙岛陆府正厅' then
-			self:newsub{ class = 'go', to = '神龙岛陆府正厅', complete_func = handler.sld_pre_steal }
+			self:newsub{ class = 'go', to = '神龙岛陆府正厅', complete_func = handler.sld_preget_lingpai }
 		else
-			self:enable_trigger 'sld_steal'
-			self:send{ 'steal 通行令牌' }
+			self:enable_trigger 'sld_got_lingpai'
+			local c = player.party == '神龙教' and 'ask lu gaoxuan about 通行令牌' or 'steal 通行令牌'
+			self:send{ c }
 		end
 	else
 		self:send{ t.cmd }
@@ -360,7 +362,24 @@ function handler:sld_pre_steal( t )
 end
 
 -- 神龙岛蛇窟
-
+-- from 山崖 to 蛇窟
+function handler:sld_sheku()
+	if self.step.is_successful then
+		self:send{ 'climb 山藤' }
+	else
+		self:listen{ event = 'prompt', func = handler.sld_sheku, id = 'step_handler.sld_sheku' }
+		self:send{ 'kan 崖底' }
+	end
+end
+trigger.new{ name = 'sld_sheku_look', group = 'step_handler.sld_sheku', match = '^(> )*崖底笼罩在迷雾中，有一条山藤似乎挺光滑，看来常有人\\(climb\\)下去。$', func = handler.step_cmd_succeed }
+-- from 蛇窟 to 树林
+function handler:sld_sheku_leave()
+	if not self.step.is_successful then
+		self:listen{ event = 'prompt', func = handler.sld_sheku_leave, id = 'step_handler.sld_sheku_leave' }
+		self:send{ 'go south' }
+	end
+end
+trigger.new{ name = 'sld_sheku_leave', group = 'step_handler.sld_sheku_leave', match = '^(> )*树林 - ', sequence = 90, keep_eval = true, func = handler.step_cmd_succeed }
 
 -- 铁掌山石室（上官剑南）
 function handler:pre_ask_ghost( t )
@@ -424,10 +443,16 @@ function handler:unwield_weapon()
 	end
 end
 
+-- 铁掌山天然洞穴
+
+-- 星宿海山洞
+
+
+
 --------------------------------------------------------------------------------
 -- Maze handlers
 
--- 嵩山少林塔林、嵩山少林竹林、嵩山少林松树林、杭州城长廊、武馆竹林、桃花岛绿竹林、铁掌山松树林、明教密道、苏州城杏子林
+-- 嵩山少林塔林、嵩山少林竹林、嵩山少林松树林、杭州城长廊、武馆竹林、桃花岛绿竹林、铁掌山松树林、明教密道、苏州城杏子林、星宿海南疆沙漠
 local simple_path_pos_tbl = { ['嵩山少林塔林#N'] = 10, ['嵩山少林松树林#2'] = 8, ['铁掌山松树林#2'] = 4 }
 	function handler:simple_path_set_pos( t )
 		handler.data[ t.to.id ] = simple_path_pos_tbl[ t.from.id ] or 0
@@ -448,6 +473,7 @@ local simple_path_tbl = {
 	['桃花岛草地'] = { 's', 's', 'w', 'n', 's' }, -- TODO split exit room?
 	['明教秘道出口'] = { 'w', 's', 'e', 's', 'w', 'n' }, -- TODO split exit room?
 	['丐帮杏子林#2'] = { 'e', 'n', 'w', 'n', 'e', 'w', 'n' },
+	['星宿海南疆沙漠#2'] = { 'sw', 'se' },
 }
 function handler:simple_path( t )
 	t.path = t.path or simple_path_tbl[ t.to.id ]
@@ -468,7 +494,7 @@ function handler:simple_path( t )
 	end
 end
 
--- 大理城东山间小路、长安城长街、长安城柏树林、星宿海、兰州城沙漠、星宿海大沙漠、回疆草原边缘、归云庄湖滨小路、杭州城柳林、华山菜地、神龙岛小帆船、神龙岛蛇窟
+-- 大理城东山间小路、长安城长街、长安城柏树林、星宿海、兰州城沙漠、星宿海大沙漠、回疆草原边缘、归云庄湖滨小路、杭州城柳林、华山菜地
 function handler:go_straight( t )
 	self:send{ t.cmd }
 end

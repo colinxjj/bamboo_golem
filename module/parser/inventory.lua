@@ -182,13 +182,14 @@ trigger.new{ name = 'inventory_drop', match = '^(> )*你丢下(\\S+)。$', func = pa
 trigger.new{ name = 'inventory_get', match = '^(> )*你捡起(\\S+)。$', func = parse_get, enabled = true }
 
 trigger.new{ name = 'inventory_lost', match = '^(> )*你突然发现(?:身上的)?(\\S+)不见了！', func = parse_lost, enabled = true }
+-- 你一时想不起五彩神龙皮有什么用处，就随手把它丢掉了。
 
 trigger.new{ name = 'inventory_buy', match = '^(> )*你以(\\S+)的价格从(\\S+)那里买下了一\\S\\S(\\S+)。', func = parse_buy, enabled = true }
 trigger.new{ name = 'inventory_sell', match = '^(> )*你以(\\S+)的价格卖掉了一\\S\\S(\\S+)给(\\S+)。', func = parse_sell, enabled = true }
 
 trigger.new{ name = 'inventory_give', match = '^(> )*你给(\\S+)。', func = parse_give, enabled = true }
 trigger.new{ name = 'inventory_give2', match = '^(> )*你拿出(\\S+)\\(\\w+\\)给(\\S+)。', func = parse_lost, enabled = true }
-trigger.new{ name = 'inventory_accept', match = '^(> )*(\\S+)给你(\\S+)。', func = parse_accept, enabled = true }
+trigger.new{ name = 'inventory_accept', match = '^(> )*([^、，]+)给你(\\S+)。', func = parse_accept, enabled = true }
 
 trigger.new{ name = 'inventory_dazao_wield', match = '^(> )*你将手一挥，一柄(\\S+)从身后飞出，电光一闪，已经握在了你手中。', func = parse_wield, enabled = true }
 trigger.new{ name = 'inventory_normal_wield', match = '^(> )*你「唰」的一声抽出一柄(\\S+)握在手中。', func = parse_wield, enabled = true }
