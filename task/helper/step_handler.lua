@@ -296,6 +296,7 @@ function handler:ts_bzjian()
 end
 
 -- 神龙岛
+-- TODO ask lingpai instead of steal for sld id
 -- from 海滩 to 小木筏
 function handler:sld_enter()
 	if is_present '木筏' then
@@ -303,7 +304,7 @@ function handler:sld_enter()
 	elseif ( item.is_carrying '粗绳子' or is_present '粗绳子' ) and is_present '大木头' then
 		self:send{ 'bang mu tou;#wa 1000;zuo mufa' }
 	elseif not item.is_carrying '粗绳子' and not is_present '粗绳子' then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '粗绳子' }
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '粗绳子' } -- FIXME currently doesn't work, need to update task.manage_inventory
 	elseif not item.is_carrying{ type = 'sharp_weapon' } then
 		self:newsub{ class = 'manage_inventory', action = 'prepare', item = 'sharp_weapon' }
 	elseif not player.wielded or not item.is_sharp_weapon( player.wielded ) then
@@ -343,6 +344,23 @@ function handler:sld_steal()
 	handler.sld_leave( self )
 end
 trigger.new{ name = 'sld_steal', group = 'step_handler.sld_leave', match = '^(> )*你成功地偷到了块通行令牌!$', func = handler.sld_steal }
+-- pre-steal lingpai
+function handler:sld_pre_steal( t )
+	local loc = map.get_current_location()[ 1 ]
+	if not item.is_carrying '通行令牌' and self.to.area ~= '神龙岛' then
+		if loc.id ~= '神龙岛陆府正厅' then
+			self:newsub{ class = 'go', to = '神龙岛陆府正厅', complete_func = handler.sld_pre_steal }
+		else
+			self:enable_trigger 'sld_steal'
+			self:send{ 'steal 通行令牌' }
+		end
+	else
+		self:send{ t.cmd }
+	end
+end
+
+-- 神龙岛蛇窟
+
 
 -- 铁掌山石室（上官剑南）
 function handler:pre_ask_ghost( t )
@@ -450,7 +468,7 @@ function handler:simple_path( t )
 	end
 end
 
--- 大理城东山间小路、长安城长街、长安城柏树林、星宿海、兰州城沙漠、星宿海大沙漠、回疆草原边缘、归云庄湖滨小路、杭州城柳林、华山菜地
+-- 大理城东山间小路、长安城长街、长安城柏树林、星宿海、兰州城沙漠、星宿海大沙漠、回疆草原边缘、归云庄湖滨小路、杭州城柳林、华山菜地、神龙岛小帆船、神龙岛蛇窟
 function handler:go_straight( t )
 	self:send{ t.cmd }
 end
@@ -1361,6 +1379,21 @@ end
 function handler:xx_duchonggu()
 	local dir = map.get_current_room().exit.se and 'se' or 'e'
 	self:send{ dir }
+end
+
+-- 神龙岛药圃
+local sld_yaopu_step_tbl = { 'northwest', 'north', 'northeast', 'east', 'southeast', 'south', 'southwest', 'west' }
+local sld_yaopu_pos_tbl = { 1, 7, 4, 5, 2, 6, 3, 8 }
+function handler:sld_yaopu()
+	if not time.uptime then self:newsub{ class = 'getinfo', uptime = 'forced', complete_func = handler.sld_yaopu }; return end
+	local offset, clist, step = math.modf( time.get_uptime() % 1800 / 225 ), {}
+	for i = 1, 8 do
+		step = sld_yaopu_pos_tbl[ i ] + offset
+		step = step > 8 and step % 8 or step
+		step = 'to ' .. sld_yaopu_step_tbl[ step ]
+		clist[ #clist + 1 ] = step
+	end
+	self:send( clist )
 end
 
 -- 萧府树林

@@ -63,6 +63,7 @@ require 'module.parser.id'
 require 'module.parser.enable'
 require 'module.parser.place'
 require 'module.parser.connection'
+require 'module.parser.uptime'
 
 -- load task classes
 dofile( CWD .. 'task/_init.lua' )

@@ -90,6 +90,11 @@ function time.get_current_hour()
   return new_hour
 end
 
+function time.get_uptime()
+	if not time.uptime then return end
+	return time.uptime + os.time() - time.uptime_timestamp
+end
+
 -- check if a person / an object is present in the current room
 function is_present( object )
 	object = type( object ) == 'string' and { name = object } or object
