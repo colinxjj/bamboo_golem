@@ -95,27 +95,6 @@ function time.get_uptime()
 	return time.uptime + os.time() - time.uptime_timestamp
 end
 
--- check if a person / an object is present in the current room
-function is_present( object )
-	object = type( object ) == 'string' and { name = object } or object
-	local room = map.get_current_room()
-	local room_object = room.object[ object.name ]
-	return room_object and ( object.id and object.id == room_object.id or not object.id ) and true or false
-end
-
--- add a new object to the current room
-function new_room_object( object )
-	object = type( object ) == 'string' and { name = object } or object
- 	local room = map.get_current_room()
-	room.object[ object.name ] = object
-end
-
-function remove_room_object( object )
-	object = type( object ) == 'string' and { name = object } or object
-	local room = map.get_current_room()
-	room.object[ object.name ] = nil
-end
-
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------

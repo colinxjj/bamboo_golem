@@ -7,22 +7,31 @@ local item = {
   name = 'Í­Ç®',
   id = 'coin',
   type = 'money',
+  source = {
+    { type = 'finder', finder = 'withdraw', }
+  }
 },
 
 ['°×Òø'] = {
   name = '°×Òø',
   id = 'silver',
   type = 'money',
+  source = {
+    { type = 'finder', finder = 'withdraw', }
+  }
 },
 
 ['»Æ½ð'] = {
   name = '»Æ½ð',
   id = 'gold',
   type = 'money',
+  source = {
+    { type = 'finder', finder = 'withdraw', }
+  }
 },
 
 --------------------------------------------------------------------------------
--- vendor weapon
+-- normal weapon
 
 ['³¤½£'] = {
   name = '³¤½£',
@@ -31,7 +40,7 @@ local item = {
   type = 'sword',
   weight = 5000,
   value = 1500,
-  power = 20,
+  quality = 20,
 },
 
 ['¸Ö½£'] = {
@@ -41,7 +50,7 @@ local item = {
   type = 'sword',
   weight = 6000,
   value = 2000,
-  power = 30,
+  quality = 30,
 },
 
 ['¸Öµ¶'] = {
@@ -51,7 +60,10 @@ local item = {
   type = 'blade',
   weight = 5000,
   value = 1000,
-  power = 20,
+  quality = 20,
+  source = {
+    { type = 'cmd', location = 'ÌìÉ½±øÆ÷¿â', cmd = 'na dao', }
+  }
 },
 
 ['Ä¾½£'] = {
@@ -61,7 +73,7 @@ local item = {
   type = 'sword',
   weight = 300,
   value = 1270,
-  power = 5,
+  quality = 5,
 },
 
 ['Öñ½£'] = {
@@ -71,7 +83,7 @@ local item = {
   type = 'sword',
   weight = 1000,
   value = 100,
-  power = 5,
+  quality = 5,
 },
 
 ['Öñ°ô'] = {
@@ -80,7 +92,7 @@ local item = {
   type = 'stick',
   weight = 3000,
   value = 200,
-  power = 25,
+  quality = 25,
 },
 
 ['Ðå»¨Õë'] = {
@@ -90,7 +102,7 @@ local item = {
   type = 'sword',
   weight = 500,
   value = 200,
-  power = 10,
+  quality = 10,
 },
 
 --------------------------------------------------------------------------------
@@ -123,7 +135,7 @@ local item = {
 },
 
 --------------------------------------------------------------------------------
--- vendor armor
+-- normal armor
 
 ['Ìú¼×'] = {
   name = 'Ìú¼×',
@@ -132,8 +144,50 @@ local item = {
   type = 'armor',
   weight = 20000,
   value = 2000,
-  power = 50,
+  quality = 50,
 },
+
+['ôä´ä»¤Íó'] = {
+  name = 'ôä´ä»¤Íó',
+  id = 'feicui huwan',
+  alternate_id = { 'huwan' },
+  type = 'wrist',
+  weight = 500,
+  quality = 4,
+},
+
+['Ì´Ä¾»¤ÐØ'] = {
+  name = 'Ì´Ä¾»¤ÐØ',
+  id = 'tanmu huxiong',
+  alternate_id = { 'huxiong' },
+  type = 'wrist',
+  weight = 500,
+  quality = 4,
+},
+
+['µ¤·ï»¤Ñü'] = {
+  name = 'µ¤·ï»¤Ñü',
+  id = 'danfeng huyao',
+  alternate_id = { 'huyao' },
+  type = 'waist',
+  weight = 500,
+  quality = 4,
+},
+
+--------------------------------------------------------------------------------
+-- treasure armor
+
+['Ä¾ÃÞôÂôÄ'] = {
+  name = 'Ä¾ÃÞôÂôÄ',
+  id = 'mumian jiasha',
+  alternate_id = { 'mimian', 'jiasha' },
+  type = 'armor',
+  weight = 5000,
+  quality = 150,
+},
+
+
+
 
 }
 

@@ -174,6 +174,18 @@ local npc = {
   location = '武当山后山小院',
 },
 
+['谷虚道长'] = {
+  name = '谷虚道长',
+  id = 'guxu daozhang',
+  alternate_id = { 'guxu' },
+  location = '武当山武当广场',
+  provide = {
+    { item = '檀木护胸', cmd = 'ask guxu daozhang about 护胸', cond = 'player.party == "武当派"', },
+    { item = '丹凤护腰', cmd = 'ask guxu daozhang about 护腰', cond = 'player.party == "武当派"', },
+    { item = '翡翠护腕', cmd = 'ask guxu daozhang about 护腕', cond = 'player.party == "武当派"', },
+  },
+},
+
 --------------------------------------------------------------------------------
 -- 嵩山
 
@@ -366,6 +378,10 @@ local npc = {
   id = 'du jie',
   alternate_id = { 'du', 'jie' },
   location = '嵩山少林金刚伏魔圈',
+  loot = { '木棉袈裟' },
+  provide = {
+    { item = '木棉袈裟', cmd = 'ask du jie about 木棉袈裟', },
+  },
 },
 
 ['渡难'] = {

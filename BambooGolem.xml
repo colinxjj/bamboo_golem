@@ -24,7 +24,7 @@
 CWD = ''
 
 do
-  local f = io.open 'module/init/init.lua'
+  local f = io.open 'module/_init.lua'
   if not f then
     CWD = 'BambooGolem/'
   else
@@ -32,7 +32,7 @@ do
   end
 end
 
-dofile( CWD .. "module/init/init.lua" )
+dofile( CWD .. "module/_init.lua" )
 
 ]]>
 </script>

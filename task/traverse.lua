@@ -75,7 +75,7 @@ end
 -- check each step
 function task:check_step()
   -- if the step handler needs room desc to work
-  if self.is_step_need_desc and not map.get_current_room().desc then self:send{ 'l' }; return end
+  if self.is_step_need_desc and not room.get().desc then self:send{ 'l' }; return end
 
   local expected_room, prev_room = self.path[ self.step_num ], self.path[ self.step_num - 1 ]
 

@@ -71,7 +71,7 @@ function task:check_for_action( obj )
 end
 
 function task:last_check()
-  if is_present( self.object ) then
+  if room.has_object( self.object ) then
     self:complete()
   else
     self:fail()

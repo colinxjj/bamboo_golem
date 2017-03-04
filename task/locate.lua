@@ -23,7 +23,7 @@ function task:_resume()
   self:listen{ event = 'located', func = self.resume, id = 'task.locate' }
 
   -- get room desc
-  local room = map.get_current_room()
+  local room = room.get()
   if not room or not room.desc or not location then self:send{ 'l' }; return end
 
   -- get place info
@@ -45,7 +45,7 @@ function task:_resume()
   end
 
   -- otherwise, walk to adjacent room
-  for dir in pairs( map.get_current_room().exit ) do self:send{ dir }; return end
+  for dir in pairs( room.get().exit ) do self:send{ dir }; return end
 end
 
 --------------------------------------------------------------------------------

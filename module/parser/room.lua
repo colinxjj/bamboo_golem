@@ -127,13 +127,12 @@ local function parse_brief( _, t )
 end
 
 local function parse_ferry_came()
-  local room = map.get_current_room()
-  if room then room.exit.enter = true end
+  if room.current then room.current.exit.enter = true end
   event.new 'ferry_came'
 end
 
 local function parse_ferry_left()
-  local room = map.get_current_room()
+  local room = room.get()
   if not room then return end
   if room.name ~= 'ÌÙ¿ð'
   and room.name ~= 'ÖñÂ¨'
@@ -145,13 +144,12 @@ local function parse_ferry_left()
 end
 
 local function parse_ferry_arrived()
-  local room = map.get_current_room()
-  if room then room.exit.out = true end
+  if room.current then room.current.exit.out = true end
   event.new 'ferry_arrived'
 end
 
 local function parse_ferry_departed()
-  local room = map.get_current_room()
+  local room = room.get()
   if not room then return end
   if room.name == 'ÌÙ¿ð'
   or room.name == 'ÖñÂ¨'

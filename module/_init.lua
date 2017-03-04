@@ -35,7 +35,7 @@ player.flag, player.temp_flag, player.inventory, player.skill, player.set = {}, 
 message = require 'module.message'
 
 -- set up useful helper functions
-dofile( CWD .. 'module/init/helper.lua' )
+dofile( CWD .. 'module/_helper.lua' )
 
 -- load modules
 event = require 'module.event'
@@ -50,6 +50,8 @@ bigword = require 'module.bigword'
 gag = require 'module.gag'
 session = require 'module.session'
 item = require 'module.item'
+room = require 'module.room'
+inventory = require 'module.inventory'
 
 -- load parsers
 require 'module.parser.hp'
@@ -83,7 +85,7 @@ automode = 'inactive'
 taskmaster.current_manual_task = task.manual:new()
 
 -- set up default cli commands (must be done after the maunal task is set up)
-dofile( CWD .. 'module/init/cli_default.lua' )
+dofile( CWD .. 'module/cli_default.lua' )
 
 --------------------------------------------------------------------------------
 -- set up some saner-than-default world options, just in case

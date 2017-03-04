@@ -8,6 +8,30 @@ local item = {}
 -- load the item list
 local index = require 'data.item'
 
+-- add item sources based on npc data
+local stype, slist, source
+for person_id, person in pairs( npc ) do
+	if person.catalogue or person.loot then -- add shop or loot sources
+		stype = person.catalogue and 'shop' or 'loot'
+		for _, item_id in pairs( person.catalogue or person.loot ) do -- that means a npc can't be both a shop and a loot source
+			if not index[ item_id ] then error( 'no data found for item ' .. item_id ) end
+			index[ item_id ].source = index[ item_id ].source or {}
+			slist = index[ item_id ].source
+			source = { type = stype, location = person.location, npc = person_id }
+			table.insert( slist, source )
+		end
+	end
+	if person.provide then -- add npc_cmd sources
+		for _, it in pairs( person.provide ) do
+			if not index[ it.item ] then error( 'no data found for item ' .. it.item ) end
+			index[ it.item ].source  = index[ it.item ].source or {}
+			slist = index[ it.item ].source
+			source = { type = 'npc_cmd', location = person.location, npc = person_id, cmd = it.cmd, cond = it.cond }
+			table.insert( slist, source )
+		end
+	end
+end
+
 local weapon_type = {
 	blade = 'µ¶', sword = '½£', dagger = 'Ø°Ê×', flute = 'óï', hook = '¹³', axe = '¸«', brush = '±Ê',
 	staff = 'ÕÈ', club = '¹÷', stick = '°ô', hammer = '´¸', whip = '±Þ', throwing = '°µÆ÷' }
@@ -91,26 +115,7 @@ function item.is_stackable( name )
   return stackable_item[ name ] or false
 end
 
-function item.is_carrying( object )
-	object = type( object ) == 'string' and { name = object } or object
-	if object.name then
-		return ( player.inventory[ object.name ] and ( player.inventory[ object.name ].count or 1 ) >= ( object.count or 1 ) ) and true or false
-	elseif object.type == 'sharp_weapon' then
-		for _, it in pairs( player.inventory ) do
-			if item.is_sharp_weapon( it ) then return true end
-		end
-	end
-end
 
-function item.new( object )
-	object = type( object ) == 'string' and { name = object } or object
-	player.inventory[ object.name ] = object
-end
-
-function item.remove( object )
-	object = type( object ) == 'string' and { name = object } or object
-	player.inventory[ object.name ] = nil
-end
 
 --------------------------------------------------------------------------------
 -- End of module

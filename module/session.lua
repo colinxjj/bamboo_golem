@@ -16,7 +16,7 @@ function session.initiate_follow_up()
   if not player.set.look then
     event.listen{ event = 'set', func = session.initiate_follow_up, id = 'session.initiate' }
     cmd.new{ 'set look' }
-  elseif not map.get_current_room() then
+  elseif not room.current then
     task.getinfo:new{ room = true, complete_func = session.initiate_follow_up, priority = 1 }
   else
     player.is_initiated = true

@@ -35,10 +35,10 @@ function task:get_room_info( evt )
   if evt then self.result[ self.last_look ] = evt.data end -- put data from last look in to results
   local target = self.room
   -- look current room
-  if ( target == 'all' or target == true or not map.get_current_room() ) and not self.looked.here then self:look_dir 'here'; return end
+  if ( target == 'all' or target == true or not room.get() ) and not self.looked.here then self:look_dir 'here'; return end
   -- look surrounding rooms
   if target == 'all' or target == 'surrounding' then
-    local exit = self.result.here and self.result.here.exit or map.get_current_room().exit
+    local exit = self.result.here and self.result.here.exit or room.get().exit
     for dir in pairs( exit ) do
       if not self.looked[ dir ] then self:look_dir( dir ); return end
     end

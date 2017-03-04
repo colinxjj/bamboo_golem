@@ -19,14 +19,6 @@ function task:get_id()
   return s
 end
 
-local finder_tbl = {
-  -- special types
-  sharp_weapon = 'sharp_weapon',
-
-  ['Í­Ç®'] = 'money',   ['°×Òø'] = 'money',   ['»Æ½ğ'] = 'money',
-  ['Ä¾ÃŞôÂôÄ'] = 'mumian',
-}
-
 function task:_resume()
   task[ self.action ]( self )
 end

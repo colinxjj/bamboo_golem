@@ -8,11 +8,6 @@ local map = {}
 -- load the full map index
 local index = require 'data.map'
 
--- load submodules
-local history = require 'module.map.history'
-local helper = require 'module.map.helper'
-local locator = require 'module.map.locator'
-
 -- load all exit conditions from map index as functions
 local cond_checker = {}
 for id, room in pairs( index ) do
@@ -27,22 +22,29 @@ for id, room in pairs( index ) do
   end
 end
 
--- helper redirectors
-function map.serialize_room( room )
-  return helper.serialize_room( room )
-end
-function map.list_all_potentially_no_exit()
-  return helper.list_all_potentially_no_exit( index )
-end
-
 -- generate room name indices
+local name_index, longname_index = {}, {}
 -- index by room name like 北大街
-local name_index = helper.generate_name_index( index )
+do
+  local name
+  for _, room in pairs( index ) do
+    name = room.name
+    name_index[ name ] = name_index[ name ] or {}
+    table.insert( name_index[ name ], room )
+  end
+end
 -- index by long room names like 长安城北大街
-local longname_index = helper.generate_longname_index( index )
+do
+  local longname
+  for _, room in pairs( index ) do
+    longname = room.area .. room.name
+    longname_index[ longname ] = longname_index[ longname ] or {}
+    table.insert( longname_index[ longname ], room )
+  end
+end
 
--- current room data, not the calculated current location
-local current_room
+--------------------------------------------------------------------------------
+-- get rooms
 
 function map.get_room_by_name( name )
   return name_index[ name ]
@@ -55,6 +57,9 @@ end
 function map.get_room_by_id( id )
   return index[ id ]
 end
+
+--------------------------------------------------------------------------------
+-- path generation / evaluation
 
 -- return a function to check if reached dest by directly comparing tables of rooms
 local function is_dest_by_room( dest )
@@ -105,7 +110,7 @@ local function genpath( from, is_dest )
   message.debug( s )
   --]]
 
-  return path
+  return path, max_cost
 end
 
 -- get the path between two rooms
@@ -118,6 +123,11 @@ function map.getpath( from, to )
 
   to = type( to ) == 'table' and is_dest_by_room( to ) or to
   return genpath( from, to )
+end
+
+function map.getcost( from, to )
+  local _, cost = map.getpath( from, to )
+  return cost
 end
 
 -- check if a room can be found within X range from the starting room
@@ -232,18 +242,32 @@ function map.get_step_cmd( from, to )
   end
 end
 
-function map.get_last_location()
-  return history.query_last()
+--------------------------------------------------------------------------------
+-- location history
+
+-- player location history
+local lochistory, startpos, endpos = {}, 0, 0
+
+-- add an entry to location history
+function map.add_to_loc_history( entry )
+  endpos = endpos + 1
+  lochistory[ endpos ] = entry
+
+  if endpos - startpos > 100 then -- store 100 history entries
+    lochistory[ startpos ] = nil
+    startpos = startpos + 1
+  end
+
+  return entry
 end
 
--- get current room data
-function map.get_current_room()
-  return current_room
+function map.get_last_location()
+  return lochistory[ endpos - 1 ]
 end
 
 -- get current location
 function map.get_current_location()
-  return history.query_current()
+  return lochistory[ endpos ]
 end
 
 -- check if a room is the current location or one of the possible current locations
@@ -253,104 +277,381 @@ function map.is_current_location( room )
   end
 end
 
---[[
-function map.ignore_room()
-  mesage.debug 'MAP 模块：忽略了一个房间'
+--------------------------------------------------------------------------------
+-- locating / comparing current room with map rooms
+
+function map.is_area_match( this_room, map_room )
+  return this_room.area == map_room.area
 end
 
-function map.ignore_next_room()
-  mesage.debug 'MAP 模块：收到忽略下一个房间的请求'
-  event.listen{ event = 'room', func = map.ignore_room, id = 'map.ignore_room', sequence = 90, keep_eval = false }
+-- compare if two rooms match based their exits
+function map.is_exit_match( this_room, map_room )
+  local is_diff
+  for dir, exit in pairs( this_room.exit ) do
+    local e, dir2, dir3, dir4 = map_room.exit, dir .. '2', dir .. '3', dir .. '4'
+    if not e[ dir ] or -- check for exit room name as well if available
+    ( exit ~= true and ( exit ~= index[ e[ dir ].to ].name
+    and ( e[ dir2 ] and exit ~= index[ e[ dir2 ].to ].name or not e[ dir2 ] )
+    and ( e[ dir3 ] and exit ~= index[ e[ dir3 ].to ].name or not e[ dir3 ] )
+    and ( e[ dir4 ] and exit ~= index[ e[ dir4 ].to ].name or not e[ dir4 ] ) ) ) then
+      is_diff = true
+      break
+    end
+  end
+  if is_diff then return false end
+  for dir, exit in pairs( map_room.exit ) do
+    if not this_room.exit[ dir ] and
+    not string.find( dir, 'hidden' ) and
+    not string.find( dir, '%d' ) and -- e.g. ignore out2, e4
+    not exit.unstable and not exit.door then
+      is_diff = true
+      break
+    end
+  end
+  return not is_diff
 end
---]]
 
--- locate the player based on the current room data
-function map.locate( room )
-  local same_name_list = name_index[ room.name ] or {}
-
-  if #same_name_list <= 1 then return same_name_list end
-
-  local same_area_list
-  if room.area then
-    same_area_list = {}
-    for _, map_room in pairs( same_name_list ) do -- check area
-      if locator.is_area_same( room, map_room ) then table.insert( same_area_list, map_room ) end
+-- compare if two rooms match based their description
+function map.is_desc_match( this_room, map_room )
+  local is_same
+  if type( map_room.desc ) == 'table' then
+    for _, desc in pairs( map_room.desc ) do
+      if desc == this_room.desc then is_same = true; break end
     end
   else
-    same_area_list = same_name_list
+    if map_room.desc == this_room.desc then is_same = true end
   end
+  return is_same
+end
 
-  if #same_area_list <= 1 then return same_area_list end
-
-  local same_exit_list = {}
-  for _, map_room in pairs( same_area_list ) do -- check exit
-    if locator.is_exit_match( room, map_room, index ) then table.insert( same_exit_list, map_room ) end
+-- check if a map room is within X range from player's previous location
+function map.is_adjacent_to_prev_location( map_room, range )
+  local prev_loc, is_found = map.get_current_location()
+  if not prev_loc then return end
+  for _, loc in pairs( prev_loc ) do
+    is_found = map.is_room_within_range( loc, map_room, range )
+    if is_found then break end
   end
+  return is_found
+end
 
-  if #same_exit_list <= 1 then return same_exit_list end
-
-  local same_desc_list
-  if room.desc then
-    same_desc_list = {}
-    for _, map_room in pairs( same_exit_list ) do -- check desc
-      if locator.is_desc_same( room, map_room ) then table.insert( same_desc_list, map_room ) end
+-- check if a room can be reached from another room with specified cmd
+local function is_room_reachable( from, cmd, to )
+  for dir, exit in pairs( from.exit ) do
+    dir = string.gsub( dir, '_', '' ) -- convert dirs like out_ to out
+    if ( dir == cmd or exit.cmd == cmd or exit.handler ) and exit.to == to.id then -- if  exit has a handler and links to the target room, then consider it as reachable with the cmd
+      -- message.debug( string.format( '可从“%s”的 %s 出口到达“%s”', from.id, dir, to.id ) )
+      return true
     end
+  end
+  -- message.debug( string.format( '不可从“%s”到达“%s”', from.id, to.id ) )
+end
+
+-- check if a room can be reached from player's previous location with specified cmd
+function map.is_reachable_from_prev_location_with_cmd( map_room, cmd )
+  local prev_loc, is_reachable = map.get_current_location()
+  if not prev_loc then return end
+  for _, loc in pairs( prev_loc ) do
+    is_reachable = is_room_reachable( loc, cmd, map_room )
+    if is_reachable then break end
+  end
+  return is_reachable
+end
+
+--------------------------------------------------------------------------------
+-- helper functions
+
+-- list all map areas
+function map.list_all_area()
+  local result = {}
+  for id, room in pairs( index ) do
+    local a = room.area or string.gsub( id, room.name .. '#?[%w-]*$', '' )
+    result[ a ] = true
+  end
+  -- tprint( result )
+  return result
+end
+
+-- list all rooms that could have no exit (like 渡船)
+function map.list_all_potentially_no_exit()
+  local result = {}
+  for id, room in pairs( index ) do
+    local exit_count = 0
+    for dir, exit in pairs( room.exit ) do
+      if not exit.unstable and
+         not exit.door and
+       ( not string.find( dir, 'hidden' ) ) then
+        exit_count = exit_count + 1 or exit_count
+      end
+    end
+    if exit_count == 0 then
+      result[ room.name ] = id
+    end
+  end
+  return result
+end
+
+-- list all duplicate room ids
+function map.list_duplicate_room_id()
+  local t, result = {}, {}
+  for id in pairs( index ) do
+    if t[ id ] == nil then
+      t[ id ] = true
+    else
+      result[ id ] = true
+    end
+  end
+  if #result > 0 then
+    tprint( result )
   else
-    same_desc_list = same_exit_list
+    print '没有任何重复的房间 ID！'
   end
+end
 
-  if #same_desc_list <= 1 then return same_desc_list end
-
-  local adjacent_list = {}
-  if history.query_current() then
-    for _, map_room in pairs( same_desc_list ) do -- check adjacency
-      if locator.is_adjacent_to_prev_location( map_room, 1 ) then table.insert( adjacent_list, map_room ) end
-    end
-  end
-
-  local c = cmd.get_last()
-  if #adjacent_list > 1 and c and c.type ~= 'batch' then -- narrow down the scope based on last non-batch command sent
-    local i, map_room = 1
-    while i <= #adjacent_list do
-      map_room = adjacent_list[ i ]
-      -- message.debug( '检查是否可从之前的位置以 ' .. c.cmd .. ' 命令到达' .. map_room.id )
-      if not locator.is_reachable_from_prev_location_with_cmd( map_room, c.cmd ) then
-        table.remove( adjacent_list, i )
-      else
-        i = i + 1
+-- list all dead end exits
+function map.list_all_deadend()
+  local result = {}
+  for _, room in pairs( index ) do
+    for _, exit in pairs( room.exit ) do
+      if index[ exit.to ] == nil then
+        result[ exit.to ] = true
       end
     end
   end
-
-  if #adjacent_list == 1 then return adjacent_list end
-
-  -- adjacency locating should be auxiliary only so if it ruled out all options, revert to the result from previous step
-  if #adjacent_list == 0 then adjacent_list = same_desc_list end
-
-  return adjacent_list -- set current location to a list of possbile locations
+  tprint( result )
 end
 
-function map.auto_locate( evt )
-  current_room = evt.data
-  local result = map.locate( current_room )
-  if #result == 0 then message.warning '自动定位失败' end
-  --[[
-  if #result > 1 then
-    local s = '自动定位：' .. #result .. ' 个可能结果'
-    s = s .. '：'
-    for _, loc in pairs( result ) do
-      s = s .. loc.id .. '、'
+-- list all rooms with multiple description
+function map.list_all_multi_desc()
+  local result = {}
+  for id, room in pairs( index ) do
+    if type( room.desc ) == 'table' then
+      table.insert( result, id )
     end
-    s = string.gsub( s, '、$', '' )
-    message.debug( s )
   end
-  --]]
-  history.insert( result )
-  event.new 'located'
+  tprint( result )
 end
 
-event.listen{ event = 'room', func = map.auto_locate, persistent = true, id = 'map.auto_locate' }
-event.listen{ event = 'place', func = map.auto_locate, persistent = true, id = 'map.auto_locate' }
+-- list all labels used in room exits, like no_wander, unstable
+function map.list_all_exit_labels()
+  local result = {}
+  for _, room in pairs( index ) do
+    for _, exit in pairs( room.exit ) do
+      for k in pairs( exit ) do
+        result[ k ] = true
+      end
+    end
+  end
+  tprint( result )
+end
+
+-- list all labels used in rooms, like name, desc
+function map.list_all_room_labels()
+  local result = {}
+  for _, room in pairs( index ) do
+    for k in pairs( room ) do
+      result[ k ] = true
+    end
+  end
+  tprint( result )
+end
+
+-- list all rooms with non standard exits
+function map.list_all_nonst_exit_room()
+  local temp, result = {}, {}
+  for id, room in pairs( index ) do
+    for dir, exit in pairs( room.exit ) do
+      if not DIR_REVERSE[ dir ] then
+        temp[ id ] = true
+      end
+    end
+  end
+  for id in pairs( temp ) do
+    table.insert( result, id )
+  end
+  tprint( result )
+  print( '共 ' .. #result .. ' 个房间有非标准出口')
+end
+
+-- list all non standard exit labels
+function map.list_all_nonst_exit_labels()
+  local result = {}
+  for _, room in pairs( index ) do
+    for dir in pairs( room.exit ) do
+      if not DIR_REVERSE[ dir ] then
+        result[ dir ] = true
+      end
+    end
+  end
+  tprint( result )
+end
+
+-- index rooms within each area
+function map.generate_area_index()
+  local area_list, result = map.list_all_area( index ), {}
+  for area in pairs( area_list ) do
+    result[ area ] = {}
+    for id, room in pairs( index ) do
+      if room.area == area then
+        table.insert( result[ area ], id )
+      end
+    end
+  end
+  -- tprint( result )
+  return result
+end
+
+-- how many rooms are there in the map?
+function map.get_room_count()
+  local result = 0
+  for _ in pairs( index ) do
+    result = result + 1
+  end
+  print( '地图数据中共 ' .. result .. ' 个房间' )
+end
+
+-- list rooms that couldn't be located with full current room info (name, desc, exits, area.) It's not a complete list since it doesn't handle directions like out2
+function map.list_hard_to_locate_room()
+  for longname, list in pairs( longname_index ) do
+    local desc_index, same_desc_list = {}, {}
+    for _, room in pairs( list ) do
+      if type( room.desc ) == 'string' then -- rooms with multiple descriptions are always uniquely identifiable
+        desc_index[ room.desc ] = desc_index[ room.desc ] or {}
+        table.insert( desc_index[ room.desc ], room )
+      end
+    end
+    for _, same_desc_room in pairs( desc_index ) do
+      if #same_desc_room > 1 then table.insert( same_desc_list, same_desc_room ) end
+    end
+    local same_exit_list = {}
+    for _, list in pairs( same_desc_list ) do
+      local exit_index = {}
+      for _, room in pairs( list ) do
+        local fingerprint = ''
+        for _, dir in ipairs( DIR_ALL ) do -- generate exit fingerprint for a room
+          fingerprint = fingerprint .. ( room.exit[ dir ] and 'x' or '_' )
+        end
+        exit_index[ fingerprint ] = exit_index[ fingerprint ] or {}
+        table.insert( exit_index[ fingerprint ], room )
+      end
+      for _, same_exit_room in pairs( exit_index ) do
+        if #same_exit_room > 1 then table.insert( same_exit_list, same_exit_room ) end
+      end
+    end
+    local same_exit_to_list = {}
+    for _, list in pairs( same_exit_list ) do
+      local exit_to_index = {}
+      for _, room in pairs( list ) do
+        local fingerprint = ''
+        for _, dir in ipairs( DIR_ALL ) do -- generate exit to fingerprint for a room
+          if room.exit[ dir ] then fingerprint = fingerprint .. index[ room.exit[ dir ].to ].name .. '-' end
+        end
+        exit_to_index[ fingerprint ] = exit_to_index[ fingerprint ] or {}
+        table.insert( exit_to_index[ fingerprint ], room.id )
+      end
+      for _, same_exit_to_room in pairs( exit_to_index ) do
+        if #same_exit_to_room > 1 then table.insert( same_exit_to_list, same_exit_to_room ) end
+      end
+    end
+    tprint( same_exit_to_list )
+  end
+end
+
+local exit_labels = {
+  'to',
+  'cost',
+  'cmd',
+  'door',
+  'unstable',
+  'ignore',
+  'cond',
+  'handler',
+  'no_wander',
+}
+
+function map.serialize_room( room )
+  room.area = room.area or ''
+  room.id = room.area .. room.name
+  local result = string.format( [=[
+['%s'] = {
+  id = '%s',
+  area = '%s',
+  name = '%s',
+  desc = [[%s]],
+  exit = {
+]=], room.id, room.id, room.area, room.name, room.desc )
+  for dir, exit in pairs( room.exit ) do
+    result = result .. string.format( [[
+    %s = { to = '%s', },
+]], dir, room.area .. ( exit ~= true and exit or 'XXX' ) )
+  end
+  result = result .. [[
+  },
+},
+
+]]
+  return result
+end
+
+function map.serialize_map_room( room )
+  local result = string.format( [[
+['%s'] = {
+  id = '%s',
+  area = '%s',
+  name = '%s',
+  use_cond = '%s',
+  desc = ]], room.id, room.id, room.area, room.name, room.use_cond or '' ) ..
+  ( type( room.desc ) == 'string' and
+  string.format( [=[ [[%s]],]=], room.desc ) or
+  string.format( [=[{ [[%s]], [[%s]] },]=], room.desc[ 1 ], room.desc[ 2 ] ) ) ..
+  [[
+
+  exit = {
+]]
+  for dir, exit in pairs( room.exit ) do
+    result = result .. string.format( [[
+    %s = { ]], dir )
+    for _, label in pairs( exit_labels ) do
+      if type( exit[ label ] ) == 'string' then
+        result = result .. string.format( [[%s = '%s', ]], label, exit[ label ] )
+      elseif exit[ label ] then
+        result = result .. string.format( [[%s = %s, ]], label, tostring( exit[ label ] ) )
+      end
+    end
+    result = result .. [[},
+]]
+  end
+  result = result .. [[
+  },
+},
+
+]]
+  return result
+end
+
+function map.serialize_all( filename )
+  local count = 0
+  local file = io.open( CWD .. 'userdata/' .. filename, 'w' )
+  local area_index = map.generate_area_index()
+  file:write [[
+local map = {
+
+]]
+  for area, list in pairs( area_index ) do
+    for _, id in pairs( list ) do
+      count = count + 1
+      file:write( map.serialize_map_room( index[ id ] ) )
+    end
+  end
+  file:write [[
+}
+
+return map
+]]
+  file:flush()
+  file:close()
+  print( '共序列化 ' .. count .. ' 个房间，已保存到“' .. CWD .. 'userdata/' .. filename .. '”文件中。' )
+end
 
 --------------------------------------------------------------------------------
 -- End of module

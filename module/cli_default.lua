@@ -88,7 +88,7 @@ cli.register{ cmd = 'll', desc = '查看所有周边房间。', func = parse_ll, no_prefi
 
 local parse_mm
 parse_mm = function()
-  local room = map.get_current_room()
+  local room = room.get()
   if not room or not room.desc then
     event.listen{ event = 'room', func = parse_mm, id = 'mm' }
     cmd.new{ 'l' }

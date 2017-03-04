@@ -24,7 +24,7 @@ function finder:money()
   if not is_untried_bank( loc ) then -- go to the nearest untried bank
     local bank = map.find_nearest( loc, is_untried_bank )
     self:newsub{ class = 'go' , to = bank }
-  elseif not is_present( banker ) then -- banker is absent, try next bank
+  elseif not room.has_object( banker ) then -- banker is absent, try next bank
     banker.last_fail_time = os.time()
     self:resume()
   else -- draw money
@@ -49,7 +49,7 @@ local function is_selling_sharp_weapon( room )
   end
 end
 function finder:sharp_weapon()
-  if item.is_carrying{ type = 'sharp_weapon' } then
+  if inventory.has_item{ type = 'sharp_weapon' } then
     self:complete()
   elseif player.cash < 3000 then
     self:newsub{ class = 'manage_inventory', action = 'prepare', item = '»Æ½ð', count = 1 }
@@ -77,7 +77,7 @@ function finder:purchase()
   local shop_owner = get_shop_owner( loc )
   if not is_untried_shop( loc ) then -- go to the nearest untried shop
     self:resume()
-  elseif not is_present( shop_owner ) then -- shop owner is absent, try next shop
+  elseif not room.has_object( shop_owner ) then -- shop owner is absent, try next shop
     banker.last_fail_time = os.time()
     self:resume()
   else -- purchase item
