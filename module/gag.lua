@@ -32,6 +32,12 @@ local gag_def = {
     startp = '^(> )*以下是你目前使用中的特殊技能。',
     endp = 1 - lpeg.P ' ',
     exclude_endp = true },
+  set = {
+    startp = '^(> )*你目前设定的环境变量有：$',
+    endp = lpeg.P '> ',
+    exclude_endp = true },
+
+  title = { linep = '^(> )*【(.+)】\\S+( |「)\\S+\\(\\w+\\)$' }
 }
 
 function gag.once( group )
@@ -39,14 +45,18 @@ function gag.once( group )
   local t = gag_def[ group ]
   if not t then message.debug( '未找到 gag 组定义：' .. group ); return end
   list[ group ] = 'not_started'
-  trigger.new{ name = 'gag_start_' .. group, match = t.startp, func = gag.start, sequence = 50, enabled = true, keep_eval = true, omit = true, one_shot = true }
+  trigger.new{ name = 'gag_start_' .. group, match = t.startp or t.linep, func = gag.start, sequence = 50, enabled = true, keep_eval = true, omit = true, one_shot = true }
 end
 
 function gag.start( name )
   local group = string.gsub( name, 'gag_start_', '' )
-  list[ group ] = 'started'
-  in_gag = true
-  trigger.enable 'gag'
+  if not gag_def[ group ].endp then
+    list[ group ] = nil
+  else
+    list[ group ] = 'started'
+    in_gag = true
+    trigger.enable 'gag'
+  end
 end
 
 function gag.check( text )

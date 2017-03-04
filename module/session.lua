@@ -7,24 +7,34 @@ local session = {}
 
 function session.initiate()
   player.temp_flag = {}
-  cmd.new{ 'set look' }
-  task.getinfo:new{ hp = 'forced', inventory = 'forced', score = 'forced', enable = 'forced', skills = 'forced', time = 'forced', complete_func = session.setup_done, priority = 1 }
+  task.getinfo:new{ hp = 'forced', inventory = 'forced', score = 'forced', enable = 'forced', skills = 'forced', time = 'forced', set = 'forced', complete_func = session.initiate_follow_up, priority = 1 }
 end
 
 event.listen{ event = 'connected', func = session.initiate, id = 'session.initiate', persistent = true }
 
-function session.setup_done()
-  if not map.get_current_room() then
-    task.getinfo:new{ room = true, complete_func = session.setup_done, priority = 1 }
+function session.initiate_follow_up()
+  if not player.set.look then
+    event.listen{ event = 'set', func = session.initiate_follow_up, id = 'session.initiate' }
+    cmd.new{ 'set look' }
+  elseif not map.get_current_room() then
+    task.getinfo:new{ room = true, complete_func = session.initiate_follow_up, priority = 1 }
   else
     player.is_initiated = true
   end
 end
 
+local old_id
+
 function session.resume()
+  old_id = player.id
+  task.getinfo:new{ title = 'forced', complete_func = session.resume_follow_up, priority = 1 }
 end
 
 event.listen{ event = 'reconnected', func = session.resume, id = 'session.resume', persistent = true }
+
+function session.resume_follow_up()
+  if player.id ~= old_id then message.debug 'ID 已变，重置会话'; session.initiate() end
+end
 
 function session.terminate()
   -- body...

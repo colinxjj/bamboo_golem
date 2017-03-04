@@ -15,7 +15,7 @@ room = true: get info for current room
 
 task.class = 'getinfo'
 
-info_type = { 'hp', 'inventory', 'skills', 'score', 'enable', 'room', 'time', 'uptime' }
+info_type = { 'hp', 'inventory', 'skills', 'score', 'enable', 'room', 'time', 'uptime', 'set', 'title' }
 
 local function get_info_type_string( self )
   string = ''

@@ -29,7 +29,7 @@ dofile( CWD .. 'data/default_config.txt' )
 
 -- setup necessary tables
 player, time = {}, {}
-player.flag, player.temp_flag, player.inventory, player.skill = {}, {}, {}, {}
+player.flag, player.temp_flag, player.inventory, player.skill, player.set = {}, {}, {}, {}, {}
 
 -- load message module
 message = require 'module.message'
@@ -64,6 +64,8 @@ require 'module.parser.enable'
 require 'module.parser.place'
 require 'module.parser.connection'
 require 'module.parser.uptime'
+require 'module.parser.set'
+require 'module.parser.title'
 
 -- load task classes
 dofile( CWD .. 'task/_init.lua' )
