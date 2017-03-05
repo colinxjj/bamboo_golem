@@ -5,30 +5,29 @@ local room = {}
 -- This module handles current room related stuff
 --------------------------------------------------------------------------------
 
+local current_room
+
 -- get current room data
 function room.get()
-  return room.current
+  return current_room
 end
 
 -- check if a person / an object is present in the current room
 function room.has_object( object )
-	object = type( object ) == 'string' and { name = object } or object
-	local room = map.get_room.current()
-	local room_object = room.object[ object.name ]
+	object = type( object ) == 'table' and object or get_npc( object ) or { name = object }
+	local room_object = current_room.object[ object.name ]
 	return room_object and ( object.id and object.id == room_object.id or not object.id ) and true or false
 end
 
 -- add a new object to the current room
 function room.add_object( object )
 	object = type( object ) == 'string' and { name = object } or object
- 	local room = map.get_room.current()
-	room.object[ object.name ] = object
+	current_room.object[ object.name ] = object
 end
 
 function room.remove_object( object )
 	object = type( object ) == 'string' and { name = object } or object
-	local room = map.get_room.current()
-	room.object[ object.name ] = nil
+	current_room.object[ object.name ] = nil
 end
 
 -- locate the player based on the current room data
@@ -98,8 +97,8 @@ local function locate( room )
 end
 
 local function auto_locate( evt )
-  room.current = evt.data
-  local result = locate( room.current )
+  current_room = evt.data
+  local result = locate( current_room )
   if #result == 0 then message.warning '自动定位失败' end
   --[[
   if #result > 1 then

@@ -38,7 +38,7 @@ local function parse_content( _, t )
     type = item.get_type( name ),
   }
   local it = cache[ name ]
-  if it.is_equiped and item.is_weapon( it ) then player.wielded = it end
+  if it.is_equiped and item.is_type( name, 'weapon' ) then player.wielded = it end
 end
 
 local function parse_withdraw( _, t )
@@ -182,7 +182,7 @@ trigger.new{ name = 'inventory_drop', match = '^(> )*你丢下(\\S+)。$', func = pa
 trigger.new{ name = 'inventory_get', match = '^(> )*你捡起(\\S+)。$', func = parse_get, enabled = true }
 
 trigger.new{ name = 'inventory_lost', match = '^(> )*你突然发现(?:身上的)?(\\S+)不见了！', func = parse_lost, enabled = true }
--- 你一时想不起五彩神龙皮有什么用处，就随手把它丢掉了。
+trigger.new{ name = 'inventory_lost2', match = '^(> )*你一时想不起(\\S+)有什么用处，就随手把它丢掉了。', func = parse_lost, enabled = true }
 
 trigger.new{ name = 'inventory_buy', match = '^(> )*你以(\\S+)的价格从(\\S+)那里买下了一\\S\\S(\\S+)。', func = parse_buy, enabled = true }
 trigger.new{ name = 'inventory_sell', match = '^(> )*你以(\\S+)的价格卖掉了一\\S\\S(\\S+)给(\\S+)。', func = parse_sell, enabled = true }

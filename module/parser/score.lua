@@ -12,6 +12,7 @@ local function parse_line_2( _, t )
   player.title2 = t[ 1 ]
   player.str = tonumber( t[ 2 ] )
   player.str_innate = tonumber( t[ 3 ] )
+  player.encumbrance_max = ( player.str_innate - 10 ) * 2500 + ( player.str - player.str_innate ) * 3000 + 40000
   player.con = tonumber( t[ 4 ] )
   player.con_innate = tonumber( t[ 5 ] )
 end

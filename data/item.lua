@@ -7,27 +7,18 @@ local item = {
   name = 'Í­Ç®',
   id = 'coin',
   type = 'money',
-  source = {
-    { type = 'finder', finder = 'withdraw', }
-  }
 },
 
 ['°×Òø'] = {
   name = '°×Òø',
   id = 'silver',
   type = 'money',
-  source = {
-    { type = 'finder', finder = 'withdraw', }
-  }
 },
 
 ['»Æ½ð'] = {
   name = '»Æ½ð',
   id = 'gold',
   type = 'money',
-  source = {
-    { type = 'finder', finder = 'withdraw', }
-  }
 },
 
 --------------------------------------------------------------------------------
@@ -62,7 +53,7 @@ local item = {
   value = 1000,
   quality = 20,
   source = {
-    { type = 'cmd', location = 'ÌìÉ½±øÆ÷¿â', cmd = 'na dao', }
+    { type = 'cmd', location = 'ÌìÉ½±øÆ÷ÊÒ', cmd = 'na dao', }
   }
 },
 
@@ -141,7 +132,7 @@ local item = {
   name = 'Ìú¼×',
   id = 'tie jia',
   alternate_id = { 'tiejia', 'armor', 'jia' },
-  type = 'armor',
+  type = 'cloth',
   weight = 20000,
   value = 2000,
   quality = 50,
@@ -181,7 +172,7 @@ local item = {
   name = 'Ä¾ÃÞôÂôÄ',
   id = 'mumian jiasha',
   alternate_id = { 'mimian', 'jiasha' },
-  type = 'armor',
+  type = 'cloth',
   weight = 5000,
   quality = 150,
 },

@@ -95,6 +95,12 @@ function time.get_uptime()
 	return time.uptime + os.time() - time.uptime_timestamp
 end
 
+function get_npc( name )
+	for iname, person in pairs( npc ) do
+		if iname == name or person.name == name then return person end
+	end
+end
+
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------

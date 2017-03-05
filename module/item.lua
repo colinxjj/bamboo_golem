@@ -8,26 +8,50 @@ local item = {}
 -- load the item list
 local index = require 'data.item'
 
+local money_list = { '»Æ½ð', '°×Òø', 'Í­Ç®' }
+
 -- add item sources based on npc data
 local stype, slist, source
 for person_id, person in pairs( npc ) do
-	if person.catalogue or person.loot then -- add shop or loot sources
+	-- add shop or loot sources
+	if person.catalogue or person.loot then
 		stype = person.catalogue and 'shop' or 'loot'
-		for _, item_id in pairs( person.catalogue or person.loot ) do -- that means a npc can't be both a shop and a loot source
-			if not index[ item_id ] then error( 'no data found for item ' .. item_id ) end
-			index[ item_id ].source = index[ item_id ].source or {}
-			slist = index[ item_id ].source
+		for _, iname in pairs( person.catalogue or person.loot ) do -- that means a npc can't be both a shop and a loot source
+			if not index[ iname ] then error( 'no data found for item ' .. iname ) end
+			index[ iname ].source = index[ iname ].source or {}
+			slist = index[ iname ].source
 			source = { type = stype, location = person.location, npc = person_id }
-			table.insert( slist, source )
+			slist[ #slist + 1 ] = source
 		end
 	end
-	if person.provide then -- add npc_cmd sources
+	-- add banks as local_handler sources
+	if person.label and person.label.bank then
+		for _, money in pairs( money_list ) do
+			index[ money ].source = index[ money ].source or {}
+			slist = index[ money ].source
+			source = { type = 'local_handler', handler = 'withdraw', cond = 'player.bank_gold_balance > 0', location = person.location, npc = person_id }
+			slist[ #slist + 1 ] = source
+		end
+	end
+	-- add npc_cmd sources
+	if person.provide then
 		for _, it in pairs( person.provide ) do
 			if not index[ it.item ] then error( 'no data found for item ' .. it.item ) end
 			index[ it.item ].source  = index[ it.item ].source or {}
 			slist = index[ it.item ].source
-			source = { type = 'npc_cmd', location = person.location, npc = person_id, cmd = it.cmd, cond = it.cond }
-			table.insert( slist, source )
+			source = { type = 'cmd', location = person.location, npc = person_id, cmd = it.cmd, cond = it.cond }
+			slist[ #slist + 1 ] = source
+		end
+	end
+end
+
+-- add iname to each item source and compile source conditions to functions
+local cond_checker = {}
+for iname, it in pairs( index ) do
+	if it.source then
+		for _, source in pairs( it.source ) do
+			source.item = iname
+			if source.cond then cond_checker[ source.cond ] = loadstring( 'return ' .. source.cond ) end
 		end
 	end
 end
@@ -36,9 +60,15 @@ local weapon_type = {
 	blade = 'µ¶', sword = '½£', dagger = 'Ø°Ê×', flute = 'óï', hook = '¹³', axe = '¸«', brush = '±Ê',
 	staff = 'ÕÈ', club = '¹÷', stick = '°ô', hammer = '´¸', whip = '±Þ', throwing = '°µÆ÷' }
 
-local armor_type = { cloth = 'ÒÂ·þ', armor = '»¤¼×', shoes = 'Ð¬×Ó', helm = 'Í·¿ø', mantle = 'Åû·ç' }
+local armor_type = { cloth = 'ÒÂ·þ', armor = '»¤¼×', shoes = 'Ð¬×Ó', helm = 'Í·¿ø', mantle = 'Åû·ç', waist = 'Ñü´ø', wrist = '»¤Íó' }
 
 local sharp_weapon_type = { blade = true, sword = true, dagger = true, hook = true, axe = true, }
+
+local valid_type = { weapon = 'ÎäÆ÷', armor = '·À¾ß', sharp_weapon = '·æÀûÎäÆ÷',
+	blade = 'µ¶', sword = '½£', dagger = 'Ø°Ê×', flute = 'óï', hook = '¹³', axe = '¸«', brush = '±Ê',
+	staff = 'ÕÈ', club = '¹÷', stick = '°ô', hammer = '´¸', whip = '±Þ', throwing = '°µÆ÷',
+	cloth = 'ÒÂ·þ', armor = '»¤¼×', shoes = 'Ð¬×Ó', helm = 'Í·¿ø', mantle = 'Åû·ç', waist = 'Ñü´ø', wrist = '»¤Íó',
+}
 
 local stackable_item = {
   ['»Æ½ð'] = true,
@@ -76,46 +106,173 @@ for type, patt in pairs( item_type_name_patt ) do
   item_type_name_patt[ type ] = any_but( patt )^0 * patt * -1
 end
 
-function item.get_item( object )
-  object = type( object ) == 'string' and ( object:find( '^[a-z0-9 ,\'%-]+$' ) and { id = object } or { name = object } ) or object
-  for _, it in pairs( index ) do
-    if ( not object.name or it.name == object.name ) and ( not object.id or object.id == it.id ) then return it end -- only returns the first item matching the name and/or id
+-- generate type indices
+local type_index = { weapon = {}, sharp_weapon = {}, armor = {} }
+for iname, it in pairs( index ) do
+	if it.type then
+		type_index[ it.type ] = type_index[ it.type ] or {}
+		type_index[ it.type ][ iname ] = it
+		if weapon_type[ it.type ] then type_index.weapon[ iname ] = it end
+		if sharp_weapon_type[ it.type ] then type_index.sharp_weapon[ iname ] = it end
+		if armor_type[ it.type ] then type_index.armor[ iname ] = it end
+	end
+end
+
+--------------------------------------------------------------------------------
+
+function item.get( name )
+	assert( type( name ) == 'string', 'item.get - param must be a string' )
+  for iname, it in pairs( index ) do
+    if it.name == name or iname == name then return it end -- only returns the first item matching the name
   end
 end
 
-function item.get_id( object )
-  object = type( object ) == 'string' and { name = object } or object
-	if object.id then return object.id end
-  for _, it in pairs( index ) do
-    if it.name == object.name then return it.id end -- only returns the id of the first item matching the name
+function item.get_by_id ( id )
+	assert( type( id ) == 'string', 'item.get_by_id - param must be a string' )
+	for _, it in pairs( index ) do
+    if it.id == id then return it end -- only returns the first item matching the id
+		if it.alternate_id then
+			for _, alt_id in pairs( it.alternate_id ) do
+				if alt_id == id then return it end
+			end
+		end
   end
 end
 
-function item.get_type( object )
-  object = type( object ) == 'string' and { name = object } or object
-	local it, type = item.get_item( object )
+function item.get_by_type( name )
+	assert( type( name ) == 'string', 'item.get_by_type - param must be a string' )
+	return type_index[ name ]
+end
+
+function item.get_id( name )
+	assert( type( name ) == 'string', 'item.get_id - param must be a string' )
+  for _, it in pairs( index ) do
+    if it.name == name or iname == name then return it.id end -- only returns the id of the first item matching the name
+  end
+end
+
+function item.get_type( name )
+	assert( type( name ) == 'string', 'item.get_type - param must be a string' )
+	local it, type = item.get( name )
 	for type_name, patt in pairs( item_type_name_patt ) do
-    if patt:match( object.name ) then type = type_name; break end
+    if patt:match( name ) then type = type_name; break end
   end
   type = it and it.type or type
 	return type
 end
 
-function item.is_weapon( object )
-  local type = item.get_type( object ) or ''
-  return weapon_type[ type ] and true or false
-end
-
-function item.is_sharp_weapon( object )
-	local type = item.get_type( object ) or ''
-  return sharp_weapon_type[ type ] and true or false
+function item.is_type( name, stype )
+	assert( type( name ) == 'string', 'item.is_type - the name param must be a string' )
+	assert( type( stype ) == 'string', 'item.is_type - the type param must be a string' )
+	local itype = item.get_type( name ) or ''
+	if stype == 'sharp_weapon' then
+		return sharp_weapon_type[ itype ] and true or false
+	elseif stype == 'weapon' then
+		return weapon_type[ itype ] and true or false
+	elseif stype == 'armor' then
+		return armor_type[ itype ] and true or false
+	else
+		return stype == itype
+	end
 end
 
 function item.is_stackable( name )
+	assert( type( name ) == 'string', 'item.is_stackable - param must be a string' )
   return stackable_item[ name ] or false
 end
 
+function item.is_valid_type( name )
+	assert( type( name ) == 'string', 'item.is_valid_type - param must be a string' )
+	return valid_type[ name ]
+end
 
+function item.get_all_source( name )
+	assert( type( name ) == 'string', 'item.get_all_source - param must be a string' )
+	if not item.is_valid_type( name ) then
+		for iname, it in pairs( index ) do
+			if it.name == name or iname == name then return it.source end
+		end
+	else
+		local item_list = item.get_by_type( name )
+		if not item_list then return end
+		local slist = {}
+		for iname, it in pairs( item_list ) do
+			for _, source in pairs( it.source ) do
+				slist[ #slist + 1 ] = source
+			end
+		end
+		return slist
+	end
+end
+
+local function calculate_source_score( source, is_quality_ignored )
+	-- rank sources whose condition the player doesn't meet very low scores
+	if source.cond and not cond_checker[ source.cond ]() then return -1000000 end
+	--print( source.item, source.location )
+	local score = 0
+	-- distance score
+	local loc = map.get_current_location()[ 1 ]
+	local path_cost = map.getcost( loc, source.location )
+	if not path_cost then return -1000000 end -- no path cost means that we can't get to this source
+	score = score - path_cost * 0.5
+	--print( 'distance score: -' .. path_cost * 0.5 )
+	-- weight score
+	local weight = item.get( source.item ).weight
+	if weight then
+		local encumbrance = weight / player.encumbrance_max * 100
+		score = score - math.ceil( encumbrance * 50 ) / 10
+		--print( 'weight score: -' .. math.ceil( encumbrance * 50 ) / 10 )
+	end
+	-- price score
+	local value = item.get( source.item ).value
+	if value and source.type == 'shop' then
+		local silver = value / 100
+		score = score - silver
+		--print( 'price score: -' .. silver )
+	end
+	-- quality score
+	local quality = item.get( source.item ).quality
+	if quality and not is_quality_ignored then
+		score = score + quality
+		--print( 'quality score: +' .. quality )
+	end
+	--print( 'total score: ' .. score )
+	return score
+end
+
+function item.get_sorted_source( name, is_quality_ignored )
+	assert( type( name ) == 'string', 'item.get_sorted_source - param must be a string' )
+	local slist, score = item.get_all_source( name ), {}
+	for _, source in pairs( slist ) do
+		score[ source ] = calculate_source_score( source, is_quality_ignored )
+	end
+	local sort_by_score = function ( a, b )
+		return score[ a ] > score[ b ]
+	end
+	table.sort( slist, sort_by_score )
+	--tprint( slist )
+	return slist
+end
+
+function item.get_best_source( name, is_quality_ignored )
+	assert( type( name ) == 'string', 'item.get_best_source - param must be a string' )
+	local slist = item.get_sorted_source( name, is_quality_ignored )
+	for _, source in ipairs( slist ) do
+		if item.is_valid_source( source ) then return source end
+	end
+end
+
+function item.is_valid_source( source )
+	local is_valid = ( not source.last_fail_time or os.time() - source.last_fail_time > 200 ) -- if last try at a source failed, then only retry that source at least 200 seconds later
+							 and ( not source.cond or cond_checker[ source.cond ]() ) -- always check source cond in case player status changed, e.g. bank balance update could result in all bank sources not being valid any more
+	return is_valid
+end
+
+function item.mark_invalid_source( source )
+	source.first_fail_time = source.first_fail_time or os.time()
+	source.last_fail_time = os.time()
+	source.fail_count = source.fail_count and source.fail_count + 1 or 1
+end
 
 --------------------------------------------------------------------------------
 -- End of module

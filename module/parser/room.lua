@@ -127,7 +127,8 @@ local function parse_brief( _, t )
 end
 
 local function parse_ferry_came()
-  if room.current then room.current.exit.enter = true end
+  local room = room.get()
+  if room then room.exit.enter = true end
   event.new 'ferry_came'
 end
 
@@ -144,7 +145,8 @@ local function parse_ferry_left()
 end
 
 local function parse_ferry_arrived()
-  if room.current then room.current.exit.out = true end
+  local room = room.get()
+  if room then room.exit.out = true end
   event.new 'ferry_arrived'
 end
 

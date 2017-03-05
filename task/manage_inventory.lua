@@ -5,9 +5,10 @@ local task = {}
 -- Manage inventory and items
 --[[----------------------------------------------------------------------------
 Params:
-action = 'perpare': action to perform, see below for a list valid actions (required)
+action = 'prepare': action to perform, see below for a list valid actions (required)
 item = '铜钱': Chinese name of the item (required or optional, depends on action)
-count = 500: Number of items (required or optional, depends on action)
+count = 500: Number of items to prepare (optional for 'prepare' action, default: 1 )
+count_min = 200: if player has this number of items, then no need to get more (optional for 'prepare' action )
 ----------------------------------------------------------------------------]]--
 
 task.class = 'manage_inventory'
@@ -20,7 +21,11 @@ function task:get_id()
 end
 
 function task:_resume()
-  task[ self.action ]( self )
+  local s = '开始物品任务：' .. self.action
+  s = self.count and ( s .. ' ' .. self.count ) or s
+  s = self.item and ( s .. ' ' .. self.item ) or s
+  message.verbose( s )
+  task[ self.action ]( self ) -- call handler for the specified action
 end
 
 function task:_complete()
@@ -30,20 +35,87 @@ function task:_complete()
   message.verbose( s )
 end
 
+--------------------------------------------------------------------------------
+-- prepare
+
 function task:prepare()
   self.count = self.count or 1
-  local it = player.inventory[ self.item ]
-  if it then
-    if it.count_is == 'max' then self:newsub{ class = 'getinfo', inventory = 'forced' }; return end -- update inventory info if current count data can be higher than the actual count
-    if it.count >= self.count then self:complete(); return end -- complete the task if have enough item
-  end
-  self.item_finder = self.item_finder or _G.task.helper.item_finder[ finder_tbl[ self.item ] ]
-  if self.item_finder then
-    self:item_finder()
-  else
-    -- simply buy at shop or pick up from ground
+  -- already have the required item(s)?
+  local has_item = inventory.has_item( self.item, self.count_min or self.count )
+  -- update inventory info if no count data or current count data can be higher than the actual count
+  if has_item == 'unsure' then self:newsub{ class = 'getinfo', inventory = 'forced' }; return end
+  -- complete the task if have enough item
+  if has_item then self:complete(); return end
+  -- otherwise, try the best source available
+  local source = item.get_best_source( self.item )
+  self:handle_source( source )
+end
+
+local current_source
+
+function task:handle_source( source )
+  current_source = source
+  -- first go to the source location if we're not already there
+  local loc = map.get_current_location()[ 1 ]
+  if loc.id ~= source.location then
+    self:newsub{ class = 'go' , to = source.location }
+  elseif source.npc and not room.has_object( source.npc ) then
+    item.mark_invalid_source( source )
+    self:resume()
+  elseif source.type == 'get' then
+    self:get( source )
+  elseif source.type == 'cmd' then
+    self:listen{ event = 'prompt', func = self.check_inventory, id = 'task.manage_inventory' }
+    self:send{ source.cmd }
+  elseif source.type == 'local_handler' then
+    _G.task.helper.item_finder[ source.handler ]( self )
+  elseif source.type == 'shop' then
+    self:purchase( source )
+  elseif source.type == 'loot' then
   end
 end
+
+-- get item from ground
+function task:get( source )
+  if room.has_object( source.item ) then
+    self:listen{ event = 'prompt', func = self.check_source_result, id = 'task.manage_inventory' }
+    local c = self.count ~= 1 and ( self.count .. ' ' ) or ''
+    self.send{ 'get ' .. c .. self.item }
+  else
+    item.mark_invalid_source( source )
+    self:resume()
+  end
+end
+
+-- purchase item from shop
+function task:purchase( source )
+  local id
+  if item.is_valid_type( self.item ) then
+    for _, iname in pairs( npc[ source.npc ].catalogue ) do
+      if item.is_type( iname, self.item ) then id = item.get_id( iname ); break end
+    end
+  else
+    id = item.get_id( self.item )
+  end
+  self:listen{ event = 'inventory', func = self.check_source_result, id = 'task.manage_inventory' }
+  self:send{ 'buy ' .. id }
+end
+
+function task:check_inventory()
+  self:newsub{ class = 'getinfo', inventory = 'forced', complete_func = task.check_source_result }
+end
+
+function task:check_source_result()
+  if inventory.has_item( self.item, self.count_min or self.count ) then
+    self:complete()
+  else
+    item.mark_invalid_source( current_source )
+    self:resume()
+  end
+end
+
+--------------------------------------------------------------------------------
+-- wield and unwield
 
 function task:unwield()
   if player.wielded then
@@ -57,14 +129,14 @@ end
 
 function task:wield()
   if player.wielded then
-    if self.item == 'sharp_weapon' and item.is_sharp_weapon( player.wielded ) or self.item == player.wielded.name then self:complete(); return end
+    if self.item == 'sharp_weapon' and item.is_type( player.wielded, 'sharp_weapon' ) or self.item == player.wielded.name then self:complete(); return end
     self:listen{ event = 'inventory', func = self.resume, id = 'task.manage_inventory' }
     self:send{ 'unwield ' .. player.wielded.id }
   else
     local id
     if self.item == 'sharp_weapon' then
       for _, it in pairs( player.inventory ) do
-        if item.is_sharp_weapon( it ) then id = item.get_id( it ); break end
+        if item.is_type( it, 'sharp_weapon' ) then id = item.get_id( it ); break end
       end
     else
       id = item.get_id( self.item )

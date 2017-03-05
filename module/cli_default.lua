@@ -11,7 +11,7 @@ cli.register{ cmd = 'auto', desc = '¿ØÖÆ×Ô¶¯Ä£Ê½¡£auto start£º¿ªÊ¼×Ô¶¯Ä£Ê½£¬auto
 local function start_go_task( dest )
   dest = dest and map.get_room_by_id( dest ) or dest
   if not dest then
-    message.normal( 'Î´ÕÒµ½¶ÔÓ¦µÄÄ¿µÄµØ£¬Çë¼ì²é' )
+    message.normal 'Î´ÕÒµ½¶ÔÓ¦µÄÄ¿µÄµØ£¬Çë¼ì²é'
   else
     taskmaster.current_manual_task:newweaksub{ class = 'go', to = dest }
   end
@@ -148,14 +148,30 @@ cli.register{ cmd = 'f', desc = 'Ç°ÍùÄ³¸öNPCËùÔÚ´¦¡£Ö§³ÖÖĞÎÄÃûºÍ ID¡£ÀıÈç£ºf Àî°
 --------------------------------------------------------------------------------
 -- pp
 
+local type_list = { sharp_weapon = true }
 local patt = lpeg.C( lpeg.R '09'^1 ) * ' ' * lpeg.C( lpeg.P( 1 )^1 )
 local function parse_pp( _, input )
-  local count, it = patt:match( input )
-  count, it = tonumber( count ), it or input
-  it = item.get_item( it )
-  it = it and it.name or input
-  taskmaster.current_manual_task:newweaksub{ class = 'manage_inventory', action = 'prepare', item = it, count = count }
+  local count, name = patt:match( input )
+  count, name = tonumber( count ), name or input
+  local it = item.get( name ) or item.get_by_id( name )
+  if it then
+    taskmaster.current_manual_task:newweaksub{ class = 'manage_inventory', action = 'prepare', item = it.name, count = count }
+  elseif item.is_valid_type( name ) then
+    taskmaster.current_manual_task:newweaksub{ class = 'manage_inventory', action = 'prepare', item = name, count = count }
+  else
+    message.normal 'Î´ÕÒµ½¶ÔÓ¦µÄÎïÆ·£¬Çë¼ì²é'
+  end
 end
 
 
 cli.register{ cmd = 'pp', desc = '»ñÈ¡Ö¸¶¨µÄÎïÆ·¡£Ö§³ÖÖĞÎÄÃûºÍ ID¡£ÀıÈç£ºpp 500 coin »ò pp Ä¾ÃŞôÂôÄ', func = parse_pp, no_prefix = true }
+
+--------------------------------------------------------------------------------
+-- tt
+
+local function parse_tt( _, input )
+  item.get_sorted_source{ type = 'sharp_weapon', quality = 'not_ignore' }
+end
+
+
+cli.register{ cmd = 'tt', desc = '²âÊÔ', func = parse_tt, no_prefix = true }

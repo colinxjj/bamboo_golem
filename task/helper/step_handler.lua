@@ -45,7 +45,7 @@ function handler:cross_cj( t )
 		-- then hand over to fly handler
 		handler.fly( self )
 	else -- try to embark across all 3 positions
-		if room.current.exit.enter then self:send{ 'enter' }; return end -- if boat is here, enter it
+		if room.get().exit.enter then self:send{ 'enter' }; return end -- if boat is here, enter it
 		t.to_yell = t.to_yell or { [ t.loc.w ] = true, [ t.loc.c ] = true, [ t.loc.e ] = true }
 		if t.to_yell[ t.curr_loc ] then -- yell at current location
 			self:send{ 'yell boat' }
@@ -83,7 +83,7 @@ end
 function handler:fly()
 	-- since this handler is always called by other handlers, it needs to take care of trigger enabling itself
 	self:enable_trigger_group 'step_handler.fly'
-	if room.current.exit.enter then
+	if room.get().exit.enter then
 		self:newsub{ class = 'killtime', complete_func = handler.fly }
 	else
 		self:send{ self.step.yell_cmd or 'yell boat', self.step.cmd }
@@ -102,7 +102,7 @@ trigger.new{ name = 'fly_done', group = 'step_handler.fly', match = '^(> )*你在(
 -- 乘坐渡船。黄河、长江、汉水、黑木崖猩猩滩、大雪山绞盘等
 -- TODO make sure have silver
 function handler:embark()
-	if room.current.exit.enter then self:send{ 'enter' }; return end
+	if room.get().exit.enter then self:send{ 'enter' }; return end
 	self:send{ self.step.cmd ~= 'enter' and self.step.cmd or 'yell boat' }
 	self:newweaksub{ class = 'killtime', complete_func = handler.embark }
 end
@@ -136,7 +136,7 @@ hmy_shimen_tbl = {
 	'教主烛照天下，造福万民', '教主战无不胜，攻无不克', '日月神教文成武德、仁义英明', '教主中兴圣教，泽被苍生',
 }
 function handler:hmy_shimen( name )
-	if room.current.exit.wu then self:send{ 'wu' }; return end
+	if room.get().exit.wu then self:send{ 'wu' }; return end
 	local t = self.step
 	t.count = t.count or 0
 	if name == 'hmy_shimen_succeed' then
@@ -264,7 +264,7 @@ end
 function handler:jqg_enter( t )
 	if player.temp_flag.gsz_agree then
 		self:send{ 'xian hua;zuan dao' }
-	elseif room.has_object( npc[ '公孙止' ] ) then
+	elseif room.has_object '公孙止' then
 		player.temp_flag.gsz_agree = true -- only need to ask once per session
 		self:send{ t.cmd }
 	else -- wait 1 min for respawn
@@ -287,9 +287,9 @@ end
 -- 天山百丈涧
 function handler:ts_bzjian()
 	if not inventory.has_item{ type = 'sharp_weapon' } then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = 'sharp_weapon' }
-	elseif not player.wielded or not item.is_sharp_weapon( player.wielded ) then
-		self:newsub{ class = 'manage_inventory', action = 'wield', item = 'sharp_weapon', complete_func = handler.ts_bzjian }
+		self:newsub{ class = 'manage_inventory', action = 'prepare', type = 'sharp_weapon' }
+	elseif not player.wielded or not item.is_type( player.wielded, 'sharp_weapon' ) then
+		self:newsub{ class = 'manage_inventory', action = 'wield', type = 'sharp_weapon', complete_func = handler.ts_bzjian }
 	else
 		self:send{ self.step.cmd }
 	end
@@ -306,9 +306,9 @@ function handler:sld_enter()
 	elseif not inventory.has_item '粗绳子' and not room.has_object '粗绳子' then
 		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '粗绳子' } -- FIXME currently doesn't work, need to update task.manage_inventory
 	elseif not inventory.has_item{ type = 'sharp_weapon' } then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = 'sharp_weapon' }
-	elseif not player.wielded or not item.is_sharp_weapon( player.wielded ) then
-		self:newsub{ class = 'manage_inventory', action = 'wield', item = 'sharp_weapon', complete_func = handler.sld_enter }
+		self:newsub{ class = 'manage_inventory', action = 'prepare', type = 'sharp_weapon' }
+	elseif not player.wielded or not item.is_type( player.wielded, 'sharp_weapon' ) then
+		self:newsub{ class = 'manage_inventory', action = 'wield', type = 'sharp_weapon', complete_func = handler.sld_enter }
 	else
 		self:send{ 'chop tree' }
 	end
@@ -598,8 +598,8 @@ function handler:plum( t )
 	handler.data.plum = handler.data.plum or {}
 	local list = handler.data.plum
 	t.forward = list.entry_point ~= t.to.id and ( t.forward == nil and true or t.forward ) or false
-	if t.forward and not room.current.desc then self:send{ 'l' }; return end
-	if t.forward then table.insert( list, room.current.exit ) end
+	if t.forward and not room.get().desc then self:send{ 'l' }; return end
+	if t.forward then table.insert( list, room.get().exit ) end
 	local node, revdir = list[ #list ], DIR_REVERSE[ t.cmd ]
 	node[ revdir ] = node[ revdir ] and 0 or nil
 	for dir, v in pairs( node ) do
@@ -643,8 +643,8 @@ end
 
 -- from 明教紫杉林#9 to X字门，明教树林
 function handler:look_self_dir( t )
-	if not room.current.desc then self:send{ 'l' }; return end
-	for dir, roomname in pairs( room.current.exit ) do
+	if not room.get().desc then self:send{ 'l' }; return end
+	for dir, roomname in pairs( room.get().exit ) do
 		if roomname == t.to.name then self:send{ dir }; return end
 	end
 end
@@ -663,7 +663,7 @@ local look_around_cond_tbl = {
 											alt_exit = function( exit ) return exit.s ~= '空地' end, },
 }
 function handler:look_around( t )
-	if not room.current.desc then self:send{ 'l' }; return end
+	if not room.get().desc then self:send{ 'l' }; return end
 	self.is_step_need_desc = true
 	local cond = look_around_cond_tbl[ t.to.id ]
 	t.is_look_ok = cond.look or function() return true end
@@ -673,7 +673,7 @@ function handler:look_around( t )
 	t.look( self, t )
 end
 function handler:look( t )
-	local exit, dir_list = room.current.exit, {}
+	local exit, dir_list = room.get().exit, {}
 	for dir, roomname in pairs( exit ) do
 		table.insert( dir_list, dir )
 		if t.is_look_ok( roomname ) then
@@ -1405,7 +1405,7 @@ end
 
 -- 星宿海毒虫谷
 function handler:xx_duchonggu()
-	local dir = room.current.exit.se and 'se' or 'e'
+	local dir = room.get().exit.se and 'se' or 'e'
 	self:send{ dir }
 end
 
