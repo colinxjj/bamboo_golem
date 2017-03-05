@@ -21,10 +21,6 @@ function task:get_id()
 end
 
 function task:_resume()
-  local s = '开始物品任务：' .. self.action
-  s = self.count and ( s .. ' ' .. self.count ) or s
-  s = self.item and ( s .. ' ' .. self.item ) or s
-  message.verbose( s )
   task[ self.action ]( self ) -- call handler for the specified action
 end
 
@@ -97,7 +93,7 @@ function task:purchase( source )
   else
     id = item.get_id( self.item )
   end
-  self:listen{ event = 'inventory', func = self.check_source_result, id = 'task.manage_inventory' }
+  self:listen{ event = 'prompt', func = self.check_inventory, id = 'task.manage_inventory' }
   self:send{ 'buy ' .. id }
 end
 

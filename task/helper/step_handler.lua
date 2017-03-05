@@ -286,10 +286,10 @@ end
 
 -- ÃÏ…Ω∞Ÿ’…Ωß
 function handler:ts_bzjian()
-	if not inventory.has_item{ type = 'sharp_weapon' } then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', type = 'sharp_weapon' }
+	if not inventory.has_item 'sharp_weapon' then
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = 'sharp_weapon' }
 	elseif not player.wielded or not item.is_type( player.wielded, 'sharp_weapon' ) then
-		self:newsub{ class = 'manage_inventory', action = 'wield', type = 'sharp_weapon', complete_func = handler.ts_bzjian }
+		self:newsub{ class = 'manage_inventory', action = 'wield', item = 'sharp_weapon', complete_func = handler.ts_bzjian }
 	else
 		self:send{ self.step.cmd }
 	end
@@ -305,10 +305,10 @@ function handler:sld_enter()
 		self:send{ 'bang mu tou;#wa 1000;zuo mufa' }
 	elseif not inventory.has_item '¥÷…˛◊”' and not room.has_object '¥÷…˛◊”' then
 		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '¥÷…˛◊”' } -- FIXME currently doesn't work, need to update task.manage_inventory
-	elseif not inventory.has_item{ type = 'sharp_weapon' } then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', type = 'sharp_weapon' }
+	elseif not inventory.has_item 'sharp_weapon' then
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = 'sharp_weapon' }
 	elseif not player.wielded or not item.is_type( player.wielded, 'sharp_weapon' ) then
-		self:newsub{ class = 'manage_inventory', action = 'wield', type = 'sharp_weapon', complete_func = handler.sld_enter }
+		self:newsub{ class = 'manage_inventory', action = 'wield', item = 'sharp_weapon', complete_func = handler.sld_enter }
 	else
 		self:send{ 'chop tree' }
 	end
@@ -879,7 +879,7 @@ function handler:prepare_coin( t )
 	if string.find( self.to.id, 'Ã“ª®µ∫' )
 	and ( player.party == "Ã“ª®µ∫" and ( not player.skill["∆Ê√≈∞Àÿ‘"] or player.skill["∆Ê√≈∞Àÿ‘"].level <= 80 )
 	 or ( player.party ~= "Ã“ª®µ∫" and ( not player.skill["∆Ê√≈∞Àÿ‘"] or player.skill["∆Ê√≈∞Àÿ‘"].level <= 150 ) ) )
-	and not inventory.has_item{ name = 'Õ≠«Æ', count = 500 } then
+	and not inventory.has_item( 'Õ≠«Æ', 500 ) then
 		self:newsub{ class = 'manage_inventory', action = 'prepare', item = 'Õ≠«Æ', count = 500 }
 	else
 		self:send{ t.cmd }
