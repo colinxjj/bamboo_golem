@@ -378,9 +378,10 @@ local npc = {
   id = 'du jie',
   alternate_id = { 'du', 'jie' },
   location = 'áÔÉ½ÉÙÁÖ½ð¸Õ·üÄ§È¦',
+  power_level = 24,
   loot = { 'Ä¾ÃÞôÂôÄ' },
   provide = {
-    { item = 'Ä¾ÃÞôÂôÄ', cmd = 'ask du jie about Ä¾ÃÞôÂôÄ', },
+    { item = 'Ä¾ÃÞôÂôÄ', cmd = 'ask du jie about Ä¾ÃÞôÂôÄ', cond = 'player.power_level_parry >= 25' },
   },
 },
 

@@ -125,14 +125,14 @@ end
 
 function task:wield()
   if player.wielded then
-    if self.item == 'sharp_weapon' and item.is_type( player.wielded, 'sharp_weapon' ) or self.item == player.wielded.name then self:complete(); return end
+    if self.item == 'sharp_weapon' and item.is_type( player.wielded.name, 'sharp_weapon' ) or self.item == player.wielded.name then self:complete(); return end
     self:listen{ event = 'inventory', func = self.resume, id = 'task.manage_inventory' }
     self:send{ 'unwield ' .. player.wielded.id }
   else
     local id
     if self.item == 'sharp_weapon' then
-      for _, it in pairs( player.inventory ) do
-        if item.is_type( it, 'sharp_weapon' ) then id = item.get_id( it ); break end
+      for iname in pairs( player.inventory ) do
+        if item.is_type( iname, 'sharp_weapon' ) then id = inventory.get_item_id( iname ); break end
       end
     else
       id = item.get_id( self.item )

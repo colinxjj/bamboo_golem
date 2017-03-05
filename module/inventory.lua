@@ -33,6 +33,11 @@ function inventory.get_item_count( name )
 	return player.inventory[ name ] and player.inventory[ name ].count or 0
 end
 
+function inventory.get_item_id ( name )
+	for iname, it in pairs( player.inventory ) do
+		if iname == name then return it.id end
+	end
+end
 
 --------------------------------------------------------------------------------
 -- End of module
