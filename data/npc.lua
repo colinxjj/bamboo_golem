@@ -178,7 +178,7 @@ local npc = {
   name = '谷虚道长',
   id = 'guxu daozhang',
   alternate_id = { 'guxu' },
-  location = '武当山武当广场',
+  location = '武当山复真观',
   provide = {
     { item = '檀木护胸', cmd = 'ask guxu daozhang about 护胸', cond = 'player.party == "武当派"', },
     { item = '丹凤护腰', cmd = 'ask guxu daozhang about 护腰', cond = 'player.party == "武当派"', },

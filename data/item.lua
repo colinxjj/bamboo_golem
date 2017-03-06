@@ -177,8 +177,55 @@ local item = {
   quality = 150,
 },
 
+--------------------------------------------------------------------------------
+-- misc
 
+['毛毯#WD'] = {
+  name = '毛毯',
+  id = 'mao tan',
+  alternate_id = { 'tan' },
+  desc = '一张由纯羊毛织成的毛毯。毛线细密十分保暖。',
+  weight = 600,
+  source = {
+    { type = 'cmd', location = '武当山女休息室', cmd = 'find mao tan', },
+    { type = 'cmd', location = '武当山男休息室', cmd = 'find mao tan', },
+  },
+},
 
+['药锄'] = {
+  name = '药锄',
+  id = 'yao chu',
+  alternate_id = { 'chu' },
+  desc = '这是一把普通采药用的锄头。',
+  weight = 500,
+  source = {
+    { type = 'cmd', location = '武当山武当广场', cmd = 'find yao chu', cond = 'player.party == "武当派"', }
+  },
+},
+
+['绳子#WD'] = {
+  name = '绳子',
+  id = 'sheng zi',
+  alternate_id = { 'sheng' },
+  desc = '这是一捆长长的麻绳，最适合于攀爬之用。',
+  weight = 400,
+},
+
+['小树枝'] = {
+  name = '小树枝',
+  id = 'xiao shuzhi',
+  alternate_id = { 'shuzhi' },
+  desc = '这是一枝小树枝。',
+  weight = 1000,
+  source = {
+    { type = 'get', location = '昆仑山云杉林#1', },
+    { type = 'get', location = '明教树林深处#5', },
+    { type = 'get', location = '明教树林#M1', },
+    { type = 'get', location = '曼佗罗山庄柳树林#N', },
+    { type = 'get', location = '苏州城虎丘山', },
+    { type = 'get', location = '苏州城灵岩山', },
+  },
+},
 
 }
 

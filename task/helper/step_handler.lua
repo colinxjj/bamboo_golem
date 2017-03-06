@@ -45,7 +45,7 @@ function handler:cross_cj( t )
 		-- then hand over to fly handler
 		handler.fly( self )
 	else -- try to embark across all 3 positions
-		if room.get().exit.enter then self:send{ 'enter' }; return end -- if boat is here, enter it
+		if room.get().exit.enter then self:send{ 'enter' } return end -- if boat is here, enter it
 		t.to_yell = t.to_yell or { [ t.loc.w ] = true, [ t.loc.c ] = true, [ t.loc.e ] = true }
 		if t.to_yell[ t.curr_loc ] then -- yell at current location
 			self:send{ 'yell boat' }
@@ -102,7 +102,7 @@ trigger.new{ name = 'fly_done', group = 'step_handler.fly', match = '^(> )*你在(
 -- 乘坐渡船。黄河、长江、汉水、黑木崖猩猩滩、大雪山绞盘等
 -- TODO make sure have silver
 function handler:embark()
-	if room.get().exit.enter then self:send{ 'enter' }; return end
+	if room.get().exit.enter then self:send{ 'enter' } return end
 	self:send{ self.step.cmd ~= 'enter' and self.step.cmd or 'yell boat' }
 	self:newweaksub{ class = 'killtime', complete_func = handler.embark }
 end
@@ -136,7 +136,7 @@ hmy_shimen_tbl = {
 	'教主烛照天下，造福万民', '教主战无不胜，攻无不克', '日月神教文成武德、仁义英明', '教主中兴圣教，泽被苍生',
 }
 function handler:hmy_shimen( name )
-	if room.get().exit.wu then self:send{ 'wu' }; return end
+	if room.get().exit.wu then self:send{ 'wu' } return end
 	local t = self.step
 	t.count = t.count or 0
 	if name == 'hmy_shimen_succeed' then
@@ -249,7 +249,7 @@ function handler:jqg_river( t )
 		self:newsub{ class = 'manage_inventory', action = 'unwield', complete_func = handler.jqg_river }
 	elseif t.from.id == '绝情谷小溪边' then
 		local room = room.get()
-		if not room.desc then self:send{ 'l' }; return end
+		if not room.desc then self:send{ 'l' } return end
 		if not string.find( room.desc, '你沿岸迂回数次，发现溪中好象有艘小舟。' ) then
 			self:newsub{ class = 'killtime', complete_func = handler.look_again }
 		else
@@ -304,7 +304,7 @@ function handler:sld_enter()
 	elseif ( inventory.has_item '粗绳子' or room.has_object '粗绳子' ) and room.has_object '大木头' then
 		self:send{ 'bang mu tou;#wa 1000;zuo mufa' }
 	elseif not inventory.has_item '粗绳子' and not room.has_object '粗绳子' then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '粗绳子' } -- FIXME currently doesn't work, need to update task.manage_inventory
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '粗绳子' }
 	elseif not inventory.has_item 'sharp_weapon' then
 		self:newsub{ class = 'manage_inventory', action = 'prepare', item = 'sharp_weapon' }
 	elseif not player.wielded or not item.is_type( player.wielded.name, 'sharp_weapon' ) then
@@ -432,11 +432,73 @@ trigger.new{ name = 'tz_ask_ghost', group = 'step_handler.tz_cave', match = '^听
 -- 武当后山茅屋
 
 -- 武当后山古道
+function handler:wdhs_gudao()
+	if not inventory.has_item '毛毯#WD' then
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '毛毯#WD', complete_func = handler.wdhs_gudao }
+	elseif not inventory.has_item '药锄' then
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '药锄', complete_func = handler.wdhs_gudao }
+	elseif not map.is_current_location '武当山山路#2' then
+		self:newsub{ class = 'go', to = '武当山山路#2', complete_func = handler.wdhs_gudao }
+	elseif room.has_object '采药道长' then
+		self:send{ 'give yao chu to caiyao daozhang' }
+		inventory.add_item '绳子#WD'
+	else
+		self:newsub{ class = 'killtime', duration = 60, can_move = true, complete_func = handler.look_again }
+	end
+end
+
+-- 武当后山猢狲愁
+function handler:wdhs_husun()
+	if not inventory.has_item '绳子#WD' then self:fail() return end
+	self:send{ 'tie song;climb down' }
+end
+
+-- 武当后山山崖
+function handler:wdhs_shanya()
+	self.is_step_need_desc = true
+	self:send{ 'pa down' }
+end
+function handler:wdhs_jump( t )
+	if not inventory.has_item '毛毯#WD' then self:fail() return end
+	inventory.remove_item( t.to.id == '武当后山万年松' and '绳子#WD' or '毛毯#WD' )
+	self:send{ 'jump down' }
+end
+
+-- 武当后山水潭
+function handler:wdhs_shuitan()
+	if not inventory.has_item '练心石' then self:fail() return end
+	self:send{ 'dive down' }
+end
+
+-- 襄阳郊外大山洞
+function handler:xy_cave()
+	if not inventory.has_item '火折' then
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '火折', complete_func = handler.xy_cave }
+	elseif not inventory.has_item '小树枝' then
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '小树枝', complete_func = handler.xy_cave }
+	elseif not map.is_current_location '襄阳郊外大山洞' then
+		self:newsub{ class = 'go', to = '襄阳郊外大山洞', complete_func = handler.xy_cave }
+	else
+		self:send{ 'dian shuzhi;l qingtai;#wa 1500;clean qingtai;l zi;l mu;#wa 1500;kneel mu;#wa 1500;zuan dong;#wa 1500' }
+		inventory.remove_item '小树枝'
+	end
+end
+
+-- 襄阳郊外峭壁
+function handler:xyjw_cliff()
+	if self.step.is_successful then
+		self:send{ '#wa 3500;mo qingtai;cuan up;#wa 3500' }
+	else
+		self:listen{ event = 'prompt', func = handler.xyjw_cliff, id = 'step_handler.xyjw_cliff' }
+		self:send{ 'l shibi' }
+	end
+end
+trigger.new{ name = 'xyjw_cliff_look', group = 'step_handler.xyjw_cliff', match = '^(> )*你凝神瞧了一阵，突见峭壁上每隔数尺便生著一丛青苔，数十丛笔直排列而上。$', func = handler.step_cmd_succeed }
 
 -- 峨嵋山洗象池
 
 
--- 嵩山少林迎客亭
+-- 嵩山少林迎客亭、襄阳郊外剑冢
 function handler:unwield_weapon()
 	if player.wielded then
 		self:newsub{ class = 'manage_inventory', action = 'unwield', complete_func = handler.unwield_weapon }
@@ -521,11 +583,11 @@ function handler:cord( t )
 	handler.data[ t.from.id ] = handler.data[ t.from.id ] or {}
 	local d = handler.data[ t.from.id ]
 	d.x, d.y = d.x or 0, d.y or 0
-	if t.dest.y > d.y then self:send{ 'n' }; d.y = d.y + 1; return end
-	if t.dest.y < d.y then self:send{ 's' }; d.y = d.y - 1; return end
+	if t.dest.y > d.y then self:send{ 'n' }; d.y = d.y + 1 return end
+	if t.dest.y < d.y then self:send{ 's' }; d.y = d.y - 1 return end
 	-- handle x only after y is done, to avoid premature exit in 终南山黑林
-	if t.dest.x > d.x then self:send{ 'e' }; d.x = d.x + 1; return end
-	if t.dest.x < d.x then self:send{ 'w' }; d.x = d.x - 1; return end
+	if t.dest.x > d.x then self:send{ 'e' }; d.x = d.x + 1 return end
+	if t.dest.x < d.x then self:send{ 'w' }; d.x = d.x - 1 return end
 	self:send{ 'e' }; d.x = d.x + 1
 end
 
@@ -558,11 +620,11 @@ function handler:twisted_cord( t )
 	handler.data[ t.to.id ] = nil -- a workaround to reset data for 回疆针叶林#M
 	local d = handler.data[ t.from.id ]
 	d.x, d.y = d.x or 0, d.y or 0
-	if t.dest.x > d.x then self:send{ 'n' }; d.x = d.x + 1; return end
-	if t.dest.x < d.x then self:send{ 'e' }; d.x = d.x - 1; return end
-	if t.dest.y > d.y then self:send{ 's' }; d.y = d.y + 1; return end
-	if t.dest.y < d.y then self:send{ 'w' }; d.y = d.y - 1; return end
-	if t.dest.z then self:send{ t.dest.z }; return end
+	if t.dest.x > d.x then self:send{ 'n' }; d.x = d.x + 1 return end
+	if t.dest.x < d.x then self:send{ 'e' }; d.x = d.x - 1 return end
+	if t.dest.y > d.y then self:send{ 's' }; d.y = d.y + 1 return end
+	if t.dest.y < d.y then self:send{ 'w' }; d.y = d.y - 1 return end
+	if t.dest.z then self:send{ t.dest.z } return end
 end
 
 -- 回疆针叶林、回疆大戈壁（回疆绿洲方向）、峨嵋山灌木丛、终南山石室
@@ -598,7 +660,7 @@ function handler:plum( t )
 	handler.data.plum = handler.data.plum or {}
 	local list = handler.data.plum
 	t.forward = list.entry_point ~= t.to.id and ( t.forward == nil and true or t.forward ) or false
-	if t.forward and not room.get().desc then self:send{ 'l' }; return end
+	if t.forward and not room.get().desc then self:send{ 'l' } return end
 	if t.forward then table.insert( list, room.get().exit ) end
 	local node, revdir = list[ #list ], DIR_REVERSE[ t.cmd ]
 	node[ revdir ] = node[ revdir ] and 0 or nil
@@ -615,7 +677,7 @@ end
 local xy_shulin_path = { 'n', 'e', 'n', 'e', 'w', 's', 'n', 's', 's', 'n' }
 function handler:xy_shulin( t )
 	local room, pos = room.get(), handler.data[ t.from.id ]
-	if not room.desc and not pos then self:send{ 'l' }; return end
+	if not room.desc and not pos then self:send{ 'l' } return end
 	pos = ( room.exit.s == '山路' and 1 )
 		 or ( room.exit.n == '山路' and 8 )
 		 or ( pos and pos < 10 and pos + 1 )
@@ -643,9 +705,9 @@ end
 
 -- from 明教紫杉林#9 to X字门，明教树林
 function handler:look_self_dir( t )
-	if not room.get().desc then self:send{ 'l' }; return end
+	if not room.get().desc then self:send{ 'l' } return end
 	for dir, roomname in pairs( room.get().exit ) do
-		if roomname == t.to.name then self:send{ dir }; return end
+		if roomname == t.to.name then self:send{ dir } return end
 	end
 end
 
@@ -663,7 +725,7 @@ local look_around_cond_tbl = {
 											alt_exit = function( exit ) return exit.s ~= '空地' end, },
 }
 function handler:look_around( t )
-	if not room.get().desc then self:send{ 'l' }; return end
+	if not room.get().desc then self:send{ 'l' } return end
 	self.is_step_need_desc = true
 	local cond = look_around_cond_tbl[ t.to.id ]
 	t.is_look_ok = cond.look or function() return true end
@@ -691,7 +753,7 @@ end
 function handler:look_around_result( result )
 	local t = self.step
 	for dir, room in pairs( result ) do
-		if t.is_exit( room.exit ) then self:send{ dir }; return end
+		if t.is_exit( room.exit ) then self:send{ dir } return end
 		if t.is_alt_exit( room.exit ) then t.alt_exit = dir end
 	end
 	t.look( self, t )
@@ -733,7 +795,7 @@ local function wdhs_conglin_locate( room ) -- return room no. that matches given
 end
 function handler:wdhs_conglin( t )
 	local pos, room = handler.data.wdhs_conglin_pos, room.get()
-	if not room.desc and not pos then self:send{ 'l' }; return end
+	if not room.desc and not pos then self:send{ 'l' } return end
 	if pos then -- if exact position is known, then just walk the path
 		-- go to 武当后山丛林边缘#2 if in correct position
 		if pos > 14 and t.to.id == '武当后山丛林边缘#2' then
@@ -791,7 +853,7 @@ end
 function handler:wdhs_conglin_look_result( result )
 	local t = self.step
 	for dir, room in pairs( result ) do
-		if wdhs_conglin_locate( room ) then self:send{ dir }; return end -- go to room that can be uniquely identified
+		if wdhs_conglin_locate( room ) then self:send{ dir } return end -- go to room that can be uniquely identified
 		t.alt_exit = dir
 	end
 	t.look_around( self, t )
@@ -845,9 +907,9 @@ end
 function handler:gyz_jiugong()
 	handler.data.jiugong = handler.data.jiugong or {}
 	local room, t = room.get(), handler.data.jiugong
-	if t.has_exited then handler.data.jiugong = nil; return end
+	if t.has_exited then handler.data.jiugong = nil return end
 	t.inv_count, t.pos = t.inv_count or 0, get_pos( room )
-	if not room.desc and not t[ t.pos ] then self:send{ 'l' }; return end
+	if not room.desc and not t[ t.pos ] then self:send{ 'l' } return end
 	local taohua_count = t[ t.pos ] or get_taohua_count( room )
 	if not t.taohua_adjusted and taohua_count ~= 5 and t.inv_count >= 5 - taohua_count then
 		t.taohua_adjusted = true
@@ -1240,13 +1302,13 @@ function handler:thd_mudao( t )
 	t = self.step
 	local room = room.get()
 	-- arrived at 桃花岛墓道#2?
-	if room.exit.d and not room.exit.out then self:check_step(); return end
+	if room.exit.d and not room.exit.out then self:check_step() return end
 	-- intercept next located event, i.e. handle failures here instead of by the standard routine
 	self:listen{ event = 'located', func = handler.thd_mudao, id = 'step_handler.thd_mudao', sequence = 99, keep_eval = false }
 	-- returned to 桃花岛墓道#1?
 	if room.exit.out then
 		-- ignore first room because of repetition bug
-		if not t.is_fail_known and t.offset ~= 'reset_done' then t.is_fail_known = true; return end
+		if not t.is_fail_known and t.offset ~= 'reset_done' then t.is_fail_known = true return end
 		-- reset vars
 		t.is_fail_known, t.round = nil, 1
 		t.offset = not t.offset and 'later'
@@ -1282,9 +1344,9 @@ end
 -- from 桃花岛墓道#2 to 桃花岛墓道#M
 function handler:thd_mudao_up( t )
 	local room = room.get()
-	if os.time() - room.time > 5 then self:send{ 'l' }; return end -- refresh room data if stale
+	if os.time() - room.time > 5 then self:send{ 'l' } return end -- refresh room data if stale
 	for _, dir in pairs( DIR_ALL ) do
-		if dir ~= 'd' and room.exit[ dir ] then self:send{ dir }; return end
+		if dir ~= 'd' and room.exit[ dir ] then self:send{ dir } return end
 	end
 end
 
@@ -1358,7 +1420,7 @@ local thd_wuxing_step_tbl = {
 }
 function handler:thd_wuxing()
 	local room = room.get()
-	if room.name == '石坟' then self:check_step(); return end
+	if room.name == '石坟' then self:check_step() return end
 	local dir = thd_wuxing_step_tbl[ handler.data.wuxing ][ room.name ]
 	self:listen{ event = 'located', func = handler.thd_wuxing, id = 'step_handler.thd_wuxing', sequence = 99, keep_eval = false }
 	self:send{ dir }
@@ -1368,7 +1430,7 @@ end
 local patt = any_but '灌木'^1 * '灌木，' * lpeg.C( any_but '方'^1 ) * '方似乎能走过去'
 function handler:ts_longtan()
 	local room = room.get()
-	if not room.desc then self:send{ 'l' }; return end
+	if not room.desc then self:send{ 'l' } return end
 	local dir = CN_DIR[ patt:match( room.desc ) ]
 	self:send{ dir }
 end
@@ -1379,10 +1441,10 @@ function handler:wls_songlin( t )
 	local room = room.get()
 	t.step_count = t.step_count and t.step_count + 1 or 1
 	if t.step_count > 50 then self:fail() end -- limit to 50 steps since this maze can be a dead lock
-	if not room.desc then self:send{ 'l' }; return end
+	if not room.desc then self:send{ 'l' } return end
 	local pos = room.exit.s == '后院' and 1 or room.exit.e == '大瀑布' and 3 or 2
-	if pos == 1 and t.to.id == '无量山后院' then self:send{ 's' }; return end
-	if pos == 3 and t.to.id == '无量山大瀑布' then self:send{ 'e' }; return end
+	if pos == 1 and t.to.id == '无量山后院' then self:send{ 's' } return end
+	if pos == 3 and t.to.id == '无量山大瀑布' then self:send{ 'e' } return end
 	local t = wls_songlin_tbl[ pos ]
 	self:send{ t[ math.random( #t ) ] }
 end
@@ -1395,8 +1457,8 @@ function handler:hdg_huapu( t )
 	t = self.step
 	t.i = t.i or 1
 	local room = room.get()
-	if room.name == t.to.name then self:check_step(); return end
-	if room.name == '牛棚' then self:send{ 'nd' }; return end
+	if room.name == t.to.name then self:check_step() return end
+	if room.name == '牛棚' then self:send{ 'nd' } return end
 	self:listen{ event = 'located', func = handler.hdg_huapu, id = 'step_handler.hdg_huapu', sequence = 99, keep_eval = false }
 	t.i = t.i + 1
 	if t.i > 10 then self:send{ 'yun jing' }; t.i = 0 end
@@ -1413,7 +1475,7 @@ end
 local sld_yaopu_step_tbl = { 'northwest', 'north', 'northeast', 'east', 'southeast', 'south', 'southwest', 'west' }
 local sld_yaopu_pos_tbl = { 1, 7, 4, 5, 2, 6, 3, 8 }
 function handler:sld_yaopu()
-	if not time.uptime then self:newsub{ class = 'getinfo', uptime = 'forced', complete_func = handler.sld_yaopu }; return end
+	if not time.uptime then self:newsub{ class = 'getinfo', uptime = 'forced', complete_func = handler.sld_yaopu } return end
 	local offset, clist, step = math.modf( time.get_uptime() % 1800 / 225 ), {}
 	for i = 1, 8 do
 		step = sld_yaopu_pos_tbl[ i ] + offset

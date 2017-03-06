@@ -240,14 +240,15 @@ local function calculate_source_score( source, is_quality_ignored )
 	return score
 end
 
+local function sort_by_score( a, b )
+	return a.score > b.score
+end
+
 function item.get_sorted_source( name, is_quality_ignored )
 	assert( type( name ) == 'string', 'item.get_sorted_source - param must be a string' )
-	local slist, score = item.get_all_source( name ), {}
+	local slist = item.get_all_source( name )
 	for _, source in pairs( slist ) do
-		score[ source ] = calculate_source_score( source, is_quality_ignored )
-	end
-	local sort_by_score = function ( a, b )
-		return score[ a ] > score[ b ]
+		source.score = calculate_source_score( source, is_quality_ignored )
 	end
 	table.sort( slist, sort_by_score )
 	--tprint( slist )
@@ -265,6 +266,7 @@ end
 function item.is_valid_source( source )
 	local is_valid = ( not source.last_fail_time or os.time() - source.last_fail_time > 200 ) -- if last try at a source failed, then only retry that source at least 200 seconds later
 							 and ( not source.cond or cond_checker[ source.cond ]() ) -- always check source cond in case player status changed, e.g. bank balance update could result in all bank sources not being valid any more
+							 and source.score > -1000 -- ignore soure with very low scores
 	return is_valid
 end
 

@@ -31,6 +31,13 @@ function task:_complete()
   message.verbose( s )
 end
 
+function task:_fail()
+  local s = '物品任务失败：' .. self.action
+  s = self.count and ( s .. ' ' .. self.count ) or s
+  s = self.item and ( s .. ' ' .. self.item ) or s
+  message.verbose( s )
+end
+
 --------------------------------------------------------------------------------
 -- prepare
 
@@ -39,11 +46,12 @@ function task:prepare()
   -- already have the required item(s)?
   local has_item = inventory.has_item( self.item, self.count_min or self.count )
   -- update inventory info if no count data or current count data can be higher than the actual count
-  if has_item == 'unsure' then self:newsub{ class = 'getinfo', inventory = 'forced' }; return end
+  if has_item == 'unsure' then self:newsub{ class = 'getinfo', inventory = 'forced' } return end
   -- complete the task if have enough item
-  if has_item then self:complete(); return end
+  if has_item then self:complete() return end
   -- otherwise, try the best source available
   local source = item.get_best_source( self.item )
+  if not source then self:fail() return end
   self:handle_source( source )
 end
 
@@ -76,7 +84,7 @@ function task:get( source )
   if room.has_object( source.item ) then
     self:listen{ event = 'prompt', func = self.check_source_result, id = 'task.manage_inventory' }
     local c = self.count ~= 1 and ( self.count .. ' ' ) or ''
-    self.send{ 'get ' .. c .. self.item }
+    self:send{ 'get ' .. c .. item.get_id( self.item ) }
   else
     item.mark_invalid_source( source )
     self:resume()
@@ -125,14 +133,14 @@ end
 
 function task:wield()
   if player.wielded then
-    if self.item == 'sharp_weapon' and item.is_type( player.wielded.name, 'sharp_weapon' ) or self.item == player.wielded.name then self:complete(); return end
+    if self.item == 'sharp_weapon' and item.is_type( player.wielded.name, 'sharp_weapon' ) or self.item == player.wielded.name then self:complete() return end
     self:listen{ event = 'inventory', func = self.resume, id = 'task.manage_inventory' }
     self:send{ 'unwield ' .. player.wielded.id }
   else
     local id
     if self.item == 'sharp_weapon' then
       for iname in pairs( player.inventory ) do
-        if item.is_type( iname, 'sharp_weapon' ) then id = inventory.get_item_id( iname ); break end
+        if item.is_type( iname, 'sharp_weapon' ) then id = inventory.get_item_id( iname ) or item.get_id( iname ); break end
       end
     else
       id = item.get_id( self.item )

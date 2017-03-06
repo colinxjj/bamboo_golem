@@ -272,6 +272,8 @@ end
 
 -- check if a room is the current location or one of the possible current locations
 function map.is_current_location( room )
+  if type( room ) == 'string' then room = map.get_room_by_id( room ) end
+  if not room then return end
   for _, loc in pairs( map.get_current_location() ) do
     if loc == room then return true end
   end

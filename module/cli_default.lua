@@ -55,7 +55,7 @@ cli.register{ cmd = 'loc', desc = '定位当前位置。', func = parse_loc, no_prefix 
 
 local function parse_dev()
   if dev_mode then
-    dev_mode, message.level, log.level = false, 'normal', 'normal'
+    dev_mode, message.level, log.level = false, 'verbose', 'verbose'
     message.normal '开发模式已关闭'
   else
     dev_mode, message.level, log.level = true, 'debug', 'debug'
