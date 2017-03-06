@@ -54,9 +54,9 @@ local sep_patt = sep^0 * lpeg.Cs( ( nonsep^1 * ( sep / '|' + -1 ) )^1 )
 
 -- pattern used to split commands into units, #wa and ask commands get their standalone units because they cause delay to subsequent commands
 local nsep = lpeg.P '|'
-local waitp = lpeg.C( lpeg.P '#wa' * ' ' * lpeg.R '09'^1 * ( nsep + -1 ) )
+local waitp = lpeg.C( lpeg.P '#w' * lpeg.S 'ab' * ' ' * lpeg.R '09'^1 * ( nsep + -1 ) )
 local askp = lpeg.C( lpeg.P 'ask ' * any_but( nsep )^1 * ( nsep + -1 ) )
-local cmdp = lpeg.C( ( 1 - lpeg.P '#wa' - 'ask' )^1 )
+local cmdp = lpeg.C( ( 1 - lpeg.P '#wa' - lpeg.P '#wb' - 'ask' )^1 )
 local unit_patt = ( waitp + askp + cmdp )^1
 
 -- pattern used to remove leading and trailing '|'
@@ -89,7 +89,7 @@ local function add_to_list( c )
   list_endpos = list_endpos + 1
   list[ list_endpos ] = c
 
-  if list_endpos - list_startpos > 1000 then -- store 1000 list entries
+  if list_endpos - list_startpos > 100 then -- store 100 list entries
     list[ list_startpos ] = nil
     list_startpos = list_startpos + 1
   end
@@ -124,12 +124,16 @@ local is_possibly_still_busy
 
 -- send a command
 local function send( c )
-  if c.type == '#wa' then
-    c.duration = tonumber( ( string.gsub( c.cmd, '#wa ', '' ) ) )
+  if c.type == '#wa' or c.type == '#wb' then
+    c.duration = tonumber( ( string.gsub( c.cmd, '#w[ab] ', '' ) ) )
     c.hbcount = c.duration / ( HEARTBEAT_INTERVAL * 1000 ) -- convert duration to number of heartbeats
     -- message.debug( 'CMD 模块按照 #wa 命令等待 ' .. c.duration .. ' 毫秒 / ' .. c.hbcount .. ' 次心跳' )
     c.target_hbcount = get_heartbeat_count() + c.hbcount
     c.status = 'waiting'
+    if c.type == '#wb' then -- mark player as busy for the same period for #wb
+      addbusy( c.duration / 1000 )
+      is_possibly_still_busy = true
+    end
   elseif is_possibly_still_busy and c.type == 'batch' and not c.ignore_result then -- try halting first if might still be in busy and next command is a batch
     if is_possibly_still_busy == true then
       is_possibly_still_busy = 'halt_sent'
@@ -153,7 +157,7 @@ function cmd.dispatch( source )
   if not c then return end -- return if no command at current position
 
   -- first check if current cmd's task if still active, if not, discard it and subsequent commands from the same task and end this dispatch session
-  if c.task and c.task.status ~= 'running' and c.task.status ~= 'lurking' and c.status ~= 'sent' then
+  if c.task and c.task.status ~= 'running' and c.task.status ~= 'lurking' and c.status ~= 'sent' and c.status ~= 'completed' then
     message.debug( 'CMD 模块：舍弃任务“' .. c.task.id .. '”的命令：' .. c.cmd )
     c.status = 'discarded'
     list_curpos = list_curpos + 1
@@ -173,6 +177,7 @@ function cmd.dispatch( source )
       -- move on to next command
       if c.status ~= 'pending' then
         c.status = 'completed'
+        if c.complete_func then c.complete_func( c.task ) end
         list_curpos = list_curpos + 1
       end
 

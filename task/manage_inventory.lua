@@ -69,8 +69,7 @@ function task:handle_source( source )
   elseif source.type == 'get' then
     self:get( source )
   elseif source.type == 'cmd' then
-    self:listen{ event = 'prompt', func = self.check_inventory, id = 'task.manage_inventory' }
-    self:send{ source.cmd }
+    self:send{ source.cmd; complete_func = self.check_inventory }
   elseif source.type == 'local_handler' then
     _G.task.helper.item_finder[ source.handler ]( self )
   elseif source.type == 'shop' then
@@ -82,9 +81,8 @@ end
 -- get item from ground
 function task:get( source )
   if room.has_object( source.item ) then
-    self:listen{ event = 'prompt', func = self.check_source_result, id = 'task.manage_inventory' }
     local c = self.count ~= 1 and ( self.count .. ' ' ) or ''
-    self:send{ 'get ' .. c .. item.get_id( self.item ) }
+    self:send{ 'get ' .. c .. item.get_id( self.item ); complete_func = self.check_source_result }
   else
     item.mark_invalid_source( source )
     self:resume()
@@ -101,8 +99,7 @@ function task:purchase( source )
   else
     id = item.get_id( self.item )
   end
-  self:listen{ event = 'prompt', func = self.check_inventory, id = 'task.manage_inventory' }
-  self:send{ 'buy ' .. id }
+  self:send{ 'buy ' .. id; complete_func = self.check_inventory }
 end
 
 function task:check_inventory()
@@ -123,8 +120,7 @@ end
 
 function task:unwield()
   if player.wielded then
-    self:listen{ event = 'prompt', func = self.resume, id = 'task.manage_inventory' }
-    self:send{ 'unwield ' .. player.wielded.id }
+    self:send{ 'unwield ' .. player.wielded.id; complete_func = self.resume }
     player.wielded = nil
   else
     self:complete()
@@ -134,8 +130,7 @@ end
 function task:wield()
   if player.wielded then
     if self.item == 'sharp_weapon' and item.is_type( player.wielded.name, 'sharp_weapon' ) or self.item == player.wielded.name then self:complete() return end
-    self:listen{ event = 'inventory', func = self.resume, id = 'task.manage_inventory' }
-    self:send{ 'unwield ' .. player.wielded.id }
+    self:send{ 'unwield ' .. player.wielded.id; complete_func = self.resume }
   else
     local id
     if self.item == 'sharp_weapon' then
@@ -145,8 +140,7 @@ function task:wield()
     else
       id = item.get_id( self.item )
     end
-    self:listen{ event = 'inventory', func = self.resume, id = 'task.manage_inventory' }
-    self:send{ 'wield ' .. id }
+    self:send{ 'wield ' .. id; complete_func = self.resume }
   end
 end
 

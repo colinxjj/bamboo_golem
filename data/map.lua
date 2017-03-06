@@ -13426,8 +13426,8 @@ local map = {
   name = '苗家庄门口',
   desc =  [[这里是苗家庄的大门，两扇黑漆漆的大门敞开着，门口正中央高悬着一块金色横匾“苗家庄”，台阶两旁立着两个石狮，只是门街冷清，颇为凄凉。]],
   exit = {
-    w = { to = '兰州城前厅', cmd = '#wa 2000;w', },
-    e = { to = '兰州城大道#1S', cmd = '#wa 2000;e', },
+    w = { to = '兰州城前厅', cmd = '#wb 2000;w', },
+    e = { to = '兰州城大道#1S', cmd = '#wb 2000;e', },
   },
 },
 
@@ -13448,8 +13448,8 @@ local map = {
   name = '正厅',
   desc =  [[这里是苗家庄的正厅,周围的墙上挂着几幅字画,似乎出自名家手笔，屋子打扫的很干净，但是一字两排八仙桌，却颇有山寨模样。]],
   exit = {
-    s = { to = '兰州城前厅',cmd = '#wa 2000;s', },
-    n = { to = '兰州城后院', cmd = '#wa 2000;n', },
+    s = { to = '兰州城前厅',cmd = '#wb 2000;s', },
+    n = { to = '兰州城后院', cmd = '#wb 2000;n', },
   },
 },
 
@@ -16818,7 +16818,7 @@ local map = {
   name = '石棺内',
   desc =  [[棺盖内侧似乎写得有字，凝目瞧去，果见是十六个大字：「玉女心经，技压全真。重阳一生，不弱於人。」这十六个字以浓墨所书，笔力苍劲，字体甚大。其时棺盖只推开了一半，但斜眼看去，仍是清清楚楚。]],
   exit = {
-    hidden = { to = '终南山石室#3D', cmd = 'use fire;#9 search;turn ao left;#wa 1500;ti up', },
+    hidden = { to = '终南山石室#3D', cmd = 'use fire;#9 search;turn ao left;#wb 1500;ti up', },
     out = { to = '终南山灵室', },
   },
 },
@@ -22425,7 +22425,7 @@ local map = {
   desc =  [[这里是仙愁门，仙愁门三面环海，云天无际，凛冽北风掠过身边，吹得人如腾云驾雾，彷佛这里真的是与天接壤之处。]],
   exit = {
     nu = { to = '天山山径#1', },
-    hidden = { to = '天山百丈涧', cmd = 'tiao duimian;#wa 3500', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 100', },
+    hidden = { to = '天山百丈涧', cmd = 'tiao duimian;#wb 3500', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 100', },
   },
 },
 
@@ -22814,7 +22814,7 @@ local map = {
   desc =  [[眼前是一处山涧，深不可测。连接两侧峭壁的竟是几条铁链，铁链上的木板早已不见。这边桥柱上钉这几枚暗器，四周积雪中插有数柄断刀断剑，更多的是些奇门兵器，有几柄色泛悠蓝，定是涂有剧毒, 山涧下面是云雾弥漫的万丈深崖，看来掉下去定无生路。]],
   exit = {
     s = { to = '天山失足岩', },
-    hidden = { to = '天山仙愁门', cmd = 'ge tielian;#wa 3500;tiao duimian;#wa 3500', handler = 'ts_bzjian', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 100', },
+    hidden = { to = '天山仙愁门', cmd = 'ge tielian;#wb 3500;tiao duimian;#wb 3500', handler = 'ts_bzjian', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 100', },
   },
 },
 
@@ -26183,7 +26183,7 @@ local map = {
   exit = {
     e = { to = '华山玉女峰', },
     hidden = { to = '华山山涧#SW', cmd = 'tiao down', cond = '( player.dex >= 30 or ( player.enable.dodge and player.enable.dodge.level >= 100 ) ) and player.skill["基本轻功"] and player.skill["基本轻功"].level >= 140', },
-    hidden = { to = '华山瀑布底', cmd = 'tiao tan;#wa 4500', },
+    hidden = { to = '华山瀑布底', cmd = 'tiao tan;#wb 4500', },
   },
 },
 
@@ -30205,8 +30205,8 @@ local map = {
   name = '松树',
   desc = [[这是一株长于峭壁上的松树。向上而望，不能看见悬崖上之物，刚才从上面跳下之时义无返顾，但回想起来你自不禁心悸，额头冷汗涔涔而下。再看四下形势，向上攀援是绝不可能，而脚下也深不见底。如果跌到底下，十之八九是没有命了的，唯有沿着山壁斜坡，慢慢的爬行出去。东边是雪山上的斜坡，西面是半山悬崖。]],
   exit = {
-    hidden1 = { to = '昆仑山雪山斜坡#1', cmd = 'climb east;#wa 1500', },
-    hidden2 = { to = '昆仑山半山悬崖', cmd = 'climb west;#wa 1500', },
+    hidden1 = { to = '昆仑山雪山斜坡#1', cmd = 'climb east;#wb 1500', },
+    hidden2 = { to = '昆仑山半山悬崖', cmd = 'climb west;#wb 1500', },
   },
 },
 
@@ -30216,7 +30216,7 @@ local map = {
   name = '半山悬崖',
   desc = [[你向西爬行，这边的山势十分凶险，直爬了半个时辰也无任何去路了。]],
   exit = {
-    hidden2 = { to = '昆仑山松树', cmd = 'climb east;#wa 1500', },
+    hidden2 = { to = '昆仑山松树', cmd = 'climb east;#wb 1500', },
   },
 },
 
@@ -30226,8 +30226,8 @@ local map = {
   name = '雪山斜坡',
   desc = [[你手脚着地，沿着雪山斜坡，一步一步向着有阳光之处爬去，但此峭壁本就极陡，加上冻结冰雪，更是滑溜无比，一不小心就会滑跌。]],
   exit = {
-    hidden1 = { to = '昆仑山雪山斜坡#2', cmd = 'climb east;#wa 1500', },
-    hidden2 = { to = '昆仑山松树', cmd = 'climb west;#wa 1500', },
+    hidden1 = { to = '昆仑山雪山斜坡#2', cmd = 'climb east;#wb 1500', },
+    hidden2 = { to = '昆仑山松树', cmd = 'climb west;#wb 1500', },
   },
 },
 
@@ -30237,8 +30237,8 @@ local map = {
   name = '雪山斜坡',
   desc = [[你手脚着地，沿着雪山斜坡，一步一步向着有阳光之处爬去，但此峭壁本就极陡，加上冻结冰雪，更是滑溜无比，一不小心就会滑跌。]],
   exit = {
-    hidden1 = { to = '昆仑山大石壁', cmd = 'climb east;#wa 1500', },
-    hidden2 = { to = '昆仑山雪山斜坡#1', cmd = 'climb west;#wa 1500', },
+    hidden1 = { to = '昆仑山大石壁', cmd = 'climb east;#wb 1500', },
+    hidden2 = { to = '昆仑山雪山斜坡#1', cmd = 'climb west;#wb 1500', },
   },
 },
 
@@ -30270,8 +30270,8 @@ local map = {
   name = '山洞',
   desc = [[这是一个越来越窄的山洞，洞壁皆是颇为坚硬的岩石，刀剑不能开。洞口刚好能进一人，如果不小心头部则会撞到山石。往里十多丈后，更加狭窄，身体已不能随意的转动了，如果身体稍大点则不能入内。再进数丈后，忽见前面透进亮光，似乎另有一翻天地。 ]],
   exit = {
-    hidden1 = { to = '昆仑山洞天福地', cmd = 'climb;#wa 1500', cond = 'player.str < 25 or ( player.skill["基本内功"] and player.skill["基本内功"].level >= 150 )', },
-    hidden2 = { to = '昆仑山大平台', cmd = 'back;#wa 1500', },
+    hidden1 = { to = '昆仑山洞天福地', cmd = 'climb;#wb 1500', cond = 'player.str < 25 or ( player.skill["基本内功"] and player.skill["基本内功"].level >= 150 )', },
+    hidden2 = { to = '昆仑山大平台', cmd = 'back;#wb 1500', },
   },
 },
 
@@ -32667,7 +32667,7 @@ local map = {
   name = '秘室',
   desc = [[这是一个较大的秘室。是明教历代教主练功的地方，秘室内用器样样具全，东边有一张大石床，床上躺着一具已干枯的的男性骸骨(haigu），只有毛发和衣服尚没腐烂，床延伏着一具较为瘦小的骸骨(haigu），衣着为女性衣服，骸骨上插着一把短剑，想是当年自尽而忙。秘室四周皆为石壁(wall)，没有任何的出路通何外面。]],
   exit = {
-    e = { to = '明教秘道#15', door = 'gua wall;push men;#wa 2500', cond = 'player.skill["乾坤大挪移"] and player.skill["乾坤大挪移"].level >= 50', },
+    e = { to = '明教秘道#15', door = 'gua wall;push men;#wb 2500', cond = 'player.skill["乾坤大挪移"] and player.skill["乾坤大挪移"].level >= 50', },
   },
 },
 
@@ -32689,7 +32689,7 @@ local map = {
   exit = {
     s = { to = '明教藏金室', },
     wu = { to = '明教秘道#11', },
-    enter = { to = '明教秘室#1', door = 'pull zhuan down;#wa 1500', cond = 'player.exp >= 350000 and player.skill["基本内功"] and player.skill["基本内功"].level >= 140', },
+    enter = { to = '明教秘室#1', door = 'pull zhuan down;#wb 1500', cond = 'player.exp >= 350000 and player.skill["基本内功"] and player.skill["基本内功"].level >= 140', },
   },
 },
 
@@ -33325,7 +33325,7 @@ local map = {
   desc =  [[这洞其实甚浅，行不到三丈，已抵尽头，洞中除了一张石桌、一张石凳之外更无别物。洞角有一堆乱石高起，极似一个坟墓，洞壁上似乎写得有字，只是尘封苔蔽，黑暗中瞧不清楚。]],
   exit = {
     out = { to = '襄阳郊外洞口', },
-    hidden = { to = '襄阳郊外深谷#1', no_wander = true, handler = 'xy_cave', },
+    hidden = { to = '襄阳郊外深谷#1', no_wander = true, handler = 'xyjw_cave', },
   },
 },
 
@@ -33405,8 +33405,8 @@ local map = {
     w = { to = '襄阳郊外树林', },
     s = { to = '襄阳郊外树林', },
     n = { to = '襄阳郊外树林', },
-    s2 = { to = '襄阳郊外山路#1', cost = 10, handler = 'xy_shulin', },
-    n2 = { to = '襄阳郊外山路#2', cost = 10, handler = 'xy_shulin', },
+    s2 = { to = '襄阳郊外山路#1', cost = 10, handler = 'xyjw_shulin', },
+    n2 = { to = '襄阳郊外山路#2', cost = 10, handler = 'xyjw_shulin', },
   },
 },
 
@@ -33733,8 +33733,8 @@ local map = {
   name = '崖壁',
   desc =  [[你手握藤条，身体紧紧贴附在悬崖峭壁之上。向四周望去，只见到云雾缭绕的一片迷茫。阵阵切骨山风吹得你遍体冰凉。山壁光滑平境，要是没有支撑点，就连飞鸟也难以立足。]],
   exit = {
-    hidden1 = { to = '绝情谷谷底', cmd = 'pa down;#wa 1500', handler = 'go_straight', },
-    hidden2 = { to = '绝情谷峭壁', cmd = 'pa up;#wa 1500', handler = 'go_straight', },
+    hidden1 = { to = '绝情谷谷底', cmd = 'pa down;#wb 1500', handler = 'go_straight', },
+    hidden2 = { to = '绝情谷峭壁', cmd = 'pa up;#wb 1500', handler = 'go_straight', },
   },
 },
 
@@ -33872,7 +33872,7 @@ local map = {
   desc = [[你转过二个弯后，眼前突然亮光耀目。这是一个天然生成的石窟，深不见尽头，顶上有个圆径丈许的大孔，日光从孔中透射进来，只是那大孔离地一百馀丈，这石窟深处地底，纵在窟中大声呼叫，上面有人经过也未必听见。抬头可以看见高处石壁上凹凹凸凸，不似底下的滑溜。石窟中日光所及处生长了不少大枣树(tree)。]],
   exit = {
     e = { to = '绝情谷隧洞', },
-    hidden = { to = '绝情谷石壁', cost = 10, cmd = '#8 bo shupi;cuo shupi;#wa 1500;zhe shugan;#wa 2000;pa shibi', },
+    hidden = { to = '绝情谷石壁', cost = 10, cmd = '#8 bo shupi;cuo shupi;#wb 1500;zhe shugan;#wb 2000;pa shibi', },
   },
 },
 
@@ -33883,7 +33883,7 @@ local map = {
   desc = [[你约莫爬了六七十丈，仗着轻功卓绝，一路化险为夷，但爬到离洞穴七八丈时，石壁不但光滑异常，再无可容手足之处，而且向内倾斜，除非是壁虎、苍蝇，方能附壁不落。]],
   exit = {
     hidden1 = { to = '绝情谷石窟', cmd = 'climb down', },
-    hidden2 = { to = '绝情谷厉鬼峰', cost = 5, cmd = 'fu shugan;shuai shugan;#wa 3000;climb up', },
+    hidden2 = { to = '绝情谷厉鬼峰', cost = 5, cmd = 'fu shugan;shuai shugan;#wb 3000;climb up', },
   },
 },
 
@@ -33904,7 +33904,7 @@ local map = {
   name = '谷底水潭',
   desc =  [[你双手划水，漂浮在水潭的水面上面。水潭位处谷底，地势低寒，一股股的寒气从水潭下面直逼上来。四周水中不要说鱼虾，就连水草也没有一根。你只觉得寒气刺骨，不禁机伶伶打了几个冷颤。]],
   exit = {
-    hidden1 = { to = '绝情谷谷底水潭#2', cmd = 'qian down;#wa 1500', },
+    hidden1 = { to = '绝情谷谷底水潭#2', cmd = 'qian down;#wb 1500', },
     hidden2 = { to = '绝情谷谷底', cmd = 'pa up', },
   },
 },
@@ -33915,8 +33915,8 @@ local map = {
   name = '谷底水潭',
   desc =  [[你屏气凝神，潜伏在水潭的中间。水潭位处谷底，地势低寒，一股股的寒气从水潭下面直逼上来。四周水中不要说鱼虾，就连水草也没有一根。你只觉得寒气刺骨，不禁机伶伶打了几个冷颤。]],
   exit = {
-    hidden1 = { to = '绝情谷谷底水潭#3', cmd = 'qian down;#wa 1500', },
-    hidden2 = { to = '绝情谷谷底水潭#1', cmd = 'qian up;#wa 1500', },
+    hidden1 = { to = '绝情谷谷底水潭#3', cmd = 'qian down;#wb 1500', },
+    hidden2 = { to = '绝情谷谷底水潭#1', cmd = 'qian up;#wb 1500', },
   },
 },
 
@@ -33926,8 +33926,8 @@ local map = {
   name = '谷底水潭',
   desc =  [[你屏气凝神，潜伏在水潭的中间。水潭位处谷底，地势低寒，你向四周望去，四面蓝森森，青郁郁，寒气逼人，似乎结满玄冰。你只觉得寒气刺骨，冷不可耐。]],
   exit = {
-    hidden1 = { to = '绝情谷谷底水潭#4', cmd = 'qian down;#wa 1500', },
-    hidden2 = { to = '绝情谷谷底水潭#2', cmd = 'qian up;#wa 2500', },
+    hidden1 = { to = '绝情谷谷底水潭#4', cmd = 'qian down;#wb 1500', },
+    hidden2 = { to = '绝情谷谷底水潭#2', cmd = 'qian up;#wb 2500', },
   },
 },
 
@@ -33937,8 +33937,8 @@ local map = {
   name = '谷底水潭',
   desc =  [[你历尽坚辛，终于到达了水潭底部，水潭四周层层叠叠的都是万年玄冰。你头顶左上方(zuoshang)隐约透着光亮。水中寒气逼人，阵阵刺骨冰气使你感觉就象刀刮一样的疼痛，此处看来不可多呆，还是赶快离开吧。]],
   exit = {
-    hidden1 = { to = '绝情谷谷底水潭#3', cmd = '#8 drop stone;qian up;#wa 1500', },
-    hidden2 = { to = '绝情谷水底通道', cmd = '#8 drop stone;qian zuoshang;#wa 1500', },
+    hidden1 = { to = '绝情谷谷底水潭#3', cmd = '#8 drop stone;qian up;#wb 1500', },
+    hidden2 = { to = '绝情谷水底通道', cmd = '#8 drop stone;qian zuoshang;#wb 1500', },
   },
 },
 
@@ -33948,7 +33948,7 @@ local map = {
   name = '水底通道',
   desc =  [[你屏气凝神，潜伏在水底中的一条斜向上的通道之中。阳光从头顶水面上直照下来，水中温度和旭温暖，四下里水草丛生，周围数条不知名的白鱼缓缓游动。身体下面的水中却有阵阵寒气传上来。]],
   exit = {
-    hidden1 = { to = '绝情谷谷底水潭#4', cmd = 'qian down;#wa 1500', },
+    hidden1 = { to = '绝情谷谷底水潭#4', cmd = 'qian down;#wb 1500', },
     hidden2 = { to = '绝情谷水潭表面', cmd = 'qian up', },
   },
 },
@@ -33959,7 +33959,7 @@ local map = {
   name = '水潭表面',
   desc =  [[你双手划水，漂浮在一片水面上面。你只觉阳光耀眼，水面上花香扑鼻，竟是别有天地。]],
   exit = {
-    hidden1 = { to = '绝情谷水底通道', cmd = 'qian down;#wa 1500', },
+    hidden1 = { to = '绝情谷水底通道', cmd = 'qian down;#wb 1500', },
     hidden2 = { to = '绝情谷水潭岸边', cmd = 'pa up', },
   },
 },

@@ -166,8 +166,7 @@ function handler:sl_fota()
 		local c = t.to.id == '嵩山少林无相牌' and 'chuzhang pai' or 'enter'
 		self:send{ c }
 	else
-		self:listen{ event = 'prompt', func = handler.sl_fota, id = 'step_handler.sl_fota' }
-		self:send{ sl_fota_tbl[ t.to.id ] }
+		self:send{ sl_fota_tbl[ t.to.id ]; complete_func = handler.sl_fota }
 	end
 end
 function handler:step_cmd_succeed()
@@ -367,16 +366,14 @@ function handler:sld_sheku()
 	if self.step.is_successful then
 		self:send{ 'climb 山藤' }
 	else
-		self:listen{ event = 'prompt', func = handler.sld_sheku, id = 'step_handler.sld_sheku' }
-		self:send{ 'kan 崖底' }
+		self:send{ 'kan 崖底'; complete_func = handler.sld_sheku }
 	end
 end
 trigger.new{ name = 'sld_sheku_look', group = 'step_handler.sld_sheku', match = '^(> )*崖底笼罩在迷雾中，有一条山藤似乎挺光滑，看来常有人\\(climb\\)下去。$', func = handler.step_cmd_succeed }
 -- from 蛇窟 to 树林
 function handler:sld_sheku_leave()
 	if not self.step.is_successful then
-		self:listen{ event = 'prompt', func = handler.sld_sheku_leave, id = 'step_handler.sld_sheku_leave' }
-		self:send{ 'go south' }
+		self:send{ 'go south'; complete_func = handler.sld_sheku_leave }
 	end
 end
 trigger.new{ name = 'sld_sheku_leave', group = 'step_handler.sld_sheku_leave', match = '^(> )*树林 - ', sequence = 90, keep_eval = true, func = handler.step_cmd_succeed }
@@ -471,15 +468,15 @@ function handler:wdhs_shuitan()
 end
 
 -- 襄阳郊外大山洞
-function handler:xy_cave()
+function handler:xyjw_cave()
 	if not inventory.has_item '火折' then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '火折', complete_func = handler.xy_cave }
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '火折', complete_func = handler.xyjw_cave }
 	elseif not inventory.has_item '小树枝' then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '小树枝', complete_func = handler.xy_cave }
+		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '小树枝', complete_func = handler.xyjw_cave }
 	elseif not map.is_current_location '襄阳郊外大山洞' then
-		self:newsub{ class = 'go', to = '襄阳郊外大山洞', complete_func = handler.xy_cave }
+		self:newsub{ class = 'go', to = '襄阳郊外大山洞', complete_func = handler.xyjw_cave }
 	else
-		self:send{ 'dian shuzhi;l qingtai;#wa 1500;clean qingtai;l zi;l mu;#wa 1500;kneel mu;#wa 1500;zuan dong;#wa 1500' }
+		self:send{ 'dian shuzhi;l qingtai;#wb 1500;clean qingtai;l zi;l mu;#wb 1500;kneel mu;#wb 1500;zuan dong;#wb 1500' }
 		inventory.remove_item '小树枝'
 	end
 end
@@ -487,10 +484,9 @@ end
 -- 襄阳郊外峭壁
 function handler:xyjw_cliff()
 	if self.step.is_successful then
-		self:send{ '#wa 3500;mo qingtai;cuan up;#wa 3500' }
+		self:send{ '#wb 3500;mo qingtai;cuan up;#wb 3500' }
 	else
-		self:listen{ event = 'prompt', func = handler.xyjw_cliff, id = 'step_handler.xyjw_cliff' }
-		self:send{ 'l shibi' }
+		self:send{ 'l shibi'; complete_func = handler.xyjw_cliff }
 	end
 end
 trigger.new{ name = 'xyjw_cliff_look', group = 'step_handler.xyjw_cliff', match = '^(> )*你凝神瞧了一阵，突见峭壁上每隔数尺便生著一丛青苔，数十丛笔直排列而上。$', func = handler.step_cmd_succeed }
@@ -674,8 +670,8 @@ function handler:plum( t )
 end
 
 -- 襄阳郊外树林
-local xy_shulin_path = { 'n', 'e', 'n', 'e', 'w', 's', 'n', 's', 's', 'n' }
-function handler:xy_shulin( t )
+local xyjw_shulin_path = { 'n', 'e', 'n', 'e', 'w', 's', 'n', 's', 's', 'n' }
+function handler:xyjw_shulin( t )
 	local room, pos = room.get(), handler.data[ t.from.id ]
 	if not room.desc and not pos then self:send{ 'l' } return end
 	pos = ( room.exit.s == '山路' and 1 )
@@ -685,8 +681,8 @@ function handler:xy_shulin( t )
 	handler.data[ t.from.id ] = pos
 	self:send{ ( pos == 1 and t.to.id == '襄阳郊外山路#1' and 's' )
 					or ( pos == 8 and t.to.id == '襄阳郊外山路#2' and 'n' )
-					or ( pos and xy_shulin_path[ pos ] )
-					or xy_shulin_path[ math.random( 10 ) ] }
+					or ( pos and xyjw_shulin_path[ pos ] )
+					or xyjw_shulin_path[ math.random( 10 ) ] }
 end
 
 -- 绝情谷竹林
@@ -807,7 +803,7 @@ function handler:wdhs_conglin( t )
 		local forward = wdhs_layout[ t.from.id ] < wdhs_layout[ t.to.id ]
 		local cmd = forward and wdhs_fpath[ pos ] or wdhs_bpath[ 17 - pos ]
 		if cmd then
-			self:send{ cmd  .. ( room.name == '积雪丛林' and ';#wa 3000' or '' ) } -- wait 3 seconds after leaving a 积雪丛林 room because of busy
+			self:send{ cmd  .. ( room.name == '积雪丛林' and ';#wb 3500' or '' ) } -- wait 3 seconds after leaving a 积雪丛林 room because of busy
 			handler.data.wdhs_conglin_pos = pos + ( forward and 1 or -1 )
 		else -- lost path, clear position and re-evaluate
 			handler.data.wdhs_conglin_pos = nil
@@ -823,7 +819,7 @@ function handler:wdhs_conglin( t )
 			for dir, roomname in pairs( room.exit ) do
 				if roomname == t.to.name then
 					handler.data.wdhs_conglin_pos = nil
-					self:send{ dir  .. ( room.name == '积雪丛林' and ';#wa 3000' or '' ) }
+					self:send{ dir  .. ( room.name == '积雪丛林' and ';#wb 3500' or '' ) }
 					return
 				end
 			end
@@ -843,10 +839,10 @@ function handler:wdhs_conglin_look( t )
 		end
 	end
 	if t.alt_exit then -- go alternate exit (exit leading to room with same name)
-		self:send{ t.alt_exit .. ( room.name == '积雪丛林' and ';#wa 3000' or '' ) }
+		self:send{ t.alt_exit .. ( room.name == '积雪丛林' and ';#wb 3500' or '' ) }
 		t.alt_exit = nil
 	else -- go random direction
-		self:send{ DIR8[ math.random( 8 ) ] .. ( room.name == '积雪丛林' and ';#wa 3000' or '' )  }
+		self:send{ DIR8[ math.random( 8 ) ] .. ( room.name == '积雪丛林' and ';#wb 3500' or '' )  }
 	end
 end
 -- parse look result
@@ -914,13 +910,12 @@ function handler:gyz_jiugong()
 	if not t.taohua_adjusted and taohua_count ~= 5 and t.inv_count >= 5 - taohua_count then
 		t.taohua_adjusted = true
 		t.inv_count = t.inv_count + taohua_count - 5
-		if taohua_count > 5 then
-			self:send{ 'get ' .. taohua_count - 5 .. ' taohua' }
-		elseif taohua_count < 5 then
-			self:send{ 'drop ' .. 5 - taohua_count .. ' taohua' }
-		end
 		t[ t.pos ] = 5
-		self:listen{ event = 'prompt', func = handler.gyz_jiugong, id = 'step_handler.gyz_jiugong' }
+		if taohua_count > 5 then
+			self:send{ 'get ' .. taohua_count - 5 .. ' taohua'; complete_func = handler.gyz_jiugong }
+		elseif taohua_count < 5 then
+			self:send{ 'drop ' .. 5 - taohua_count .. ' taohua'; complete_func = handler.gyz_jiugong }
+		end
 	else
 		t[ t.pos ] = t[ t.pos ] or taohua_count
 		t.taohua_adjusted = false
