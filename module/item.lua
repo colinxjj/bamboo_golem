@@ -186,11 +186,28 @@ function item.is_valid_type( name )
 	return valid_type[ name ]
 end
 
+local function clear_temp_source( slist )
+	local i, source = 1
+	while slist[ i ] do
+		source = slist[ i ]
+		-- remove temp source that is over 15 minutes old
+		if source.is_temp and os.time() - source.add_time >= 900 then
+			table.remove( slist, i )
+			print( 'remove temp item source: ' .. source.item .. ' at ' .. source.location )
+		else
+			i = i + 1
+		end
+	end
+end
+
 function item.get_all_source( name )
 	assert( type( name ) == 'string', 'item.get_all_source - param must be a string' )
 	if not item.is_valid_type( name ) then
 		for iname, it in pairs( index ) do
-			if it.name == name or iname == name then return it.source end
+			if it.name == name or iname == name then
+				clear_temp_source( it.source )
+				return it.source
+			end
 		end
 	else
 		local item_list = item.get_by_type( name )
@@ -201,6 +218,7 @@ function item.get_all_source( name )
 				slist[ #slist + 1 ] = source
 			end
 		end
+		clear_temp_source( slist )
 		return slist
 	end
 end
@@ -275,6 +293,29 @@ function item.mark_invalid_source( source )
 	source.last_fail_time = os.time()
 	source.fail_count = source.fail_count and source.fail_count + 1 or 1
 end
+
+-- automatically add rooms with appropriate items on ground as temporary item sources
+local function add_temp_item_source( evt )
+	for name, object in pairs( room.get().object ) do
+		local it, loc, skip = item.get( name ), evt.location[ 1 ].id
+		-- only consider items in database with matched id's
+		if it and it.id == object.id then
+			it.source = it.source or {}
+			-- skip locations already have get sources for the same item
+			for _, source in pairs( it.source ) do
+				if source.location == loc and source.type == 'get' then skip = true break end
+			end
+			if not skip then
+				-- add the new temp source
+				it.source[ #it.source + 1 ] = { item = it.iname, type = 'get', location = loc, is_temp = true, add_time = os.time() }
+				print( 'add temp item source: ' .. name .. ' (' .. object.id .. ') at ' .. evt.location[ 1 ].id )
+			end
+			skip = false
+		end
+	end
+end
+
+event.listen{ event = 'located', func = add_temp_item_source, id = 'item.add_temp_item_source', persistent = true, sequence = 99 }
 
 --------------------------------------------------------------------------------
 -- End of module

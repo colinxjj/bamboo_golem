@@ -113,7 +113,7 @@ local function auto_locate( evt )
   --]]
 
   map.add_to_loc_history( result )
-  event.new 'located'
+  event.new{ event = 'located', location = result }
 end
 
 event.listen{ event = 'room', func = auto_locate, persistent = true, id = 'room.auto_locate' }

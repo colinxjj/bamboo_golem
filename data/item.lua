@@ -4,19 +4,22 @@ local item = {
 -- money
 
 ['铜钱'] = {
-  name = '铜钱',
+  iname = '铜钱',
+	name = '铜钱',
   id = 'coin',
   type = 'money',
 },
 
 ['白银'] = {
-  name = '白银',
+  iname = '白银',
+	name = '白银',
   id = 'silver',
   type = 'money',
 },
 
 ['黄金'] = {
-  name = '黄金',
+  iname = '黄金',
+	name = '黄金',
   id = 'gold',
   type = 'money',
 },
@@ -25,7 +28,8 @@ local item = {
 -- normal weapon
 
 ['长剑'] = {
-  name = '长剑',
+  iname = '长剑',
+	name = '长剑',
   id = 'chang jian',
   alternate_id = { 'changjian', 'jian' },
   type = 'sword',
@@ -35,7 +39,8 @@ local item = {
 },
 
 ['钢剑'] = {
-  name = '钢剑',
+  iname = '钢剑',
+	name = '钢剑',
   id = 'jian',
   alternate_id = { 'sword' },
   type = 'sword',
@@ -45,7 +50,8 @@ local item = {
 },
 
 ['钢刀'] = {
-  name = '钢刀',
+  iname = '钢刀',
+	name = '钢刀',
   id = 'blade',
   alternate_id = { 'dao' },
   type = 'blade',
@@ -53,12 +59,13 @@ local item = {
   value = 1000,
   quality = 20,
   source = {
-    { type = 'cmd', location = '天山兵器室', cmd = 'na dao', }
+    -- { type = 'cmd', location = '天山兵器室', cmd = 'na dao', }
   }
 },
 
 ['木剑'] = {
-  name = '木剑',
+  iname = '木剑',
+	name = '木剑',
   id = 'mu jian',
   alternate_id = { 'jian' },
   type = 'sword',
@@ -68,7 +75,8 @@ local item = {
 },
 
 ['竹剑'] = {
-  name = '竹剑',
+  iname = '竹剑',
+	name = '竹剑',
   id = 'zhu jian',
   alternate_id = { 'jian', 'sword' },
   type = 'sword',
@@ -78,7 +86,8 @@ local item = {
 },
 
 ['竹棒'] = {
-  name = '竹棒',
+  iname = '竹棒',
+	name = '竹棒',
   id = 'zhubang',
   type = 'stick',
   weight = 3000,
@@ -87,7 +96,8 @@ local item = {
 },
 
 ['绣花针'] = {
-  name = '绣花针',
+  iname = '绣花针',
+	name = '绣花针',
   id = 'xiuhua zhen',
   alternate_id = { 'zhen', 'needle' },
   type = 'sword',
@@ -100,7 +110,8 @@ local item = {
 -- vendor drinks
 
 ['清水葫芦'] = {
-  name = '清水葫芦',
+  iname = '清水葫芦',
+	name = '清水葫芦',
   id = 'qingshui hulu',
   alternate_id = { 'hulu' },
   type = 'bottle',
@@ -113,13 +124,15 @@ local item = {
 -- vendor misc goods
 
 ['粗绳子'] = {
-  name = '粗绳子',
+  iname = '粗绳子',
+	name = '粗绳子',
   id = 'cu shengzi',
   value = 1000,
 },
 
 ['火折'] = {
-  name = '火折',
+  iname = '火折',
+	name = '火折',
   id = 'fire',
   weight = 80,
   value = 100,
@@ -129,7 +142,8 @@ local item = {
 -- normal armor
 
 ['铁甲'] = {
-  name = '铁甲',
+  iname = '铁甲',
+	name = '铁甲',
   id = 'tie jia',
   alternate_id = { 'tiejia', 'armor', 'jia' },
   type = 'cloth',
@@ -139,7 +153,8 @@ local item = {
 },
 
 ['翡翠护腕'] = {
-  name = '翡翠护腕',
+  iname = '翡翠护腕',
+	name = '翡翠护腕',
   id = 'feicui huwan',
   alternate_id = { 'huwan' },
   type = 'wrist',
@@ -148,7 +163,8 @@ local item = {
 },
 
 ['檀木护胸'] = {
-  name = '檀木护胸',
+  iname = '檀木护胸',
+	name = '檀木护胸',
   id = 'tanmu huxiong',
   alternate_id = { 'huxiong' },
   type = 'wrist',
@@ -157,7 +173,8 @@ local item = {
 },
 
 ['丹凤护腰'] = {
-  name = '丹凤护腰',
+  iname = '丹凤护腰',
+	name = '丹凤护腰',
   id = 'danfeng huyao',
   alternate_id = { 'huyao' },
   type = 'waist',
@@ -169,7 +186,8 @@ local item = {
 -- treasure armor
 
 ['木棉袈裟'] = {
-  name = '木棉袈裟',
+  iname = '木棉袈裟',
+	name = '木棉袈裟',
   id = 'mumian jiasha',
   alternate_id = { 'mimian', 'jiasha' },
   type = 'cloth',
@@ -181,7 +199,8 @@ local item = {
 -- misc
 
 ['毛毯#WD'] = {
-  name = '毛毯',
+  iname = '毛毯#WD',
+	name = '毛毯',
   id = 'mao tan',
   alternate_id = { 'tan' },
   desc = '一张由纯羊毛织成的毛毯。毛线细密十分保暖。',
@@ -193,7 +212,8 @@ local item = {
 },
 
 ['药锄'] = {
-  name = '药锄',
+  iname = '药锄',
+	name = '药锄',
   id = 'yao chu',
   alternate_id = { 'chu' },
   desc = '这是一把普通采药用的锄头。',
@@ -204,7 +224,8 @@ local item = {
 },
 
 ['绳子#WD'] = {
-  name = '绳子',
+  iname = '绳子#WD',
+	name = '绳子',
   id = 'sheng zi',
   alternate_id = { 'sheng' },
   desc = '这是一捆长长的麻绳，最适合于攀爬之用。',
@@ -212,7 +233,8 @@ local item = {
 },
 
 ['小树枝'] = {
-  name = '小树枝',
+  iname = '小树枝',
+	name = '小树枝',
   id = 'xiao shuzhi',
   alternate_id = { 'shuzhi' },
   desc = '这是一枝小树枝。',

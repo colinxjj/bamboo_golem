@@ -82,7 +82,7 @@ end
 function task:get( source )
   if room.has_object( source.item ) then
     local c = self.count ~= 1 and ( self.count .. ' ' ) or ''
-    self:send{ 'get ' .. c .. item.get_id( self.item ); complete_func = self.check_source_result }
+    self:send{ 'get ' .. c .. item.get_id( source.item ); complete_func = self.check_source_result }
   else
     item.mark_invalid_source( source )
     self:resume()

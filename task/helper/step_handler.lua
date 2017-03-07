@@ -295,7 +295,6 @@ function handler:ts_bzjian()
 end
 
 -- ÉñÁúµº
--- TODO ask lingpai instead of steal for sld id
 -- from º£Ì² to Ð¡Ä¾·¤
 function handler:sld_enter()
 	if room.has_object 'Ä¾·¤' then
