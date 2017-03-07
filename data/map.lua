@@ -33325,7 +33325,7 @@ local map = {
   desc =  [[这洞其实甚浅，行不到三丈，已抵尽头，洞中除了一张石桌、一张石凳之外更无别物。洞角有一堆乱石高起，极似一个坟墓，洞壁上似乎写得有字，只是尘封苔蔽，黑暗中瞧不清楚。]],
   exit = {
     out = { to = '襄阳郊外洞口', },
-    hidden = { to = '襄阳郊外深谷#1', no_wander = true, handler = 'xyjw_cave', },
+    hidden = { to = '襄阳郊外深谷#1', no_wander = true, handler = 'xyjw_cave', req = { ['火折'] = 1, ['小树枝'] = 1 }, },
   },
 },
 

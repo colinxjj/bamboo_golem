@@ -13,6 +13,7 @@ function inventory.has_item( name, count )
 		name = it and it.name or name
 		return ( player.inventory[ name ] and ( player.inventory[ name ].count or 1 ) >= ( count or 1 ) ) and true or false
 	else
+		-- TODO also check for item count of the specified type
 		for iname in pairs( player.inventory ) do
 			if item.is_type( iname, name ) then return true end
 		end

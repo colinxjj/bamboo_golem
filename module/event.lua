@@ -16,7 +16,7 @@ local function add_to_history( evt )
   history_endpos = history_endpos + 1
   history[ history_endpos ] = evt
 
-  if history_endpos - history_startpos > 1000 then -- store 1000 history entries
+  if history_endpos - history_startpos > 100 then -- store 100 history entries
     history[ history_startpos ] = nil
     history_startpos = history_startpos + 1
   end

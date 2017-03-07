@@ -27,12 +27,17 @@ function task:_resume()
 
     self.path = map.getpath( self.from, self.to )
     if not self.path then self:fail(); return end
+    -- get the list of items / flags required to complete the path
+    self.req = map.get_path_req( self.path )
 
     self:listen{ event = 'located', func = self.resume, id = 'task.go', persistent = true }
     self.step_num, self.error_count = 1, 0
     self:next_step()
     return
   end
+
+  -- prepare the items / get the flags first
+  if self.req and #self.req > 0 then self:prepare() end
 
   self:check_step()
 end
@@ -43,6 +48,20 @@ end
 
 function task:_fail()
   message.verbose( 'Ç°Íù¡°' .. self.to.id .. '¡±Ê§°Ü' )
+end
+
+-- prepare the items / get the flags required to complete the path
+function task:prepare()
+  -- get next entry from the req list and remove it from the list
+  local req = table.remove( self.req )
+  if req.item then -- an item req
+    if inventory.has_item( req.item, req.count ) then self:resume()
+    else
+      self:newsub{ class = 'manage_inventory', action = 'prepare', item = req.item, count = req.count }
+    end
+  else -- a flag req
+    -- TODO
+  end
 end
 
 function task:check_step()

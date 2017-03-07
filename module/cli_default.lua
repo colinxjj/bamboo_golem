@@ -170,7 +170,9 @@ cli.register{ cmd = 'pp', desc = '获取指定的物品。支持中文名和 ID。例如：pp 500 
 -- tt
 
 local function parse_tt( _, input )
-  item.get_sorted_source{ type = 'sharp_weapon', quality = 'not_ignore' }
+  local path = map.getpath( '襄阳城山间空地', '襄阳郊外剑冢' )
+  local list = map.get_path_req( path )
+  tprint( list )
 end
 
 

@@ -81,6 +81,7 @@ local function genpath( from, is_dest )
       to = index[ exit.to ]
       new_cost = cost[ from ] + ( exit.cost or 1 )
       if to and from ~= to and not exit.ignore and
+      ( not exit.blocked_by or map.is_block_valid( exit ) ) and
       ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) and
       ( max_cost and new_cost < max_cost or not max_cost ) and
       ( not cost[ to ] or new_cost < cost[ to ] ) then -- add new node
@@ -118,8 +119,8 @@ end
 function map.getpath( from, to )
   from = type( from ) == 'string' and index[ from ] or from
   to = type( to ) == 'string' and index[ to ] or to
-  assert( from and from.id, 'map.getpath - can\'t parse the from param' )
-  assert( type( to ) == 'table' and to.id or type( to ) == 'function', 'map.getpath - can\'t parse the to param' )
+  assert( from and from.id, 'map.getpath - invalid "from" param' )
+  assert( type( to ) == 'table' and to.id or type( to ) == 'function', 'map.getpath - invalid "to" param' )
 
   to = type( to ) == 'table' and is_dest_by_room( to ) or to
   return genpath( from, to )
@@ -168,6 +169,7 @@ function map.expand_loc( loc, range )
         to = index[ exit.to ]
         new_distance = distance[ from ] + 1
         if to and not exit.no_wander and not exit.ignore
+        and ( not exit.blocked_by or map.is_block_valid( exit ) )
         and ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond )
         and new_distance <= range and not distance[ to ] then -- add new node
           distance[ to ] = new_distance
@@ -200,6 +202,7 @@ local function find_room( from, is_dest, prefer_furthest )
       to = index[ exit.to ]
       new_cost = cost[ from ] + ( exit.cost or 1 )
       if to and from ~= to and not exit.ignore and
+      ( not exit.blocked_by or map.is_block_valid( exit ) ) and
       ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) and
       ( prefer_furthest or cost_ok( new_cost, max_cost ) ) and
       ( not cost[ to ] or new_cost < cost[ to ] ) then -- add new node
@@ -217,7 +220,7 @@ end
 -- the 1st param must be the id/table of a room, the 2nd a function to check if a room is one that we want
 function map.find_nearest( from, is_dest )
   from = type( from ) == 'string' and index[ from ] or from
-  assert( from and from.id, 'map.find_nearest - can\'t parse the from param' )
+  assert( from and from.id, 'map.find_nearest - invalid "from" param' )
 
   local room = find_room( from, is_dest )
   return room
@@ -227,7 +230,7 @@ end
 -- the 1st param must be the id/table of a room, the 2nd a function to check if a room is one that we want
 function map.find_furthest( from, is_dest )
   from = type( from ) == 'string' and index[ from ] or from
-  assert( from and from.id, 'map.find_furthest - can\'t parse the from param' )
+  assert( from and from.id, 'map.find_furthest - invalid "from" param' )
 
   local room = find_room( from, is_dest, true )
   return room
@@ -240,6 +243,62 @@ function map.get_step_cmd( from, to )
       return cmd, exit.door, exit.handler
     end
   end
+end
+
+-- block the exit from a room to another with a task, the exit will be ignored until the task is dead
+-- the two room params are the id/table of a room
+function map.block_exit( from, to, task )
+  from = type( from ) == 'string' and index[ from ] or from
+  to = type( to ) == 'string' and index[ to ] or to
+  assert( from and from.id, 'map.block_exit - invalid "from" param' )
+  assert( to and to.id, 'map.block_exit - invalid "to" param' )
+  assert( type( task ) == 'table' and task.status, 'map.block_exit - invalid "task" param' )
+
+  for _, exit in pairs( from.exit ) do
+    if exit.to == to.id and not exit.ignore and
+    -- exit cond will be checked so only exits that the player can use otherwise are blocked
+    ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) then
+      exit.blocked_by = task
+    end
+  end
+end
+
+-- checks if a block is still valid or not, if not, the block will be lifted
+function map.is_block_valid( exit )
+  local task = exit.blocked_by
+  if task.status == 'dead' then
+    exit.blocked_by = nil
+    return false
+  else
+    return true
+  end
+end
+
+-- generate the list of items / flags needed to complete the path
+function map.get_path_req( path )
+  local list, from, to, entry = {}
+  for i = 1, #path - 1 do
+    from, to = path[ i ], path[ i + 1 ]
+    for _, exit in pairs( from.exit ) do
+      if exit.req and exit.to == to.id and not exit.ignore
+      -- check the exit cond because there can be multiple exits from a room to another and we need to get the requirement for the right exit
+      and ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) then
+        for k, v in pairs( exit.req ) do
+          list[ k ] = list[ k ] or {}
+          entry = list[ k ]
+          if type( v ) == 'number' then -- a numeric value means that it's an item req
+            entry.item = k
+            entry.count = entry.count and entry.count + v or v -- this might result in preparing more than what we actually need but for now it should be OK
+          else -- otherwise it's flag req
+            entry.flag = k
+          end
+          entry[ #entry + 1 ]  = { from = from, to = to } -- add the from/to pair to the array part so that all exits that require this thing can be properly blocked until we've got the items / flags
+          list[ #list + 1 ] = entry -- also add the entry to the array part of the list for easy access
+        end
+      end
+    end
+  end
+  return list
 end
 
 --------------------------------------------------------------------------------
