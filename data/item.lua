@@ -280,6 +280,28 @@ local item = {
   vanish_on_drop = true,
 },
 
+['金娃娃'] = {
+  iname = '金娃娃',
+	name = '金娃娃',
+  id = 'jin wawa',
+  alternate_id = { 'jin', 'wawa', 'yu' },
+  weight = 3000,
+  source = {
+    { type = 'local_handler', handler = 'ty_fish', location = '桃源县瀑布中', },
+  },
+},
+
+['铁舟'] = {
+  iname = '铁舟',
+	name = '铁舟',
+  id = 'tie zhou',
+  alternate_id = { 'zhou', 'boat' },
+  weight = 10000,
+  source = {
+    { type = 'local_handler', handler = 'ty_boat', location = '桃源县山谷瀑布', },
+  },
+},
+
 }
 
 return item

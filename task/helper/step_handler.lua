@@ -407,7 +407,87 @@ function handler:unwield_weapon()
 	end
 end
 
+-- from 桃源县山谷瀑布 to 桃源县瀑布中
+function handler:ty_enter_waterfall()
+	if room.has_object '渔人' then
+		self:send{ 'ask yu ren about 一灯大师;l pubu' }
+	else
+		self:fail()
+	end
+end
+function handler:ty_waterfall_look_result( _, t )
+	if t[ 2 ] == '你目光顺着瀑布往下流动' then -- no people in the waterfall
+		self:send{ 'tiao pubu' }
+	else
+		self:newsub{ class = 'killtime', complete_func = handler.ty_enter_waterfall_look_again }
+	end
+end
+function handler:ty_enter_waterfall_look_again()
+	self:send{ 'l pubu' }
+end
+trigger.new{ name = 'ty_enter_waterfall_look', group = 'step_handler.ty_enter_waterfall', match = '^(> )*(那瀑布奔腾而去，水沫四溅|你目光顺着瀑布往下流动)', func = handler.ty_waterfall_look_result }
+
+-- from 桃源县山谷瀑布 to 桃源县铁舟上
+function handler:ty_waterfall_to_boat()
+	self:send{ 'zhi boat' }
+end
+function handler:ty_waterfall_to_boat_fail()
+	self:newsub{ class = 'killtime', complete_func = handler.ty_waterfall_to_boat }
+end
+trigger.new{ name = 'ty_waterfall_to_boat_fail', group = 'step_handler.ty_waterfall_to_boat', match = '^(> )*瀑布的水流过于湍急，现在已经有艘铁舟在河中了，你还是先等会吧。', func = handler.ty_waterfall_to_boat_fail }
+
+-- 桃源县铁舟上
+function handler:ty_boat()
+	if player.wielded then
+		self:newsub{ class = 'manage_inventory', action = 'unwield', complete_func = handler.ty_boat }
+	else
+		self:send{ 'wield jiang;hua boat' }
+	end
+end
+function handler:ty_boat_disembark()
+		self:send{ 'tiao shandong' }
+end
+trigger.new{ name = 'ty_boat_disembark', group = 'step_handler.ty_boat', match = '^那铁舟缓缓向前驶去，绿柳丛间时有飞鸟鸣啭，忽然钻入了一个山洞。$', func = handler.ty_boat_disembark }
+
+-- 桃源县岸边
+function handler:ty_qiaozi()
+	if handler.data.ty_qiaozi_prompt then
+		self:send{ 'answer 青山相待，白云相爱。梦不到紫罗袍共黄金带。一茅斋，野花开，管甚谁家兴废谁成败？陋巷单瓢亦乐哉。贫，气不改！达，志不改！;pa teng' }
+	else
+		self:newsub{ class = 'killtime', complete_func = handler.ty_qiaozi }
+	end
+end
+function handler:ty_qiaozi_prompt()
+	handler.data.ty_qiaozi_prompt = true
+	-- interrupt killtime subtask when got direction prompt
+	if self.status == 'running' or self.status == 'lurking' then self:resume() end
+end
+trigger.new{ name = 'ty_qiaozi_prompt', group = 'step_handler.ty_qiaozi', match = '^(> )*樵子说道：「峰峦如聚，波涛如怒，山河表里潼关路。望西都，意踟蹰。', func = handler.ty_qiaozi_prompt, penetrate = 'suspended' } -- this trigger works even when the task is suspended, to get the prompt whenever possible
+
+-- 桃源县山坡
+-- TODO make sure neili > 2500
+function handler:ty_nongfu()
+	self:send{ 'tuo shi' }
+end
+function handler:ty_nongfu_ok()
+	self:send{ '#wb 1500;e' }
+end
+trigger.new{ name = 'ty_nongfu_ok', group = 'step_handler.ty_nongfu', match = '^农夫双手托住大石，臂上运劲，挺起大石，对你说道：「多谢相助，你过去吧。」', func = handler.ty_nongfu_ok }
+
+-- 桃源县石梁
+-- TODO make sure neili > 1000 for each jump
+
+-- 桃源县石梁尽头
+function handler:ty_shusheng()
+	if room.has_object '书生' then
+		self:send{ 'ask shu sheng about 一灯大师;ask shu sheng about 题目;answer 辛未状元;#wa 1000;answer 霜凋荷叶，独脚鬼戴逍遥巾;#wa 1000;answer 魑魅魍魉，四小鬼各自肚肠;#wa 1000;n' }
+	else
+		self:fail()
+	end
+end
+
 -- 大雪山绝顶
+
 
 --------------------------------------------------------------------------------
 -- Maze handlers

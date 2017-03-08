@@ -31,7 +31,7 @@ function task:_resume()
     self.req = map.get_path_req( self.path )
 
     self:listen{ event = 'located', func = self.resume, id = 'task.go', persistent = true }
-    self.step_num, self.error_count = 1, 0
+    self.step_num, self.error_count = 1, self.error_count or 0
   end
 
   -- prepare the items / get the flags first
@@ -54,6 +54,7 @@ end
 function task:prepare()
   -- get next entry from the req list and remove it from the list
   local req, subtask = table.remove( self.req )
+  message.debug( '行走准备：' .. ( req.item or req.flag ) )
   if req.item then -- an item req
     if inventory.has_item( req.item, req.count ) then self:resume() return end
     subtask = self:newsub{ class = 'manage_inventory', action = 'prepare', item = req.item, count = req.count }
@@ -105,7 +106,7 @@ function task:next_step()
 
     if handler and i ~= self.step_num then handler = nil; break end -- if processed more than one step then ignore the new handler
 
-    is_special_cmd = cmd and ( string.find( cmd, '^#w' ) or string.find( cmd, '^ask' ) ) or nil
+    is_special_cmd = cmd and ( string.find( cmd, '#w[ab] ' ) or string.find( cmd, '^ask ' ) or string.find( cmd, ';ask ' ) ) or nil
     if not handler and ( not is_special_cmd or i == self.step_num ) then -- add commands to list
       cmd_list[ #cmd_list + 1 ] = door
       cmd_list[ #cmd_list + 1 ] = cmd

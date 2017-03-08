@@ -32,6 +32,42 @@ function finder:sld_lingpai_check()
   end
 end
 
+-- 桃源县金娃娃
+function finder:ty_fish()
+  if player.wielded then
+		self:newsub{ class = 'manage_inventory', action = 'unwield', complete_func = handler.ty_fish }
+  else
+    self:send{ 'zhua yu' }
+  end
+end
+function finder:ty_fish_retry()
+  addbusy( 2 )
+	self:send{ 'yun qi;zhua yu' }
+end
+function finder:ty_fish_done()
+  inventory.add_item '金娃娃'
+  self:complete()
+end
+trigger.new{ name = 'ty_fish_missed', group = 'item_finder.ty_fish', match = '^(> )*你慢慢弯腰去捉那对金娃娃，一手一条，握住了金娃娃的尾巴轻轻向外拉扯，', func = finder.ty_fish_retry }
+trigger.new{ name = 'ty_fish_caught', group = 'item_finder.ty_fish', match = '^(> )*你伸手到怪鱼遁入的那大石底下用力一抬，只感那石微微摇动，双掌向上猛举，', func = finder.ty_fish_done }
+
+-- 桃源县铁舟
+function finder:ty_boat()
+  if not inventory.has_item '金娃娃' then
+    self:newsub{ class = 'manage_inventory', action = 'prepare', item = '金娃娃' }
+  elseif room.has_object '渔人' then
+    self:send{ 'give jin wawa to yu ren' }
+  else
+    self:fail()
+  end
+end
+function finder:ty_boat_succeed()
+  self:disable_trigger_group 'item_finder.ty_boat'
+  inventory.add_item '铁舟'
+  self:complete()
+end
+trigger.new{ name = 'ty_boat_succeed', group = 'item_finder.ty_boat', match = '^(> )*渔人给了你一艘铁舟。', func = finder.ty_boat_succeed }
+
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------

@@ -296,7 +296,8 @@ end
 
 function item.add_temp_item_source ( loc, name, id )
 	loc = type( loc ) == 'table' and loc.id or loc
-	assert( map.get_room_by_id( loc ), 'item.add_temp_item_source - invalid loc param' )
+	if not map.get_room_by_id( loc ) then return end
+	--assert( map.get_room_by_id( loc ), 'item.add_temp_item_source - invalid loc param' )
 	assert( type( name ) == 'string', 'item.add_temp_item_source - the name param must be a string' )
 	assert( not count or type( count ) == 'number', 'item.add_temp_item_source - the count param must be a string' )
 	assert( not id or type( id ) == 'string', 'item.add_temp_item_source - the id param must be a string' )

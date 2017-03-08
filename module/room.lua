@@ -20,7 +20,7 @@ end
 function room.has_object( object )
 	object = type( object ) == 'table' and object or get_npc( object ) or { name = object }
 	local room_object = current_room.object[ object.name ]
-	return room_object and ( object.id and object.id == room_object.id or not object.id ) and true or false
+	return room_object and ( not object.id or object.id == room_object.id ) and true or false
 end
 
 -- add a new object to the current room
