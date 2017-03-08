@@ -20,12 +20,12 @@ function finder:sld_lingpai()
 	self:send{ 'steal 通行令牌'; complete_func = finder.sld_lingpai_check }
 end
 function finder:sld_lingpai_succeed()
+  self:disable_trigger_group 'item_finder.sld_lingpai'
   inventory.add_item '通行令牌'
 end
 trigger.new{ name = 'sld_lingpai_succeed', group = 'item_finder.sld_lingpai', match = '^(> )*你成功地偷到了块通行令牌!$', func = finder.sld_lingpai_succeed }
 function finder:sld_lingpai_check()
   if inventory.has_item '通行令牌' then
-    self:disable_trigger_group 'item_finder.sld_lingpai'
     self:complete()
   else
     self:resume()

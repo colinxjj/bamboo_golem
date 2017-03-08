@@ -8,7 +8,6 @@ task = {}
 -- load the helpers
 task.helper = {}
 task.helper.step_handler = require 'task.helper.step_handler'
-task.helper.item_finder = require 'task.helper.item_finder'
 
 -- load the prototype
 task.prototype = require 'task._prototype'
@@ -24,6 +23,7 @@ local task_class = {
   'find', -- 找人
   'traverse', -- 遍历
   'manage_inventory', -- 管理物品
+  'get_flag', -- 取得标记
 
   'job.wuguan', -- 襄阳武馆
 }

@@ -138,6 +138,7 @@ local item = {
   value = 100,
   source = {
     { type = 'get', location = '终南山灵室', },
+    { type = 'get', location = '星宿海天然石洞', },
   },
 },
 
@@ -276,6 +277,7 @@ local item = {
     { type = 'cmd', cmd = 'ask lu gaoxuan about 通行令牌', location = '神龙岛陆府正厅', npc = '陆高轩', cond = 'player.party == "神龙教"', },
     { type = 'local_handler', handler = 'sld_lingpai', location = '神龙岛陆府正厅', npc = '陆高轩', cond = 'player.party ~= "神龙教"', },
   },
+  vanish_on_drop = true,
 },
 
 }

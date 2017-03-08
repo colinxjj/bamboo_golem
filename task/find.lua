@@ -72,7 +72,7 @@ end
 
 function task:last_check()
   if room.has_object( self.object ) then
-    self:complete()
+    self:check_for_action( room.get_object( self.object) )
   else
     self:fail()
   end

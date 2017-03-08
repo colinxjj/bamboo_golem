@@ -55,14 +55,11 @@ function task:prepare()
   -- get next entry from the req list and remove it from the list
   local req, subtask = table.remove( self.req )
   if req.item then -- an item req
-    if inventory.has_item( req.item, req.count ) then
-      self:resume()
-      return
-    else
-      subtask = self:newsub{ class = 'manage_inventory', action = 'prepare', item = req.item, count = req.count }
-    end
+    if inventory.has_item( req.item, req.count ) then self:resume() return end
+    subtask = self:newsub{ class = 'manage_inventory', action = 'prepare', item = req.item, count = req.count }
   else -- a flag req
-    -- TODO
+    if player.temp_flag[ req.flag ] then self:resume() return end
+    subtask = self:newsub{ class = 'get_flag', flag = req.flag }
   end
   -- block all exits related to this req until the item / flag is acquired
   for _, pair in ipairs( req ) do
@@ -108,7 +105,7 @@ function task:next_step()
 
     if handler and i ~= self.step_num then handler = nil; break end -- if processed more than one step then ignore the new handler
 
-    is_special_cmd = cmd and ( string.find( cmd, '#wa' ) or string.find( cmd, 'ask' ) ) or nil
+    is_special_cmd = cmd and ( string.find( cmd, '^#w' ) or string.find( cmd, '^ask' ) ) or nil
     if not handler and ( not is_special_cmd or i == self.step_num ) then -- add commands to list
       cmd_list[ #cmd_list + 1 ] = door
       cmd_list[ #cmd_list + 1 ] = cmd

@@ -34,6 +34,11 @@ function room.remove_object( name )
 	current_room.object[ name ] = nil
 end
 
+function room.get_object( name )
+  assert( type( name ) == 'string', 'room.get_object - param must be a string' )
+  return current_room.object[ name ]
+end
+
 function room.get_object_count( name )
   local it = current_room.object[ name ]
   return it and it.count or 0

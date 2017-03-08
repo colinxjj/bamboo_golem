@@ -13,6 +13,8 @@ count_min = 200: if player has this number of items, then no need to get more (o
 
 task.class = 'manage_inventory'
 
+local item_finder = require 'task.helper.item_finder'
+
 function task:get_id()
   local s = 'manage_inventory: ' .. self.action
   s = self.count and ( s .. ' ' .. self.count ) or s
@@ -72,7 +74,7 @@ function task:handle_source( source )
     self:send{ source.cmd; complete_func = self.check_inventory }
   elseif source.type == 'local_handler' then
     self:enable_trigger_group( 'item_finder.' .. source.handler )
-    _G.task.helper.item_finder[ source.handler ]( self )
+    item_finder[ source.handler ]( self )
   elseif source.type == 'shop' then
     self:purchase( source )
   elseif source.type == 'loot' then

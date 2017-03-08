@@ -126,6 +126,8 @@ function handler:step_cmd_succeed()
 end
 trigger.new{ name = 'emei_move_stone_succeed', group = 'step_handler.emei_move_stone', match = '^(> )*你双膀较劲，搬开了大石头。', func = handler.step_cmd_succeed }
 
+-- 峨嵋山洗象池
+
 -- 黑木崖石门
 hmy_shimen_tbl = {
 	'教主文成武德，一统江湖', '教主千秋万载，一统江湖', '属下忠心为主，万死不辞', '教主令旨英明，算无遗策',
@@ -329,32 +331,6 @@ function handler:sld_sheku_leave()
 end
 trigger.new{ name = 'sld_sheku_leave', group = 'step_handler.sld_sheku_leave', match = '^(> )*树林 - ', sequence = 90, keep_eval = true, func = handler.step_cmd_succeed }
 
--- 铁掌山石室（上官剑南）
-function handler:pre_ask_ghost( t )
-	if self.class == 'go' and self.to.id == '铁掌山石室' and not player.temp_flag.tz_ghost then
-		self:enable_trigger 'tz_ask_ghost'
-		self:newsub{ class = 'find', object = '裘千丈', action = 'ask %id about 闹鬼' }
-	else
-		self:send{ t.cmd }
-	end
-end
-function handler:tz_cave( t )
-	if player.temp_flag.tz_ghost then
-		local loc = map.get_current_location()[ 1 ]
-		if loc.id ~= '铁掌山无名峰' then
-			self:newsub{ class = 'go', to = '铁掌山无名峰', complete_func = handler.tz_cave }
-		else
-			self:send{ 'move bei', t.cmd }
-		end
-	else
-		self:newsub{ class = 'find', object = '裘千丈', action = 'ask %id about 闹鬼' }
-	end
-end
-function handler:tz_ask_ghost()
-	player.temp_flag.tz_ghost = true
-end
-trigger.new{ name = 'tz_ask_ghost', group = 'step_handler.tz_cave', match = '^听一些帮众说，经常听见无名峰上的坟墓中，传出响声！嘿嘿！一定有什么蹊跷在里面！$', func = handler.tz_ask_ghost, penetrate = 'waiting' }
-
 -- from 萧府后院 to 萧府树林
 
 -- 大理皇宫后宫
@@ -422,9 +398,6 @@ function handler:xyjw_cliff()
 end
 trigger.new{ name = 'xyjw_cliff_look', group = 'step_handler.xyjw_cliff', match = '^(> )*你凝神瞧了一阵，突见峭壁上每隔数尺便生著一丛青苔，数十丛笔直排列而上。$', func = handler.step_cmd_succeed }
 
--- 峨嵋山洗象池
-
-
 -- 嵩山少林迎客亭、襄阳郊外剑冢、姑苏慕容小舍
 function handler:unwield_weapon()
 	if player.wielded then
@@ -433,10 +406,6 @@ function handler:unwield_weapon()
 		self:send{ self.step.cmd }
 	end
 end
-
--- 铁掌山天然洞穴
-
--- 星宿海山洞
 
 -- 大雪山绝顶
 
