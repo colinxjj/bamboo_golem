@@ -24,7 +24,6 @@ local function is_able_to_fly( cmd )
 end
 
 -- 长江
--- TODO make sure have silver
 local cj_layout = {
 	['长江北岸'] = { w = '扬州城长江北岸#W', c = '扬州城长江北岸#C', e = '扬州城长江北岸#E' },
 	['长江南岸'] = { w = '扬州城长江南岸#W', c = '扬州城长江南岸#C', e = '扬州城长江南岸#E' },
@@ -66,7 +65,6 @@ function handler:cross_cj( t )
 end
 
 -- 黄河、黑木崖、澜沧江
--- TODO make sure have silver
 local yell_tbl = {
 	['黑木崖日月坪'] = 'yell xiaya',
 	['黑木崖崖顶'] = 'yell shangya',
@@ -100,7 +98,6 @@ trigger.new{ name = 'fly_wait', group = 'step_handler.fly', match = '^(> )*(峭壁
 trigger.new{ name = 'fly_done', group = 'step_handler.fly', match = '^(> )*你在(江中渡船|黄河中渡船|河中渡船|崖间竹篓)上轻轻一点', func = handler.fly_done }
 
 -- 乘坐渡船。黄河、长江、汉水、黑木崖猩猩滩、大雪山绞盘等
--- TODO make sure have silver
 function handler:embark()
 	if room.get().exit.enter then self:send{ 'enter' } return end
 	self:send{ self.step.cmd ~= 'enter' and self.step.cmd or 'yell boat' }
@@ -116,19 +113,18 @@ function handler:getout()
 	self:send{ 'out' }
 end
 
--- 姑苏慕容
--- TODO make sure have silver
-function handler:mr_embark( t )
-	self:send{ t.cmd }
-end
-
 -- 峨嵋山后山小路
-function handler:emei_move_stone( name )
-	if name == 'emei_move_stone_succeed' then self:send{ 'nd' }
-	else self:send{ 'move stone' } end
+function handler:emei_move_stone()
+	if self.step.is_successful then
+		self:send{ 'nd' }
+	else
+		self:send{ 'move stone'; complete_func = handler.emei_move_stone }
+	end
 end
-trigger.new{ name = 'emei_move_stone_fail', group = 'step_handler.emei_move_stone', match = '^(> )*你使尽了吃奶的力气，也没搬开大石头。', func = handler.emei_move_stone }
-trigger.new{ name = 'emei_move_stone_succeed', group = 'step_handler.emei_move_stone', match = '^(> )*你双膀较劲，搬开了大石头。', func = handler.emei_move_stone }
+function handler:step_cmd_succeed()
+	self.step.is_successful = true
+end
+trigger.new{ name = 'emei_move_stone_succeed', group = 'step_handler.emei_move_stone', match = '^(> )*你双膀较劲，搬开了大石头。', func = handler.step_cmd_succeed }
 
 -- 黑木崖石门
 hmy_shimen_tbl = {
@@ -169,9 +165,6 @@ function handler:sl_fota()
 		self:send{ sl_fota_tbl[ t.to.id ]; complete_func = handler.sl_fota }
 	end
 end
-function handler:step_cmd_succeed()
-	self.step.is_successful = true
-end
 trigger.new{ name = 'sl_fota_fushi', group = 'step_handler.sl_fota', match = '^你突然有一种出掌的冲动，便想一掌击出。$', func = handler.step_cmd_succeed }
 trigger.new{ name = 'sl_fota_canchan', group = 'step_handler.sl_fota', match = '^你在虚空中，感觉大师座下打开了一个小门。$', func = handler.step_cmd_succeed }
 
@@ -186,7 +179,6 @@ function handler:gyz_river( t )
 end
 
 -- 牛家村小海港坐船
--- TODO prepare money
 -- TODO handle special price under age 16
 function handler:thd_onboard()
 	local loc = map.get_current_location()[ 1 ]
@@ -280,16 +272,12 @@ end
 -- 绝情谷谷底水潭
 -- TODO ensure encumbrance > 50% for qian down, < 30% for qian up, and < 40% for qian zuoshang
 
--- from 终南山石棺 to 终南山石室#3D
--- TODO make sure have fire
-
--- 天山百丈涧
-function handler:ts_bzjian()
-	if not inventory.has_item 'sharp_weapon' then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = 'sharp_weapon' }
-	elseif not player.wielded or not item.is_type( player.wielded.name, 'sharp_weapon' ) then
-		self:newsub{ class = 'manage_inventory', action = 'wield', item = 'sharp_weapon', complete_func = handler.ts_bzjian }
+-- 天山百丈涧、峨嵋山后山小路
+function handler:wield_sharp_weapon()
+	if not player.wielded or not item.is_type( player.wielded.name, 'sharp_weapon' ) then
+		self:newsub{ class = 'manage_inventory', action = 'wield', item = 'sharp_weapon', complete_func = handler.wield_sharp_weapon }
 	else
+		handler.data[ self.step.to.id ] = nil -- a workaround to reset maze data for 峨嵋山灌木丛
 		self:send{ self.step.cmd }
 	end
 end
@@ -299,12 +287,8 @@ end
 function handler:sld_enter()
 	if room.has_object '木筏' then
 		self:send{ 'zuo mufa' }
-	elseif ( inventory.has_item '粗绳子' or room.has_object '粗绳子' ) and room.has_object '大木头' then
+	elseif room.has_object '大木头' then
 		self:send{ 'bang mu tou;#wa 1000;zuo mufa' }
-	elseif not inventory.has_item '粗绳子' and not room.has_object '粗绳子' then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '粗绳子' }
-	elseif not inventory.has_item 'sharp_weapon' then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = 'sharp_weapon' }
 	elseif not player.wielded or not item.is_type( player.wielded.name, 'sharp_weapon' ) then
 		self:newsub{ class = 'manage_inventory', action = 'wield', item = 'sharp_weapon', complete_func = handler.sld_enter }
 	else
@@ -323,40 +307,8 @@ end
 trigger.new{ name = 'sld_mufa', group = 'step_handler.sld_mufa', match = '^(> )*小木筏顺着海风，一直向东飘去。$', func = handler.sld_mufa }
 -- from 渡口 to 小帆船
 function handler:sld_leave()
-	local loc = map.get_current_location()[ 1 ]
-	if inventory.has_item '通行令牌' then
-		if loc.id == '神龙岛渡口' then
-			self:send{ 'give ling pai to chuan fu' }
-			inventory.remove_item '通行令牌'
-		else
-			self:newsub{ class = 'go', to = '神龙岛渡口', complete_func = handler.sld_leave }
-		end
-	elseif loc.id ~= '神龙岛陆府正厅' then
-		self:newsub{ class = 'go', to = '神龙岛陆府正厅', complete_func = handler.sld_leave }
-	else
-		local c = player.party == '神龙教' and 'ask lu gaoxuan about 通行令牌' or 'steal 通行令牌'
-		self:send{ c }
-	end
-end
-function handler:sld_got_lingpai()
-	inventory.add_item{ name = '通行令牌', id = 'ling pai' }
-	handler.sld_leave( self )
-end
-trigger.new{ name = 'sld_got_lingpai', group = 'step_handler.sld_leave', match = '^(> )*(你成功地偷到了块通行令牌!|既然你要出岛，我就给你块令牌吧。)$', func = handler.sld_got_lingpai }
--- pre-steal lingpai
-function handler:sld_preget_lingpai( t )
-	local loc = map.get_current_location()[ 1 ]
-	if not inventory.has_item '通行令牌' and self.to.area ~= '神龙岛' then
-		if loc.id ~= '神龙岛陆府正厅' then
-			self:newsub{ class = 'go', to = '神龙岛陆府正厅', complete_func = handler.sld_preget_lingpai }
-		else
-			self:enable_trigger 'sld_got_lingpai'
-			local c = player.party == '神龙教' and 'ask lu gaoxuan about 通行令牌' or 'steal 通行令牌'
-			self:send{ c }
-		end
-	else
-		self:send{ t.cmd }
-	end
+	self:send{ 'give ling pai to chuan fu' }
+	inventory.remove_item '通行令牌'
 end
 
 -- 神龙岛蛇窟
@@ -417,27 +369,21 @@ trigger.new{ name = 'tz_ask_ghost', group = 'step_handler.tz_cave', match = '^听
 -- TODO make sure wielded axe
 
 -- from 华山山涧#SE to 华山万年松
--- TODO get sheng zi first and encumbrance < 50%
+-- TODO make sure encumbrance < 50%
+function handler:hs_pine()
+	self:send{ 'bang shengzi;climb up' }
+	inventory.remove_item '绳子'
+end
 
 -- 华山思过崖洞口
--- TODO get fire and sword
-
--- from 峨嵋山后山小路 to 峨嵋山灌木丛
--- TODO prepare sharp weapon
 
 -- 武当后山茅屋
 
 -- 武当后山古道
 function handler:wdhs_gudao()
-	if not inventory.has_item '毛毯#WD' then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '毛毯#WD', complete_func = handler.wdhs_gudao }
-	elseif not inventory.has_item '药锄' then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '药锄', complete_func = handler.wdhs_gudao }
-	elseif not map.is_current_location '武当山山路#2' then
-		self:newsub{ class = 'go', to = '武当山山路#2', complete_func = handler.wdhs_gudao }
-	elseif room.has_object '采药道长' then
+	if room.has_object '采药道长' then
 		self:send{ 'give yao chu to caiyao daozhang' }
-		inventory.add_item '绳子#WD'
+		inventory.add_item '绳子'
 	else
 		self:newsub{ class = 'killtime', duration = 60, can_move = true, complete_func = handler.look_again }
 	end
@@ -445,7 +391,7 @@ end
 
 -- 武当后山猢狲愁
 function handler:wdhs_husun()
-	if not inventory.has_item '绳子#WD' then self:fail() return end
+	if not inventory.has_item '绳子' then self:fail() return end
 	self:send{ 'tie song;climb down' }
 end
 
@@ -456,28 +402,14 @@ function handler:wdhs_shanya()
 end
 function handler:wdhs_jump( t )
 	if not inventory.has_item '毛毯#WD' then self:fail() return end
-	inventory.remove_item( t.to.id == '武当后山万年松' and '绳子#WD' or '毛毯#WD' )
+	inventory.remove_item( t.to.id == '武当后山万年松' and '绳子' or '毛毯#WD' )
 	self:send{ 'jump down' }
-end
-
--- 武当后山水潭
-function handler:wdhs_shuitan()
-	if not inventory.has_item '练心石' then self:fail() return end
-	self:send{ 'dive down' }
 end
 
 -- 襄阳郊外大山洞
 function handler:xyjw_cave()
-	if not inventory.has_item '火折' then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '火折', complete_func = handler.xyjw_cave }
-	elseif not inventory.has_item '小树枝' then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '小树枝', complete_func = handler.xyjw_cave }
-	elseif not map.is_current_location '襄阳郊外大山洞' then
-		self:newsub{ class = 'go', to = '襄阳郊外大山洞', complete_func = handler.xyjw_cave }
-	else
-		self:send{ 'dian shuzhi;l qingtai;#wb 1500;clean qingtai;l zi;l mu;#wb 1500;kneel mu;#wb 1500;zuan dong;#wb 1500' }
-		inventory.remove_item '小树枝'
-	end
+	self:send{ 'dian shuzhi;l qingtai;#wb 1500;clean qingtai;l zi;l mu;#wb 1500;kneel mu;#wb 1500;zuan dong;#wb 1500' }
+	inventory.remove_item '小树枝'
 end
 
 -- 襄阳郊外峭壁
@@ -493,7 +425,7 @@ trigger.new{ name = 'xyjw_cliff_look', group = 'step_handler.xyjw_cliff', match 
 -- 峨嵋山洗象池
 
 
--- 嵩山少林迎客亭、襄阳郊外剑冢
+-- 嵩山少林迎客亭、襄阳郊外剑冢、姑苏慕容小舍
 function handler:unwield_weapon()
 	if player.wielded then
 		self:newsub{ class = 'manage_inventory', action = 'unwield', complete_func = handler.unwield_weapon }
@@ -931,16 +863,6 @@ trigger.new{ name = 'gyz_jiugong_exited', group = 'step_handler.gyz_jiugong', ma
 
 -- 桃花岛桃花阵, from 桃花岛绿竹林 to 桃花岛河塘
 -- TODO 1. support combinations of multiple types of items as identifiers of rooms (no more simple coin count as id) 2. switch between multiple types of items as necessary (based on factors like inventory item count)
-function handler:prepare_coin( t )
-	if string.find( self.to.id, '桃花岛' )
-	and ( player.party == "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 80 )
-	 or ( player.party ~= "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 150 ) ) )
-	and not inventory.has_item( '铜钱', 200 ) then
-		self:newsub{ class = 'manage_inventory', action = 'prepare', item = '铜钱', count = 500 }
-	else
-		self:send{ t.cmd }
-	end
-end
 local item, cn_item = 'coin', '铜钱'
 -- return number of items on the ground
 local function get_item_count( room )

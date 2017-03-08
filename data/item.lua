@@ -59,7 +59,7 @@ local item = {
   value = 1000,
   quality = 20,
   source = {
-    -- { type = 'cmd', location = '天山兵器室', cmd = 'na dao', }
+    { type = 'cmd', cmd = 'na dao', location = '天山兵器室', }
   }
 },
 
@@ -136,6 +136,9 @@ local item = {
   id = 'fire',
   weight = 80,
   value = 100,
+  source = {
+    { type = 'get', location = '终南山灵室', },
+  },
 },
 
 --------------------------------------------------------------------------------
@@ -193,6 +196,7 @@ local item = {
   type = 'cloth',
   weight = 5000,
   quality = 150,
+  vanish_on_drop = true,
 },
 
 --------------------------------------------------------------------------------
@@ -206,8 +210,8 @@ local item = {
   desc = '一张由纯羊毛织成的毛毯。毛线细密十分保暖。',
   weight = 600,
   source = {
-    { type = 'cmd', location = '武当山女休息室', cmd = 'find mao tan', },
-    { type = 'cmd', location = '武当山男休息室', cmd = 'find mao tan', },
+    { type = 'cmd', cmd = 'find mao tan', location = '武当山女休息室', },
+    { type = 'cmd', cmd = 'find mao tan', location = '武当山男休息室', },
   },
 },
 
@@ -219,17 +223,31 @@ local item = {
   desc = '这是一把普通采药用的锄头。',
   weight = 500,
   source = {
-    { type = 'cmd', location = '武当山武当广场', cmd = 'find yao chu', cond = 'player.party == "武当派"', }
+    { type = 'cmd', cmd = 'find yao chu', location = '武当山武当广场', cond = 'player.party == "武当派"', }
   },
 },
 
-['绳子#WD'] = {
-  iname = '绳子#WD',
+['绳子'] = {
+  iname = '绳子',
 	name = '绳子',
   id = 'sheng zi',
   alternate_id = { 'sheng' },
   desc = '这是一捆长长的麻绳，最适合于攀爬之用。',
+  source = {
+    { type = 'get', location = '华山寝室', },
+  },
   weight = 400,
+},
+
+['练心石'] = {
+  iname = '练心石',
+	name = '练心石',
+  id = 'lianxin shi',
+  alternate_id = { 'lianxin', 'shi' },
+  weight = 4000,
+  source = {
+    { type = 'get', location = '武当后山古道#3', },
+  },
 },
 
 ['小树枝'] = {
@@ -246,6 +264,17 @@ local item = {
     { type = 'get', location = '曼佗罗山庄柳树林#N', },
     { type = 'get', location = '苏州城虎丘山', },
     { type = 'get', location = '苏州城灵岩山', },
+  },
+},
+
+['通行令牌'] = {
+  iname = '通行令牌',
+	name = '通行令牌',
+  id = 'ling pai',
+  weight = 20,
+  source = {
+    { type = 'cmd', cmd = 'ask lu gaoxuan about 通行令牌', location = '神龙岛陆府正厅', npc = '陆高轩', cond = 'player.party == "神龙教"', },
+    { type = 'local_handler', handler = 'sld_lingpai', location = '神龙岛陆府正厅', npc = '陆高轩', cond = 'player.party ~= "神龙教"', },
   },
 },
 

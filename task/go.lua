@@ -32,14 +32,14 @@ function task:_resume()
 
     self:listen{ event = 'located', func = self.resume, id = 'task.go', persistent = true }
     self.step_num, self.error_count = 1, 0
-    self:next_step()
-    return
   end
 
   -- prepare the items / get the flags first
-  if self.req and #self.req > 0 then self:prepare() end
-
-  self:check_step()
+  if self.req and #self.req > 0 then
+    self:prepare()
+  else
+    self:check_step()
+  end
 end
 
 function task:_complete()
@@ -53,14 +53,20 @@ end
 -- prepare the items / get the flags required to complete the path
 function task:prepare()
   -- get next entry from the req list and remove it from the list
-  local req = table.remove( self.req )
+  local req, subtask = table.remove( self.req )
   if req.item then -- an item req
-    if inventory.has_item( req.item, req.count ) then self:resume()
+    if inventory.has_item( req.item, req.count ) then
+      self:resume()
+      return
     else
-      self:newsub{ class = 'manage_inventory', action = 'prepare', item = req.item, count = req.count }
+      subtask = self:newsub{ class = 'manage_inventory', action = 'prepare', item = req.item, count = req.count }
     end
   else -- a flag req
     -- TODO
+  end
+  -- block all exits related to this req until the item / flag is acquired
+  for _, pair in ipairs( req ) do
+    map.block_exit( pair.from, pair.to, subtask )
   end
 end
 

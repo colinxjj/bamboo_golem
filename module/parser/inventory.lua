@@ -22,6 +22,7 @@ end
 
 local function parse_header( _, t )
   cache = {}
+  player.wielded = nil -- reset wielded info
   player.inv_count = cntonumber( t[ 3 ] )
   player.encumbrance = tonumber( t[ 4 ] )
   trigger.enable 'inventory2'
@@ -64,7 +65,7 @@ local drop_patt = lpeg.P 'drop ' * lpeg.C( lpeg.R '09'^1 ) * ' ' * lpeg.C( lpeg.
 local function parse_drop( _, t )
   local name, count = extract_name_count( t[ 2 ] )
   local it = player.inventory[ name ]
-  if not it or not it.count then return end
+  if not it then return end
   -- drop amount unclear?
   if string.find( t[ 2 ], '^一些' ) then -- try to get drop amount by parsing last cmd sent
     local c, id = cmd.get_last()
@@ -72,7 +73,7 @@ local function parse_drop( _, t )
     count, id = drop_patt:match( c.cmd )
     if not count or it.id ~= id then it.count_is = 'max'; return end -- mark item's current count as a upper limit
   end
-  it.count = it.count - count
+  it.count = it.count and it.count - count or 0
   -- remove item if all is dropped
   if it.count < 1 then player.inventory[ name ] = nil end
   event.new 'inventory'
@@ -172,6 +173,13 @@ local function parse_unwield()
   event.new 'inventory'
 end
 
+local function parse_ferry_pay()
+  local it = player.inventory[ '白银' ]
+  if not it then return end
+  it.count = it.count - 5
+  it.count_is = 'max'
+end
+
 trigger.new{ name = 'inventory1', match = '^(> )*你身上(带着(\\S+)件|带著下列这些)东西\\(负重\\s*(\\S+)%\\)：$', func = parse_header, enabled = true }
 trigger.new{ name = 'inventory2', match = '^(□|  )([^ (]+)\\(([\\w\\s\\\'-]+)\\)$', func = parse_content }
 
@@ -200,6 +208,8 @@ trigger.new{ name = 'inventory_dazao_unwield', match = '^(> )*你将手中的\\S+一弹
 trigger.new{ name = 'inventory_normal_unwield', match = '^(> )*你将手中的\\S+插回\\S\\S鞘。', func = parse_unwield, enabled = true }
 trigger.new{ name = 'inventory_zhujian_unwield', match = '^(> )*你放下手中的\\S+。', func = parse_unwield, enabled = true }
 trigger.new{ name = 'inventory_zhen_unwield', match = '^(> )*你将绣花针插回绣花绷架。', func = parse_unwield, enabled = true }
+
+trigger.new{ name = 'inventory_ferry_pay', match = '^(> )*你把钱交给船家', func = parse_ferry_pay, enabled = true }
 
 
 --------------------------------------------------------------------------------

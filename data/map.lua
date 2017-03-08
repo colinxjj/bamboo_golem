@@ -2428,7 +2428,7 @@ local map = {
   desc =  [[一条大江横亘在面前，江水浩浩，日日夜夜无穷无休地奔向大海。]],
   exit = {
     w = { to = '牛家村江畔#2', },
-    e = { to = '桃花岛海滨', handler = 'prepare_coin', },
+    e = { to = '桃花岛海滨', },
   },
 },
 
@@ -2439,7 +2439,7 @@ local map = {
   desc =  [[一条郊外的土路，远处似乎有座村落。]],
   exit = {
     nw = { to = '杭州城青石大道#7', },
-    s = { to = '牛家村土路#2SE', handler = 'prepare_coin', },
+    s = { to = '牛家村土路#2SE', },
   },
 },
 
@@ -2549,7 +2549,7 @@ local map = {
   desc =  [[这里是海边的一个小渔港，附近唯一可以出海的地方就是这里了。正要出海的渔民忙碌地来来往往，一个船老大摸样的人正在拼命呼喝着在船上做帮工的渔家孩子。]],
   exit = {
     w = { to = '牛家村土路#1E', },
-    hidden = { to = '牛家村船上', handler = 'thd_onboard', },
+    hidden = { to = '牛家村船上', handler = 'thd_onboard', req = { ['黄金'] = 3 }, },
   },
 },
 
@@ -7458,7 +7458,7 @@ local map = {
   desc =  [[一翻上山头，你就发现眼前豁然开朗，北面山脚下是一大片的桃花丛，而在花丛中隐约露出了几座庭院的飞檐，似乎有着一片典雅的建筑在那边。向靠海的一边望去，用来爬山时垫脚的岩石已经被蹬掉了，你再也回不到海边了。而东北边更有一座小山峰，]],
   exit = {
     eu = { to = '桃花岛山脊', },
-    nd = { to = '桃花岛桃花阵', cond = 'player.party == "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level < 20 ) or ( player.party ~= "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 130 ) )', },
+    nd = { to = '桃花岛桃花阵', cond = 'player.party == "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level < 20 ) or ( player.party ~= "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 130 ) )', req = { ['铜钱'] = 500 }, },
     hidden = { to = '桃花岛山冈', cmd = 'nd', cond = 'player.party == "桃花岛" and player.skill["奇门八卦"] and player.skill["奇门八卦"].level >= 20 or ( player.skill["奇门八卦"] and player.skill["奇门八卦"].level > 130 )', },
   },
 },
@@ -13216,7 +13216,7 @@ local map = {
   desc =  [[这里是黄河大渡口，是通往中原的必经之路。宽阔的黄河江面上飘荡着几只轻帆。渡口处正停着一艘渡船，几个乘客正在和船家讨论价钱。你可以由此上(yell)船渡过黄河。]],
   exit = {
     nw = { to = '兰州城黄河#2', },
-    enter = { to = '兰州城黄河渡船#1', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, },
+    enter = { to = '兰州城黄河渡船#1', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, req = { ['白银'] = 1 }, },
   },
 },
 
@@ -13503,7 +13503,7 @@ local map = {
   desc =  [[这里是兰州黄河大渡口，是通往西域的必经之路。宽阔的黄河江面上飘荡着几只轻帆。渡口处正停着一艘渡船，几个乘客正在和船家讨论价钱。你可以由此上(yell)船渡过黄河。]],
   exit = {
     e = { to = '兰州城大道#1W', },
-    enter = { to = '兰州城黄河渡船#2', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, },
+    enter = { to = '兰州城黄河渡船#2', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, req = { ['白银'] = 1 }, },
   },
 },
 
@@ -13689,7 +13689,7 @@ local map = {
   name = '西夏渡口',
   desc =  [[这里是西夏黄河大渡口，是通往西夏的必经之路。宽阔的黄河江面上飘荡着几只轻帆。渡口处正停着一艘渡船，几个乘客正在和船家讨论价钱。你可以由此上(yell)船渡过黄河。]],
   exit = {
-    enter = { to = '兰州城黄河渡船#1', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, },
+    enter = { to = '兰州城黄河渡船#1', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, req = { ['白银'] = 1 }, },
     se = { to = '兰州城山脚下', },
   },
 },
@@ -13756,7 +13756,7 @@ local map = {
   desc =  [[这里是黄河大渡口，是通往中原的必经之路。宽阔的黄河江面上飘荡着几只轻帆。渡口处正停着一艘渡船，几个乘客正在和船家讨论价钱。你可以由此上(yell)船渡过黄河。]],
   exit = {
     nw = { to = '兰州城大道#2W', },
-    enter = { to = '兰州城黄河渡船#2', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, },
+    enter = { to = '兰州城黄河渡船#2', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, req = { ['白银'] = 1 }, },
   },
 },
 
@@ -14995,7 +14995,7 @@ local map = {
   exit = {
     nu = { to = '神龙岛山路#1', },
     enter = { to = '神龙岛陆府正厅', },
-    s = { to = '神龙岛树林#1S', handler = 'sld_preget_lingpai', },
+    s = { to = '神龙岛树林#1S', },
     n = { to = '神龙岛树林#1N', },
   },
 },
@@ -15053,7 +15053,7 @@ local map = {
   exit = {
     ne = { to = '神龙岛沙滩#E', },
     nw = { to = '神龙岛沙滩#W', },
-    hidden = { to = '神龙岛小帆船', handler = 'sld_leave', },
+    hidden = { to = '神龙岛小帆船', handler = 'sld_leave', req = { ['通行令牌'] = 1 }, },
     n = { to = '神龙岛树林#2S', },
   },
 },
@@ -15241,7 +15241,7 @@ local map = {
   name = '海滩',
   desc =  [[这里是东海之滨的一个小海滩。放眼望去，一片无际的的茫茫大海，远处海天一线，你隐隐看到几只海鸥在海上飞翔。海滩的四周稀稀落落的有一些长得颇为茂盛的树木(tree)。]],
   exit = {
-    hidden = { to = '神龙岛小木筏', handler = 'sld_enter', },
+    hidden = { to = '神龙岛小木筏', handler = 'sld_enter', req = { ['粗绳子'] = 1, sharp_weapon = 1 }, },
     sw = { to = '神龙岛小路', },
   },
 },
@@ -16818,7 +16818,7 @@ local map = {
   name = '石棺内',
   desc =  [[棺盖内侧似乎写得有字，凝目瞧去，果见是十六个大字：「玉女心经，技压全真。重阳一生，不弱於人。」这十六个字以浓墨所书，笔力苍劲，字体甚大。其时棺盖只推开了一半，但斜眼看去，仍是清清楚楚。]],
   exit = {
-    hidden = { to = '终南山石室#3D', cmd = 'use fire;#9 search;turn ao left;#wb 1500;ti up', },
+    hidden = { to = '终南山石室#3D', cmd = 'use fire;#9 search;turn ao left;#wb 1500;ti up', req = { ['火折'] = 1 }, },
     out = { to = '终南山灵室', },
   },
 },
@@ -17828,7 +17828,7 @@ local map = {
   name = '陕晋渡口',
   desc =  [[这里是黄河大渡口，是通往晋西的必经之路。宽阔的黄河江面上飘荡着几只轻帆。渡口处正停着一艘渡船，几个乘客正在和船家讨论价钱。你可以由此上(yell)船渡过黄河。]],
   exit = {
-    enter = { to = '长安城渡船', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, },
+    enter = { to = '长安城渡船', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, req = { ['白银'] = 1 }, },
     s = { to = '长安城土路#5', },
     se = { to = '黄河流域黄土高原', },
   },
@@ -18912,7 +18912,7 @@ local map = {
   name = '陕晋渡口',
   desc =  [[这里是黄河大渡口，是通往长安的必经之路。宽阔的黄河江面上飘荡着几只轻帆。渡口处正停着一艘渡船，几个乘客正在和船家讨论价钱。你可以由此上(yell)船渡过黄河。]],
   exit = {
-    enter = { to = '长安城渡船', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, },
+    enter = { to = '长安城渡船', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, req = { ['白银'] = 1 }, },
     n = { to = '长安城大道#1N', },
   },
 },
@@ -21652,7 +21652,7 @@ local map = {
   exit = {
     nd = { to = '峨嵋山后山小路#4', },
     su = { to = '峨嵋山后山树林', },
-    hidden = { to = '峨嵋山灌木丛#1', no_wander = true, cmd = 'get axe;wield axe;cut 灌木丛;drop axe', handler = 'reset_data', },
+    hidden = { to = '峨嵋山灌木丛#1', no_wander = true, cmd = 'cut 灌木丛', handler = 'wield_sharp_weapon', req = { sharp_weapon = 1 }, },
   },
 },
 
@@ -22814,7 +22814,7 @@ local map = {
   desc =  [[眼前是一处山涧，深不可测。连接两侧峭壁的竟是几条铁链，铁链上的木板早已不见。这边桥柱上钉这几枚暗器，四周积雪中插有数柄断刀断剑，更多的是些奇门兵器，有几柄色泛悠蓝，定是涂有剧毒, 山涧下面是云雾弥漫的万丈深崖，看来掉下去定无生路。]],
   exit = {
     s = { to = '天山失足岩', },
-    hidden = { to = '天山仙愁门', cmd = 'ge tielian;#wb 3500;tiao duimian;#wb 3500', handler = 'ts_bzjian', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 100', },
+    hidden = { to = '天山仙愁门', cmd = 'ge tielian;#wb 3500;tiao duimian;#wb 3500', handler = 'wield_sharp_weapon', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 100', req = { sharp_weapon = 1 }, },
   },
 },
 
@@ -22996,6 +22996,7 @@ local map = {
   desc =  [[一叶小舟，最多也就能载七、八个人。一名老艄公手持长竹篙，正在船尾吃力地撑着船。]],
   exit = {
     out = { to = '姑苏慕容湖边#3', unstable = true, cost = 50, handler = 'disembark', },
+    out2 = { to = '燕子坞岸边#3', unstable = true, cost = 50, handler = 'disembark', },
   },
 },
 
@@ -23006,8 +23007,8 @@ local map = {
   desc =  [[这里是慕容家的家仆和丫鬟出入太湖的水上码头，只见人们来来往往，一个个风尘仆仆，码头边的老船夫见到你走过来，马上笑呵呵的迎了上去。码头边张贴着一张价格表(sign)。]],
   exit = {
     n = { to = '姑苏慕容小石桥#1', },
-    hidden1 = { to = '姑苏慕容渡船#SZ-XZ', cmd = 'qu mr', no_wander = true, handler = 'mr_embark', },
-    hidden2 = { to = '姑苏慕容小舟#SZ-YZW', cmd = 'qu yanziwu', no_wander = true, handler = 'mr_embark', },
+    hidden1 = { to = '姑苏慕容渡船#SZ-XZ', cmd = 'qu mr', no_wander = true, req = { ['白银'] = 20 }, },
+    hidden2 = { to = '姑苏慕容小舟#SZ-YZW', cmd = 'qu yanziwu', no_wander = true, req = { ['白银'] = 20 }, },
   },
 },
 
@@ -23170,7 +23171,7 @@ local map = {
   desc =  [[这间房舍小巧玲珑, 颇为精雅。小舍匾额上写着「琴韵」两字，笔致颇为潇洒。远处的小屋露出一檐屋角。东西两边各有一条小径不知通向哪里。]],
   exit = {
     e = { to = '姑苏慕容小径#1E', },
-    w = { to = '姑苏慕容小径#1W', },
+    w = { to = '姑苏慕容小径#1W', handler = 'unwield_weapon', },
     n = { to = '姑苏慕容小岛边', },
   },
 },
@@ -23223,8 +23224,8 @@ local map = {
   name = '渡船',
   desc =  [[一叶小舟，最多也就能载七、八个人。一名六十多岁的老艄公手持长竹篙，正在船尾吃力地撑着船。]],
   exit = {
-    out2 = { to = '姑苏慕容小岛边', unstable = true, handler = 'disembark', cost = 50, },
-    out = { to = '姑苏慕容码头', unstable = true, handler = 'disembark', cost = 50, },
+    out = { to = '姑苏慕容小岛边', unstable = true, handler = 'disembark', cost = 50, },
+    out2 = { to = '姑苏慕容码头', unstable = true, handler = 'disembark', cost = 50, },
   },
 },
 
@@ -23267,6 +23268,7 @@ local map = {
   desc =  [[一叶小舟，最多也就能载七、八个人。一名老艄公手持长竹篙，正在船尾吃力地撑着船。]],
   exit = {
     out = { to = '曼佗罗山庄岸边#2', unstable = true, cost = 50, handler = 'disembark', },
+    out2 = { to = '燕子坞岸边#2', unstable = true, cost = 50, handler = 'disembark', },
   },
 },
 
@@ -25802,7 +25804,7 @@ local map = {
   desc = [[这里便是犯错误华山派弟子受罚思过的地方。位于玉女峰顶，正好有一小块平地，一面是深不可测的山谷、一面是陡峭的悬壁(bi)，零零落落的有几块山石。其中一块特别光滑，想是弟子在面壁是久坐而成。]],
   exit = {
     out = { to = '华山思过崖', },
-    enter = { to = '华山山洞', no_wander = true, unstable = true, handler = 'hs_siguoya', cond = 'player.neili >= 600', },
+    enter = { to = '华山山洞', no_wander = true, unstable = true, handler = 'hs_siguoya', cond = 'player.neili >= 600', req = { ['火折'] = 2, sword = 1 }, },
   },
 },
 
@@ -26117,7 +26119,7 @@ local map = {
   desc =  [[山涧到这里就没有路了，你仰头望去，一片绝壁在你的头顶上，根本没有上去的可能，离你约莫四丈高的地方有一棵万年松(Songshu)正在随风摇摆。前面就是华山的万丈深渊。]],
   exit = {
     nw = { to = '华山山涧#C', },
-    hidden = { to = '华山万年松', cmd = 'bang shengzi;climb up', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 20', },
+    hidden = { to = '华山万年松', handler = 'hs_pine', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 20', req = { ['绳子'] = 1 }, },
   },
 },
 
@@ -30934,7 +30936,7 @@ local map = {
   name = '大渡口',
   desc =  [[这里是黄河大渡口，是通往中原的必经之路。宽阔的黄河江面上飘荡着几只轻帆。渡口处正停着一艘渡船，几个乘客正在和船家讨论价钱。你可以由此上(yell)船渡过黄河。]],
   exit = {
-    enter = { to = '黄河流域渡船', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, },
+    enter = { to = '黄河流域渡船', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, req = { ['白银'] = 1 }, },
     n = { to = '沧州城官道#4', },
   },
 },
@@ -30980,7 +30982,7 @@ local map = {
   desc =  [[这里是黄河大渡口，是通往京城的必经之路。宽阔的黄河江面上飘荡着几只轻帆。渡口处正停着一艘渡船，几个乘客正在和船家讨论价钱。你可以由此上(yell)船渡过黄河。]],
   exit = {
     s = { to = '黄河流域黄河入海口', },
-    enter = { to = '黄河流域渡船', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, },
+    enter = { to = '黄河流域渡船', cmd = 'duhe', unstable = true, handler = 'fly_across', no_wander = true, req = { ['白银'] = 1 }, },
   },
 },
 
@@ -34590,7 +34592,7 @@ local map = {
     w = { to = '武当山榔梅祠', },
     se = { to = '武当后山小路#1', },
     hidden1 = { to = '武当山灌木丛', cmd = 'zuan guanmu', },
-    hidden2 = { to = '武当后山古道#1', handler = 'wdhs_gudao', cond = 'player.party == "武当派" and player.skill["基本内功"] and player.skill["基本内功"].level >= 20 and player.jingli >= 200 and player.neili >= 200', },
+    hidden2 = { to = '武当后山古道#1', handler = 'wdhs_gudao', cond = 'player.party == "武当派" and player.skill["基本内功"] and player.skill["基本内功"].level >= 20 and player.jingli >= 200 and player.neili >= 200', req = { ['药锄'] = 1, ['毛毯#WD'] = 1 }, },
   },
 },
 
@@ -34925,7 +34927,7 @@ local map = {
   desc = [[这是一碧绿水潭，潭水清澈，水寒刺骨，好象还有什么东西在咬你的脚趾，还是赶快爬上岸吧。]],
   exit = {
     hidden1 = { to = '武当后山古道#3', cmd = 'drop lianxin shi;pa up', },
-    hidden2 = { to = '武当后山水潭底#1', handler = 'wdhs_shuitan', },
+    hidden2 = { to = '武当后山水潭底#1', cmd = 'dive down', req = { ['练心石'] = 1 }, },
   },
 },
 
@@ -34936,7 +34938,7 @@ local map = {
   desc = [[你身处碧绿潭水中，潭水清澈，水寒刺骨，周围鱼虾罕见，如进了死城一般。]],
   exit = {
     hidden1 = { to = '武当后山水潭', cmd = 'dive up', },
-    hidden2 = { to = '武当后山水潭底#2', handler = 'wdhs_shuitan', },
+    hidden2 = { to = '武当后山水潭底#2', cmd = 'dive down', req = { ['练心石'] = 1 }, },
   },
 },
 
@@ -36733,8 +36735,8 @@ local map = {
   desc =  [[这是曼佗罗山庄的一个小码头，从这里上船可以到达慕容世家的领地，武林中的英雄豪杰们都十分仰慕闻名天下的燕子坞，因为那里是无人不知无人不晓的“以彼之道，还施彼身”的发源地，而慕容世家一代就是住在那里。岸边有一位老船夫，专门载着去燕子坞的武林人士，他一见你走过来，不敢怠慢，带着笑脸连忙迎上前去。在岸边有一块牌子(paizi)。]],
   exit = {
     n = { to = '曼佗罗山庄小径#2S', },
-    hidden1 = { to = '姑苏慕容小舟#MTL-XZ', cmd = 'qu xiaozhu', no_wander = true, handler = 'mr_embark', },
-    hidden2 = { to = '姑苏慕容小舟#MTL-YZW', cmd = 'qu yanziwu', no_wander = true, handler = 'mr_embark', },
+    hidden1 = { to = '姑苏慕容小舟#MTL-XZ', cmd = 'qu xiaozhu', no_wander = true, },
+    hidden2 = { to = '姑苏慕容小舟#MTL-YZW', cmd = 'qu yanziwu', no_wander = true, },
   },
 },
 

@@ -12,6 +12,10 @@ function room.get()
   return current_room
 end
 
+function room.reset()
+  current_room = nil
+end
+
 -- check if a person / an object is present in the current room
 function room.has_object( object )
 	object = type( object ) == 'table' and object or get_npc( object ) or { name = object }
@@ -25,9 +29,14 @@ function room.add_object( object )
 	current_room.object[ object.name ] = object
 end
 
-function room.remove_object( object )
-	object = type( object ) == 'string' and { name = object } or object
-	current_room.object[ object.name ] = nil
+function room.remove_object( name )
+  assert( type( name ) == 'string', 'room.remove_object - param must be a string' )
+	current_room.object[ name ] = nil
+end
+
+function room.get_object_count( name )
+  local it = current_room.object[ name ]
+  return it and it.count or 0
 end
 
 -- locate the player based on the current room data

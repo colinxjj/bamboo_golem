@@ -146,11 +146,11 @@ end
 cli.register{ cmd = 'f', desc = '前往某个NPC所在处。支持中文名和 ID。例如：f 李半仙 或 f banxian', func = parse_f, no_prefix = true }
 
 --------------------------------------------------------------------------------
--- pp
+-- pi
 
 local type_list = { sharp_weapon = true }
 local patt = lpeg.C( lpeg.R '09'^1 ) * ' ' * lpeg.C( lpeg.P( 1 )^1 )
-local function parse_pp( _, input )
+local function parse_pi( _, input )
   local count, name = patt:match( input )
   count, name = tonumber( count ), name or input
   local it = item.get( name ) or item.get_by_id( name )
@@ -164,15 +164,13 @@ local function parse_pp( _, input )
 end
 
 
-cli.register{ cmd = 'pp', desc = '获取指定的物品。支持中文名和 ID。例如：pp 500 coin 或 pp 木棉袈裟', func = parse_pp, no_prefix = true }
+cli.register{ cmd = 'pi', desc = '获取指定的物品。支持中文名和 ID。例如：pi 500 coin 或 pi 木棉袈裟', func = parse_pi, no_prefix = true }
 
 --------------------------------------------------------------------------------
 -- tt
 
 local function parse_tt( _, input )
-  local path = map.getpath( '襄阳城山间空地', '襄阳郊外剑冢' )
-  local list = map.get_path_req( path )
-  tprint( list )
+  taskmaster.current_manual_task:newweaksub{ class = 'manage_inventory', action = 'wield', item = 'sword' }
 end
 
 

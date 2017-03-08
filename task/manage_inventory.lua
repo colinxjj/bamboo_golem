@@ -71,6 +71,7 @@ function task:handle_source( source )
   elseif source.type == 'cmd' then
     self:send{ source.cmd; complete_func = self.check_inventory }
   elseif source.type == 'local_handler' then
+    self:enable_trigger_group( 'item_finder.' .. source.handler )
     _G.task.helper.item_finder[ source.handler ]( self )
   elseif source.type == 'shop' then
     self:purchase( source )
@@ -81,7 +82,9 @@ end
 -- get item from ground
 function task:get( source )
   if room.has_object( source.item ) then
-    local c = self.count ~= 1 and ( self.count .. ' ' ) or ''
+    local count = room.get_object_count( source.item )
+    count = count > self.count and self.count or count
+    local c = count ~= 1 and ( count .. ' ' ) or ''
     self:send{ 'get ' .. c .. item.get_id( source.item ); complete_func = self.check_source_result }
   else
     item.mark_invalid_source( source )
@@ -129,13 +132,13 @@ end
 
 function task:wield()
   if player.wielded then
-    if self.item == 'sharp_weapon' and item.is_type( player.wielded.name, 'sharp_weapon' ) or self.item == player.wielded.name then self:complete() return end
+    if item.is_valid_type( self.item ) and item.is_type( player.wielded.name, self.item ) or self.item == player.wielded.name then self:complete() return end
     self:send{ 'unwield ' .. player.wielded.id; complete_func = self.resume }
   else
     local id
-    if self.item == 'sharp_weapon' then
+    if item.is_valid_type( self.item ) then
       for iname in pairs( player.inventory ) do
-        if item.is_type( iname, 'sharp_weapon' ) then id = inventory.get_item_id( iname ) or item.get_id( iname ); break end
+        if item.is_type( iname, self.item ) then id = inventory.get_item_id( iname ) or item.get_id( iname ); break end
       end
     else
       id = item.get_id( self.item )

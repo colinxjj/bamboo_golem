@@ -186,7 +186,7 @@ function item.is_valid_type( name )
 	return valid_type[ name ]
 end
 
-local function clear_temp_source( slist )
+local function cleanup_temp_source( slist )
 	local i, source = 1
 	while slist[ i ] do
 		source = slist[ i ]
@@ -205,7 +205,7 @@ function item.get_all_source( name )
 	if not item.is_valid_type( name ) then
 		for iname, it in pairs( index ) do
 			if it.name == name or iname == name then
-				clear_temp_source( it.source )
+				cleanup_temp_source( it.source )
 				return it.source
 			end
 		end
@@ -214,11 +214,11 @@ function item.get_all_source( name )
 		if not item_list then return end
 		local slist = {}
 		for iname, it in pairs( item_list ) do
+			cleanup_temp_source( it.source )
 			for _, source in pairs( it.source ) do
 				slist[ #slist + 1 ] = source
 			end
 		end
-		clear_temp_source( slist )
 		return slist
 	end
 end
@@ -294,28 +294,51 @@ function item.mark_invalid_source( source )
 	source.fail_count = source.fail_count and source.fail_count + 1 or 1
 end
 
--- automatically add rooms with appropriate items on ground as temporary item sources
-local function add_temp_item_source( evt )
-	for name, object in pairs( room.get().object ) do
-		local it, loc, skip = item.get( name ), evt.location[ 1 ].id
-		-- only consider items in database with matched id's
-		if it and it.id == object.id then
-			it.source = it.source or {}
-			-- skip locations already have get sources for the same item
-			for _, source in pairs( it.source ) do
-				if source.location == loc and source.type == 'get' then skip = true break end
-			end
-			if not skip then
-				-- add the new temp source
-				it.source[ #it.source + 1 ] = { item = it.iname, type = 'get', location = loc, is_temp = true, add_time = os.time() }
-				print( 'add temp item source: ' .. name .. ' (' .. object.id .. ') at ' .. evt.location[ 1 ].id )
-			end
-			skip = false
+function item.add_temp_item_source ( loc, name, id )
+	loc = type( loc ) == 'table' and loc.id or loc
+	assert( map.get_room_by_id( loc ), 'item.add_temp_item_source - invalid loc param' )
+	assert( type( name ) == 'string', 'item.add_temp_item_source - the name param must be a string' )
+	assert( not count or type( count ) == 'number', 'item.add_temp_item_source - the count param must be a string' )
+	assert( not id or type( id ) == 'string', 'item.add_temp_item_source - the id param must be a string' )
+
+	local it = item.get( name )
+	-- igbore items not in database or with unmatched id's
+	if name == '铜钱' or not it or ( id and id ~= it.id ) then return end
+
+	it.source = it.source or {}
+	-- ignore location already have a "get" source for the same item
+	for _, source in pairs( it.source ) do
+		if source.location == loc and source.type == 'get' then return end
+	end
+	-- add the new temp source
+	it.source[ #it.source + 1 ] = { item = it.iname, type = 'get', location = loc, is_temp = true, add_time = os.time() }
+	message.debug( '添加临时物品来源：' .. name .. ' - ' .. loc )
+end
+
+function item.remove_temp_item_source( loc, name )
+	loc = type( loc ) == 'table' and loc.id or loc
+	assert( map.get_room_by_id( loc ), 'item.remove_temp_item_source - invalid loc param' )
+	assert( type( name ) == 'string', 'item.remove_temp_item_source - the name param must be a string' )
+
+	local it = item.get( name )
+	if not it or not it.source then return end
+
+	for i, source in pairs( it.source ) do
+		if source.location == loc and source.type == 'get' and source.is_temp then
+			table.remove( it.source, i )
+			return -- there shouldn't be more than one temp source for each item / loc pair so this should be fine
 		end
 	end
 end
 
-event.listen{ event = 'located', func = add_temp_item_source, id = 'item.add_temp_item_source', persistent = true, sequence = 99 }
+-- automatically add rooms with appropriate items on ground as temporary item sources
+local function parse_potential_temp_item_source( evt )
+	for name, object in pairs( room.get().object ) do
+		item.add_temp_item_source( evt.location[ 1 ], name, object.id )
+	end
+end
+
+event.listen{ event = 'located', func = parse_potential_temp_item_source, id = 'item.parse_potential_temp_item_source', persistent = true, sequence = 99 }
 
 --------------------------------------------------------------------------------
 -- End of module

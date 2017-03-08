@@ -72,9 +72,10 @@ local function refresh_grid()
 		local func = current_task[ current_task.is_successful and 'complete_func' or 'fail_func' ]
 		local result = current_task.result
 		if current_task.parent == task_to_run then
-			--print( current_task.id .. '(' .. tostring( current_task.is_successful ) .. ') > ' ..  task_to_run.id )
+			--print( current_task.id .. ' ( ' .. tostring( current_task.is_successful ) .. ' ) > ' ..  task_to_run.id )
+			task_to_run.status = ( func or current_task.is_successful ~= false ) and 'running' or 'dead'
 			func = func or task_to_run[ current_task.is_successful ~= false and '_resume' or '_fail' ]
-			current_task, task_to_run.status = task_to_run, 'running'
+			current_task = task_to_run
 			if func then func( task_to_run, result ) end
 			return
 		elseif current_task.status == 'dead' then

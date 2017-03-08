@@ -81,7 +81,7 @@ local function genpath( from, is_dest )
       to = index[ exit.to ]
       new_cost = cost[ from ] + ( exit.cost or 1 )
       if to and from ~= to and not exit.ignore and
-      ( not exit.blocked_by or map.is_block_valid( exit ) ) and
+      ( not exit.blocked_by_task or not map.is_block_valid( exit ) ) and
       ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) and
       ( max_cost and new_cost < max_cost or not max_cost ) and
       ( not cost[ to ] or new_cost < cost[ to ] ) then -- add new node
@@ -169,7 +169,7 @@ function map.expand_loc( loc, range )
         to = index[ exit.to ]
         new_distance = distance[ from ] + 1
         if to and not exit.no_wander and not exit.ignore
-        and ( not exit.blocked_by or map.is_block_valid( exit ) )
+        and ( not exit.blocked_by_task or not map.is_block_valid( exit ) )
         and ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond )
         and new_distance <= range and not distance[ to ] then -- add new node
           distance[ to ] = new_distance
@@ -202,7 +202,7 @@ local function find_room( from, is_dest, prefer_furthest )
       to = index[ exit.to ]
       new_cost = cost[ from ] + ( exit.cost or 1 )
       if to and from ~= to and not exit.ignore and
-      ( not exit.blocked_by or map.is_block_valid( exit ) ) and
+      ( not exit.blocked_by_task or not map.is_block_valid( exit ) ) and
       ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) and
       ( prefer_furthest or cost_ok( new_cost, max_cost ) ) and
       ( not cost[ to ] or new_cost < cost[ to ] ) then -- add new node
@@ -258,16 +258,16 @@ function map.block_exit( from, to, task )
     if exit.to == to.id and not exit.ignore and
     -- exit cond will be checked so only exits that the player can use otherwise are blocked
     ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) then
-      exit.blocked_by = task
+      exit.blocked_by_task = task
     end
   end
 end
 
 -- checks if a block is still valid or not, if not, the block will be lifted
 function map.is_block_valid( exit )
-  local task = exit.blocked_by
+  local task = exit.blocked_by_task
   if task.status == 'dead' then
-    exit.blocked_by = nil
+    exit.blocked_by_task = nil
     return false
   else
     return true

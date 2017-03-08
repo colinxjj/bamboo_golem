@@ -22,7 +22,7 @@ end
 
 function inventory.add_item( object )
 	assert( type( object ) == 'string' or type( object ) == 'table', 'inventory.add_item - param must be a string or table' )
-	if type( object ) == 'string' then object = item.get( object ) or { name = object } end
+	if type( object ) == 'string' then object = { name = object, id = item.get_id( object ) } end
 	player.inventory[ object.name ] = object
 end
 
