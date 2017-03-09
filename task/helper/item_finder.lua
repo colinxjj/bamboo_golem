@@ -35,7 +35,7 @@ end
 -- 桃源县金娃娃
 function finder:ty_fish()
   if player.wielded then
-		self:newsub{ class = 'manage_inventory', action = 'unwield', complete_func = handler.ty_fish }
+		self:newsub{ class = 'manage_inventory', action = 'unwield', complete_func = finder.ty_fish }
   else
     self:send{ 'zhua yu' }
   end
@@ -56,6 +56,7 @@ function finder:ty_boat()
   if not inventory.has_item '金娃娃' then
     self:newsub{ class = 'manage_inventory', action = 'prepare', item = '金娃娃' }
   elseif room.has_object '渔人' then
+    inventory.remove_item '金娃娃'
     self:send{ 'give jin wawa to yu ren' }
   else
     self:fail()

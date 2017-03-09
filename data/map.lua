@@ -2549,7 +2549,7 @@ local map = {
   desc =  [[这里是海边的一个小渔港，附近唯一可以出海的地方就是这里了。正要出海的渔民忙碌地来来往往，一个船老大摸样的人正在拼命呼喝着在船上做帮工的渔家孩子。]],
   exit = {
     w = { to = '牛家村土路#1E', },
-    hidden = { to = '牛家村船上', handler = 'thd_onboard', req = { ['黄金'] = 3 }, },
+    hidden = { to = '牛家村船上', cmd = 'ask lao da about 桃花岛;ask lao da about 价钱;give 3 gold to lao da', req = { ['黄金'] = 3, thd_coord = true, }, },
   },
 },
 
@@ -5776,7 +5776,7 @@ local map = {
   name = '石阶',
   desc =  [[石阶到了这里就没有了，突然四周一片光明，周围石壁上的火把燃烧起来，你看到面前二扇铜皮包着的大门(gate)紧闭着。?]],
   exit = {
-    hidden = { to = '铁掌山大石室', cmd = 'tui gate', },
+    hidden = { to = '铁掌山大石室', handler = 'tz_treasure_room', },
     eu = { to = '铁掌山石阶#1C', },
   },
 },
@@ -7484,9 +7484,9 @@ local map = {
   name = '小院',
   desc =  [[没有想到这里竟然会有这么幽雅的小院，假山回廊，花树盆景，无一不是放置得极为合适，显然这里的主人非常熟悉布置，再联系到东、西、南三面的桃花阵，足见主人熟通阴阳五行、变化生克之理。北面是一座小亭子。]],
   exit = {
-    e = { to = '桃花岛八卦桃花阵', handler = 'thd_bagua', cond = 'not player.skill["奇门八卦"] or player.skill["奇门八卦"].level < 200', },
+    e = { to = '桃花岛八卦桃花阵', handler = 'thd_bagua', cond = 'not player.skill["奇门八卦"] or player.skill["奇门八卦"].level < 200', req = { thd_bagua = true }, },
     s = { to = '桃花岛桃花阵', cond = 'player.party == "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level < 20 ) or ( player.party ~= "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 130 ) )', },
-    w = { to = '桃花岛八卦桃花阵', handler = 'thd_bagua', cond = 'not player.skill["奇门八卦"] or player.skill["奇门八卦"].level < 200', },
+    w = { to = '桃花岛八卦桃花阵', ignore = true },
     n = { to = '桃花岛积翠亭', },
     hidden = { to = '桃花岛洞口', cmd = 'e', cond = 'player.skill["奇门八卦"] and player.skill["奇门八卦"].level >= 200', },
   },
@@ -7789,9 +7789,9 @@ local map = {
   name = '山冈',
   desc =  [[这里是一个光秃秃的山冈，岩石丛立，但似乎每一块石头都有人精心布置过似的，和东、西和南三面的桃花阵组成了一个整体，足见岛上的主人熟通阴阳五行、变化生克之理。北面是一片草地。]],
   exit = {
-    e = { to = '桃花岛八卦桃花阵', handler = 'thd_bagua', cond = 'not player.skill["奇门八卦"] or player.skill["奇门八卦"].level < 200', },
+    e = { to = '桃花岛八卦桃花阵', handler = 'thd_bagua', cond = 'not player.skill["奇门八卦"] or player.skill["奇门八卦"].level < 200', req = { thd_bagua = true }, },
     s = { to = '桃花岛桃花阵', cond = 'player.party == "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level < 20 ) or ( player.party ~= "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 130 ) )', },
-    w = { to = '桃花岛八卦桃花阵', handler = 'thd_bagua', cond = 'not player.skill["奇门八卦"] or player.skill["奇门八卦"].level < 200', },
+    w = { to = '桃花岛八卦桃花阵', ignore = true, },
     n = { to = '桃花岛草地', },
     hidden = { to = '桃花岛洞口', cmd = 'e', cond = 'player.skill["奇门八卦"] and player.skill["奇门八卦"].level >= 200', },
   },
@@ -8093,7 +8093,7 @@ local map = {
   desc = [[这是一间非常宽敞的方厅。墙上挂着许多的名人字画，个个都是海内罕见的精品。而在门楣之上钉着八片铁片， 排作八卦(bagua)图案，却又不似寻常的八卦那么排的整齐，疏疏落落，歪斜不称，显然与四周的布置极不协调。南面是一座小亭子。]],
   exit = {
     w = { to = '桃花岛回廊#1', },
-    e = { to = '桃花岛石路', handler = 'prelook_bagua', },
+    e = { to = '桃花岛石路', },
   },
 },
 
@@ -13531,20 +13531,6 @@ local map = {
   },
 },
 
-['兰州城沙漠#2'] = {
-  id = '兰州城沙漠#2',
-  area = '兰州城',
-  name = '沙漠',
-  desc =  [[这是一片没边际的沙漠，到处是近百米高的巨大沙丘。你一走进来就仿佛迷了路。地下有个石洞。]],
-  exit = {
-    enter = { to = '兰州城石洞', },
-    s = { to = '兰州城沙漠#1', ignore = true, },
-    e = { to = '兰州城沙漠#1', },
-    w = { to = '兰州城沙漠#1', },
-    n = { to = '兰州城沙漠#1', ignore = true, },
-  },
-},
-
 ['兰州城城中心'] = {
   id = '兰州城城中心',
   area = '兰州城',
@@ -13644,9 +13630,23 @@ local map = {
   exit = {
     e = { to = '兰州城沙漠#1', },
     s = { to = '兰州城沙漠#2', },
-    w = { to = '兰州城青城', cost = 10, handler = 'go_straight', },
-    w2 = { to = '兰州城沙漠#1', },
+    w = { to = '兰州城沙漠#1', },
     n = { to = '兰州城沙漠#1', },
+    hidden = { to = '兰州城青城', cost = 10, handler = 'fixed_step', },
+  },
+},
+
+['兰州城沙漠#2'] = {
+  id = '兰州城沙漠#2',
+  area = '兰州城',
+  name = '沙漠',
+  desc =  [[这是一片没边际的沙漠，到处是近百米高的巨大沙丘。你一走进来就仿佛迷了路。地下有个石洞。]],
+  exit = {
+    enter = { to = '兰州城石洞', },
+    s = { to = '兰州城沙漠#1', },
+    e = { to = '兰州城沙漠#1', ignore = true, },
+    w = { to = '兰州城沙漠#1', ignore = true, },
+    n = { to = '兰州城沙漠#1', ignore = true, },
   },
 },
 
@@ -33947,7 +33947,7 @@ local map = {
   name = '大厅',
   desc =  [[这里是绝情谷的大厅，是公孙谷主会客的地方，大厅正前大梁上挂着一块大匾(bian)，上面刻着四个龙飞凤舞的金字，异常气派。主人又特地在大匾之下挂了一幅「白鹤鸣天」之图(hua)，画技精深，看得出其主特立独行的性格。]],
   exit = {
-    hidden = { to = '绝情谷后堂', cmd = 'ask gongsun zhi about 绝情谷;xian hua;zuan dao', handler = 'jqg_enter', cond = 'player.exp >= 200000', },
+    hidden = { to = '绝情谷后堂', cmd = 'xian hua;zuan dao', cond = 'player.exp >= 200000', req = { jqg_gsz_agree = true }, },
     out = { to = '绝情谷大石屋', },
   },
 },

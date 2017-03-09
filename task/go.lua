@@ -34,12 +34,7 @@ function task:_resume()
     self.step_num, self.error_count = 1, self.error_count or 0
   end
 
-  -- prepare the items / get the flags first
-  if self.req and #self.req > 0 then
-    self:prepare()
-  else
-    self:check_step()
-  end
+  self:check_step()
 end
 
 function task:_complete()
@@ -48,6 +43,32 @@ end
 
 function task:_fail()
   message.verbose( '前往“' .. self.to.id .. '”失败' )
+end
+
+function task:check_step()
+  -- if the step handler needs room desc to work
+  local room = room.get()
+  if self.is_step_need_desc and not room.desc then self:send{ 'l' }; return end
+
+  local expected_room, prev_room = self.path[ self.step_num ], self.path[ self.step_num - 1 ]
+  -- step ok?
+  if map.is_current_location( expected_room ) and ( not self.is_still_in_step or ( room.name == expected_room.name and room.name ~= prev_room.name ) ) then -- move on to next step
+    if self.req and #self.req > 0 then
+      self:prepare()
+    elseif self.batch_step_num and self.step_num < self.batch_step_num then
+      self.step_num = self.step_num + 1
+    elseif not self.batch_step_num or self.step_num >= self.batch_step_num then
+      self.batch_step_num = nil
+      self:next_step()
+    end
+  else
+    -- current step has a step handler and we're still in the same location?
+    if self.step_handler and map.is_current_location( prev_room ) then -- hand over control to the step handler to solve the step
+      self:step_handler( self.step )
+    else -- otherwise, step failed, retry
+      self:reset()
+    end
+  end
 end
 
 -- prepare the items / get the flags required to complete the path
@@ -68,31 +89,11 @@ function task:prepare()
   end
 end
 
-function task:check_step()
-  -- if the step handler needs room desc to work
-  local room = room.get()
-  if self.is_step_need_desc and not room.desc then self:send{ 'l' }; return end
-
-  local expected_room, prev_room = self.path[ self.step_num ], self.path[ self.step_num - 1 ]
-  -- step ok?
-  if map.is_current_location( expected_room ) and ( not self.is_still_in_step or ( room.name == expected_room.name and room.name ~= prev_room.name ) ) then -- move on to next step
-    if self.batch_step_num and self.step_num < self.batch_step_num then
-      self.step_num = self.step_num + 1
-    elseif not self.batch_step_num or self.step_num >= self.batch_step_num then
-      self.batch_step_num = nil
-      self:next_step()
-    end
-  else
-    -- current step has a step handler and we're still in the same location?
-    if self.step_handler and map.is_current_location( prev_room ) then -- hand over control to the step handler to solve the step
-      self:step_handler( self.step )
-    else -- otherwise, step failed, retry
-      self.error_count = self.error_count + 1
-      self.from = nil
-      message.verbose '路径行走需要调整路线'
-      self:resume()
-    end
-  end
+function task:reset()
+  self.error_count = self.error_count + 1
+  self.from, self.batch_step_num = nil
+  message.verbose '路径行走需要调整路线'
+  self:resume()
 end
 
 function task:next_step()

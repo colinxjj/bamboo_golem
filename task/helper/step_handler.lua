@@ -115,7 +115,7 @@ end
 
 -- 峨嵋山后山小路
 function handler:emei_move_stone()
-	if self.step.is_successful then
+	if self.step.is_successful or room.get().exit.nd then
 		self:send{ 'nd' }
 	else
 		self:send{ 'move stone'; complete_func = handler.emei_move_stone }
@@ -180,44 +180,15 @@ function handler:gyz_river( t )
 	end
 end
 
--- 牛家村小海港坐船
--- TODO handle special price under age 16
-function handler:thd_onboard()
-	local loc = map.get_current_location()[ 1 ]
-	if not handler.data.thd_sail then
-		if loc.id ~= '牛家村密室' then
-			self:newsub{ class = 'go', to = '牛家村密室', complete_func = handler.thd_onboard }
-		else
-			self:send{ 'open xiang' }
-		end
-	elseif loc.id ~= '牛家村小渔港' then
-		self:newsub{ class = 'go', to = '牛家村小渔港', complete_func = handler.thd_onboard }
-	else
-		self:send{ 'ask lao da about 桃花岛;ask lao da about 价钱;give 3 gold to lao da' }
-	end
-end
-function handler:thd_onboard_got_cord( _, t )
-	handler.data.thd_sail = { x = tonumber( t[ 2 ] ), y = tonumber( t[ 3 ] ) }
-	handler.thd_onboard( self )
-end
-trigger.new{ name = 'thd_onboard_got_cord', group = 'step_handler.thd_onboard', match = '^(> )*你用劲打开了箱子，发现里面竟藏有着无数的大内密宝。而在珠宝的下面，有一张发黄的海图。中间的一个地方用粗笔画了个圆圈，旁边用潦草的字迹写着\\((\\d+),(\\d+)\\)的字样。$', func = handler.thd_onboard_got_cord }
-
 -- 航海到桃花岛
 function handler:thd_sail( t )
 	t.x, t.y = 1, 1
 	self:send{ 'turn e' }
 end
 function handler:thd_sail_progress( _, tbl )
-	local t = self.step
-	local dir = tbl[ 2 ]
+	local t, dir, dest = self.step, tbl[ 2 ], player.temp_flag.thd_coord
 	t.x = dir == '西' and t.x - 1 or dir == '东' and t.x + 1 or t.x
 	t.y = dir == '北' and t.y - 1 or dir == '南' and t.y + 1 or t.y
-	if not handler.data.thd_sail then
-		handler.data.thd_sail = { x = 0, y = 0 }
-		self:send{ 'ask gong about location' }
-		return
- 	end
-	local dest = handler.data.thd_sail
 	if dest.x > t.x then
 		if dir ~= '东' then self:send{ 'turn e' } end
 	elseif dest.x < t.x then
@@ -228,12 +199,7 @@ function handler:thd_sail_progress( _, tbl )
 		if dir ~= '北' then self:send{ 'turn n' } end
 	end
 end
-function handler:thd_sail_cord( _, t )
-	self.step.x = tonumber( t[ 1 ] )
-	self.step.y = tonumber( t[ 2 ] )
-end
 trigger.new{ name = 'thd_sail_progress', group = 'step_handler.thd_sail', match = '^(> )*小船正向着(\\S+)方前进。$', func = handler.thd_sail_progress }
-trigger.new{ name = 'thd_sail_cord', group = 'step_handler.thd_sail', match = '^艄公看了看海图，说道：我们现在的位置是\\((\\d+)\\,(\\d+)\\)。$', func = handler.thd_sail_cord }
 
 -- 绝情谷小溪
 function handler:jqg_river( t )
@@ -250,18 +216,6 @@ function handler:jqg_river( t )
 		end
 	else
 		self:send{ t.cmd }
-	end
-end
-
--- 绝情谷大厅
-function handler:jqg_enter( t )
-	if player.temp_flag.gsz_agree then
-		self:send{ 'xian hua;zuan dao' }
-	elseif room.has_object '公孙止' then
-		player.temp_flag.gsz_agree = true -- only need to ask once per session
-		self:send{ t.cmd }
-	else -- wait 1 min for respawn
-		self:newsub{ class = 'killtime', duration = 60, can_move = true, complete_func = handler.look_again }
 	end
 end
 function handler:look_again()
@@ -290,7 +244,7 @@ function handler:sld_enter()
 	if room.has_object '木筏' then
 		self:send{ 'zuo mufa' }
 	elseif room.has_object '大木头' then
-		self:send{ 'bang mu tou;#wa 1000;zuo mufa' }
+		self:send{ 'bang mu tou;#wa 400;zuo mufa' }
 	elseif not player.wielded or not item.is_type( player.wielded.name, 'sharp_weapon' ) then
 		self:newsub{ class = 'manage_inventory', action = 'wield', item = 'sharp_weapon', complete_func = handler.sld_enter }
 	else
@@ -441,6 +395,7 @@ function handler:ty_boat()
 	if player.wielded then
 		self:newsub{ class = 'manage_inventory', action = 'unwield', complete_func = handler.ty_boat }
 	else
+		inventory.remove_item '铁舟'
 		self:send{ 'wield jiang;hua boat' }
 	end
 end
@@ -453,6 +408,7 @@ trigger.new{ name = 'ty_boat_disembark', group = 'step_handler.ty_boat', match =
 function handler:ty_qiaozi()
 	if handler.data.ty_qiaozi_prompt then
 		self:send{ 'answer 青山相待，白云相爱。梦不到紫罗袍共黄金带。一茅斋，野花开，管甚谁家兴废谁成败？陋巷单瓢亦乐哉。贫，气不改！达，志不改！;pa teng' }
+		handler.data.ty_qiaozi_prompt = nil
 	else
 		self:newsub{ class = 'killtime', complete_func = handler.ty_qiaozi }
 	end
@@ -478,12 +434,19 @@ trigger.new{ name = 'ty_nongfu_ok', group = 'step_handler.ty_nongfu', match = '^
 -- TODO make sure neili > 1000 for each jump
 
 -- 桃源县石梁尽头
+-- TODO increase reliability when the process is interrupted
 function handler:ty_shusheng()
 	if room.has_object '书生' then
 		self:send{ 'ask shu sheng about 一灯大师;ask shu sheng about 题目;answer 辛未状元;#wa 1000;answer 霜凋荷叶，独脚鬼戴逍遥巾;#wa 1000;answer 魑魅魍魉，四小鬼各自肚肠;#wa 1000;n' }
 	else
 		self:fail()
 	end
+end
+
+-- 铁掌山大石室
+function handler:tz_treasure_room ()
+	player.temp_flag.tz_treasure = nil
+	self:send{ 'tui gate' }
 end
 
 -- 大雪山绝顶
@@ -534,7 +497,7 @@ function handler:simple_path( t )
 	end
 end
 
--- 大理城东山间小路、长安城长街、长安城柏树林、星宿海、兰州城沙漠、星宿海大沙漠、回疆草原边缘、归云庄湖滨小路、杭州城柳林、华山菜地
+-- 大理城东山间小路、长安城长街、长安城柏树林、星宿海、星宿海大沙漠、回疆草原边缘、归云庄湖滨小路、杭州城柳林、华山菜地
 function handler:go_straight( t )
 	self:send{ t.cmd }
 end
@@ -603,12 +566,13 @@ function handler:twisted_cord( t )
 	if t.dest.z then self:send{ t.dest.z } return end
 end
 
--- 回疆针叶林、回疆大戈壁（回疆绿洲方向）、峨嵋山灌木丛、终南山石室
+-- 回疆针叶林、回疆大戈壁（回疆绿洲方向）、峨嵋山灌木丛、终南山石室、兰州城沙漠
 local fixed_step_tbl = {
 	['回疆针叶林#E'] = { 'n:10', 's:10', 'e:10', 'w:10' },
 	['回疆回疆绿洲'] = { 'n:11', 'w:7', 's:7', 'e:7', 'n:7' },
 	['终南山石室#2D'] = { 'n:6', 'w:6', 's:6', 'e:6' },
 	['峨嵋山灌木丛#2'] = { 'ed:4', 'sw:1', 'ne:5', 'ne:5', 'ne:5', 'ne:5', 'ne:5' },
+	['兰州城青城'] = { 'n:3', 'w:1000' },
 }
 local patt = lpeg.C( lpeg.R 'az'^1 ) * ':' * ( lpeg.R'09'^1 / tonumber )
 function handler:fixed_step( t )
@@ -1204,57 +1168,23 @@ function handler:breadcrumb_look_result( result )
 end
 
 -- 桃花岛八卦桃花阵
-function handler:prelook_bagua( t )
-	if self.class == 'go' and self.to.id == '桃花岛岩洞'
-	and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level < 200 ) then
-		self:enable_trigger 'thd_bagua'
-		self:send{ 'l bagua' }
-	else
-		self:send{ t.cmd }
-	end
-end
 function handler:thd_bagua( t )
-	local loc = map.get_current_location()[ 1 ]
-	if not handler.data.thd_bagua then
-		if loc.id ~= '桃花岛方厅' then
-			self:newsub{ class = 'go', to = '桃花岛方厅', complete_func = handler.thd_bagua }
-		else
-			self:send{ 'l bagua' }
-		end
-		return
-	end
-	if loc.id == '桃花岛山冈' or loc.id == '桃花岛小院' then
-		local c = string.sub( handler.data.thd_bagua, 1, 1 ) == '1' and 'e' or 'w'
+	if not map.is_current_location '桃花岛八卦桃花阵' then
+		local c = string.sub( player.temp_flag.thd_bagua, 1, 1 ) == '1' and 'e' or 'w'
 		self:send{ c }
-	elseif loc.id == '桃花岛八卦桃花阵' then
+	else
 		t.step_num = t.step_num or 1
-		local prev = string.sub( handler.data.thd_bagua, t.step_num, t.step_num )
+		local prev = string.sub( player.temp_flag.thd_bagua, t.step_num, t.step_num )
 		t.step_num = t.step_num + 1
-		local c = string.sub( handler.data.thd_bagua, t.step_num, t.step_num )
+		local c = string.sub( player.temp_flag.thd_bagua, t.step_num, t.step_num )
 		c = prev == c and 's' or 'e'
 		self:send{ c }
-	else
-		self:newsub{ class = 'go', to = '桃花岛山冈', complete_func = handler.thd_bagua }
 	end
-end
-local thd_bagua_tbl = {
-	['乾'] = '111', ['兑'] = '011', ['离'] = '101', ['震'] = '001',
-	['巽'] = '110', ['坎'] = '010', ['艮'] = '100', ['坤'] = '000',
-}
-function handler:thd_bagua_parse( _, t )
-	local s = ''
-	for i = 1, 8 do
-		local char = string.sub( t[ 1 ], i * 2 - 1, i * 2 )
-		s = s .. thd_bagua_tbl[ char ]
-	end
-	handler.data.thd_bagua = s
-	handler.thd_bagua( self, self.step )
 end
 function handler:thd_bagua_blocked()
-	handler.data.thd_bagua = nil
-	handler.thd_bagua( self, self.step )
+	player.temp_flag.thd_bagua = nil
+	self:reset()
 end
-trigger.new{ name = 'thd_bagua', group = 'step_handler.thd_bagua', match = '^一个奇怪的铁八卦，上面按顺时针顺序排列着：(\\S+)。$', func = handler.thd_bagua_parse }
 trigger.new{ name = 'thd_bagua_blocked', group = 'step_handler.thd_bagua', match = '^(> )*你感觉这个桃花阵中暗藏八卦，隐隐生出阻力，将你推了回来！$', func = handler.thd_bagua_blocked }
 
 -- 桃花岛墓道
