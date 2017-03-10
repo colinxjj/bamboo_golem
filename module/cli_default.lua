@@ -146,25 +146,25 @@ end
 cli.register{ cmd = 'f', desc = '前往某个NPC所在处。支持中文名和 ID。例如：f 李半仙 或 f banxian', func = parse_f, no_prefix = true }
 
 --------------------------------------------------------------------------------
--- pi
+-- gi
 
 local type_list = { sharp_weapon = true }
 local patt = lpeg.C( lpeg.R '09'^1 ) * ' ' * lpeg.C( lpeg.P( 1 )^1 )
-local function parse_pi( _, input )
+local function parse_gi( _, input )
   local count, name = patt:match( input )
   count, name = tonumber( count ), name or input
   local it = item.get( name ) or item.get_by_id( name )
   if it then
-    taskmaster.current_manual_task:newweaksub{ class = 'manage_inventory', action = 'prepare', item = it.name, count = count }
+    taskmaster.current_manual_task:newweaksub{ class = 'get_item', item = it.name, count = count }
   elseif item.is_valid_type( name ) then
-    taskmaster.current_manual_task:newweaksub{ class = 'manage_inventory', action = 'prepare', item = name, count = count }
+    taskmaster.current_manual_task:newweaksub{ class = 'get_item', item = name, count = count }
   else
     message.normal '未找到对应的物品，请检查'
   end
 end
 
 
-cli.register{ cmd = 'pi', desc = '获取指定的物品。支持中文名和 ID。例如：pi 500 coin 或 pi 木棉袈裟', func = parse_pi, no_prefix = true }
+cli.register{ cmd = 'gi', desc = '获取指定的物品。支持中文名和 ID。例如：gi 500 coin 或 gi 木棉袈裟', func = parse_gi, no_prefix = true }
 
 --------------------------------------------------------------------------------
 -- tt

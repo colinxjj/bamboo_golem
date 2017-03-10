@@ -17,8 +17,9 @@ local task_class = {
   'get_info', -- 获取信息
   'killtime', -- 混时间
   'find', -- 找人
-  'manage_inventory', -- 管理物品
+  'manage_inventory', -- 管理随身物品
   'get_flag', -- 取得标记
+  'get_item', -- 取得物品
 
   'job.wuguan', -- 襄阳武馆
 }

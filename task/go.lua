@@ -96,7 +96,7 @@ function task:prepare()
   message.debug( '行走准备：' .. ( req.item or req.flag ) )
   if req.item then -- an item req
     if inventory.has_item( req.item, req.count ) then self:resume() return end
-    subtask = self:newsub{ class = 'manage_inventory', action = 'prepare', item = req.item, count = req.count }
+    subtask = self:newsub{ class = 'get_item', item = req.item, count = req.count }
   else -- a flag req
     if player.temp_flag[ req.flag ] then self:resume() return end
     subtask = self:newsub{ class = 'get_flag', flag = req.flag }

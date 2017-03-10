@@ -8,7 +8,7 @@ Params:
 flag = 'ask ÄÖ¹í': the flag to get (required)
 ----------------------------------------------------------------------------]]--
 
-task.class = 'manage_inventory'
+task.class = 'get_flag'
 
 local flag_getter = require 'task.helper.flag_getter'
 
