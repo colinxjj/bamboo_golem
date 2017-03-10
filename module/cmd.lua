@@ -120,7 +120,18 @@ function cmd.get_last()
   return list[ list_curpos ] or list[ list_curpos - 1 ]
 end
 
-local is_possibly_still_busy
+local is_possibly_still_busy, is_waiting_for_cmd_result, cmd_timeout_hbc
+
+local function start_waiting_for_cmd_result()
+  is_waiting_for_cmd_result = true
+  cmd_timeout_hbc = get_heartbeat_count() + 0.6 / HEARTBEAT_INTERVAL -- set cmd time out as 0.6 seconds, if we haven't received prompt after this period of time, then will move forward regardless
+end
+
+local function stop_waiting_for_cmd_result()
+  is_waiting_for_cmd_result, cmd_timeout_hbc = false
+end
+
+event.listen{ event = 'prompt', func = stop_waiting_for_cmd_result, id = 'cmd.stop_waiting_for_cmd_result', persistent = true }
 
 -- send a command
 local function send( c )
@@ -140,9 +151,14 @@ local function send( c )
       world.Send( 'halt' )
     end
   else
-    is_possibly_still_busy = nil
+    is_possibly_still_busy = false
     trigger.enable_group 'cmd'
-    c.status = c.ignore_result and 'completed' or 'sent'
+    if c.ignore_result then
+      c.status = 'completed'
+    else
+      c.status = 'sent'
+      start_waiting_for_cmd_result()
+    end
     if c.no_echo then
       world.SendNoEcho( c.cmd )
     else
@@ -152,7 +168,7 @@ local function send( c )
 end
 
 -- dispatch next command, called by the heartbeat
-function cmd.dispatch( source )
+function cmd.dispatch()
   local c = list[ list_curpos ]
   if not c then return end -- return if no command at current position
 
@@ -161,7 +177,7 @@ function cmd.dispatch( source )
     message.debug( 'CMD 模块：舍弃任务“' .. c.task.id .. '”的命令：' .. c.cmd )
     c.status = 'discarded'
     list_curpos = list_curpos + 1
-    cmd.dispatch( source ) -- immediately dispatch again
+    cmd.dispatch() -- immediately dispatch again
   else
     -- if we're waiting, then wait until the target heartbeat count is reached
     if c.target_hbcount and c.target_hbcount > get_heartbeat_count() then return end
@@ -172,7 +188,9 @@ function cmd.dispatch( source )
     if c.status == 'encountered_busy' and not c.ignore_result then -- reset status and wait for next dispatch (which will not immediately resend the commands because of the set busy)
       c.status = 'pending'
     else
-      if c.status == 'sent' and source ~= 'prompt' then return end -- ignore other sources when waiting for prompt
+      if c.status == 'sent' and ( is_waiting_for_cmd_result and get_heartbeat_count() < cmd_timeout_hbc ) then return end -- ignore other sources when waiting for prompt and time out is not expired
+
+      stop_waiting_for_cmd_result()
 
       -- move on to next command
       if c.status ~= 'pending' then
@@ -198,7 +216,7 @@ function cmd.parse_busy( name )
   if not c then return end
 
   if name == 'cmd_asked' then addbusy( 2 ) end -- add 2 seconds of busy after successful 'ask' command
-  if name == 'cmd_halt_ok' then is_possibly_still_busy = nil end -- halt ok, no longer need to try halting
+  if name == 'cmd_halt_ok' then is_possibly_still_busy = false end -- halt ok, no longer need to try halting
   if string.find( name, 'busy' ) then
     c.status = 'encountered_busy'
     addbusy( 2 )

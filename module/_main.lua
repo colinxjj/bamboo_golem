@@ -3,10 +3,9 @@
 --------------------------------------------------------------------------------
 
 --------------------------------------------------------------------------------
--- prompt events
+-- partial line
 
--- to avoid multiple prompt events when a line was updated multiple times
-local prompt_fired_on_this_line
+local is_line_processed
 
 local PROMPT = '^' .. PROMPT
 
@@ -14,31 +13,29 @@ function world.OnPluginPartialLine( text )
 	if string.find( text, '^Are you using BIG5 font' ) then
 		trigger.enable_group 'connection'
 		world.Send ''
-	end
-	gag.check( text ) -- check if the line should be gagged
-	if string.find( text, PROMPT ) and not prompt_fired_on_this_line then
-		prompt_fired_on_this_line = true
-		event.new 'prompt'
-		heartbeat 'prompt'
+	else
+		gag.check( text ) -- check if the line should be gagged
+		if is_line_processed then return end -- to avoid raising multiple prompt / headline events for the same line if it has been updated multiple times
+		is_line_processed = true
+		if string.find( text, PROMPT ) then
+			event.new 'prompt'
+			cmd.dispatch()
+		end
 	end
 end
 
-function world.OnPluginLineReceived( line )
-	prompt_fired_on_this_line = false
+function world.OnPluginLineReceived()
+	is_line_processed = false
 end
 
 --------------------------------------------------------------------------------
--- heartbeat related stuff
+-- heartbeat
 
 local heartbeat_count = 0
 local idle_hbcount = 0
 local cmd_processed
 
 function OnPluginTick()
-	heartbeat 'tick'
-end
-
-function heartbeat( source )
 	heartbeat_count = heartbeat_count + 1
 	-- PlaySound( 1, PPATH .. 'data/sound/ding.wav', false, 0, 0 )
 
@@ -46,7 +43,7 @@ function heartbeat( source )
 
 	timer.refresh( heartbeat_count ) -- all high level timers are based on heartbeats
 
-	cmd_processed = cmd.dispatch( source )
+	cmd_processed = cmd.dispatch()
 
 	-- check idle
 	idle_hbcount = cmd_processed and 0 or idle_hbcount + 1
@@ -61,7 +58,7 @@ function get_heartbeat_count()
 end
 
 --------------------------------------------------------------------------------
--- busy related stuff
+-- busy
 
 local busy_expire_hbcount
 

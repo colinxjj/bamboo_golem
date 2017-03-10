@@ -52,6 +52,7 @@ session = require 'module.session'
 item = require 'module.item'
 room = require 'module.room'
 inventory = require 'module.inventory'
+kungfu = require 'module.kungfu'
 
 -- load parsers
 require 'module.parser.hp'

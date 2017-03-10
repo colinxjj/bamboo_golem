@@ -136,7 +136,7 @@ function trigger.remove( name ) -- the boolean here is actually 0 or 1
   if result == 0 then -- 0 = error_code.eOK
     list[ name ] = nil
   else
-    -- error( 'trigger.remove - DeleteTrigger returned the following error: ' .. translate_errorcode( result ) )
+    error( 'trigger.remove - DeleteTrigger returned the following error: ' .. translate_errorcode( result ) )
   end
 end
 

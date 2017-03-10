@@ -17,7 +17,7 @@ local function parse_header( _, t )
   cache = {}
   cache.count = cntonumber( t[ 2 ] )
   trigger.enable_group 'skills'
-  event.listen{ event = 'prompt', func = parse_footer, id = 'parser.skills' }
+  event.listen{ event = 'prompt', func = parse_footer, id = 'parser.skills' } -- for incomplete skills table, .e.g player without special skills
 end
 
 local sp = lpeg.P ' '^0

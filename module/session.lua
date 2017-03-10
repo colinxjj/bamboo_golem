@@ -24,6 +24,7 @@ function session.initiate_done()
   if not player.set.look then
     cmd.new{ 'set look'; complete_func = session.initiate_done }
   else
+    message.debug '玩家信息初始化完成'
     player.is_initiated = true
   end
 end

@@ -58,7 +58,14 @@ function task:look_dir( dir )
   self.last_look, self.looked[ dir ] = dir, true
 end
 
+local pending_type, received_event
+
 function task:_resume( evt )
+  -- if command was sent but the related event didn't fire, try again
+  if pending_type and not received_event then
+    self[ pending_type ] = pending_type_value
+    pending_type, pending_type_value, received_event = nil
+  end
   for _, type in pairs( info_type ) do
     if self[ type ] then
       if type == 'room' then
@@ -68,15 +75,20 @@ function task:_resume( evt )
           or ( type == 'inventory' and ( not player.inventory_update_time or os.time() - player.inventory_update_time > 180 ) ) -- update inventory info at most once every 3 min
           or ( type == 'hp' and ( not player.hp_update_time or os.time() - player.hp_update_time > 180 ) )  -- update hp info at most once every 3 min
           or not player[ type .. '_update_time' ] then -- get score, skills, enable, and time info only once
+        pending_type, pending_type_value, received_event = type, self[ type ], false
         self[ type ] = false -- to avoid repetition
         gag.once( type )
-        self:listen{ event = type, func = self.resume, id = 'task.get_info' }
-        self:send{ type, no_echo = true }
+        self:listen{ event = type, func = self.parse_event, id = 'task.get_info' }
+        self:send{ type; no_echo = true, complete_func = self.resume }
         return
       end
     end
   end
   self:complete()
+end
+
+function task:parse_event()
+  received_event = true
 end
 
 --------------------------------------------------------------------------------

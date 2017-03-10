@@ -99,7 +99,7 @@ local function prepare_to_parse_object()
   trigger.enable 'room_object'
   trigger.enable 'room_end' -- get ready for room end
   event.listen{ event = 'prompt', func = parse_end, id = 'parser.room' }
-  timer.new{ duration = 2, func = parse_end, id = 'parser.room' } -- see room as complete if no object info is received in 2 seconds
+  timer.new{ duration = 1, func = parse_end, id = 'parser.room' } -- see room as complete if no object info is received in 2 seconds
 end
 
 local function parse_exit( _, t )
