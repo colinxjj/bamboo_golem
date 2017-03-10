@@ -5,7 +5,7 @@
 local room
 
 local function parse_header( _, t )
-  room = room.get()
+  room = _G.room.get()
   room = ( not room or room.name ~= t[ 1 ] ) and { name = t[ 1 ], exit = {} } or room
   trigger.enable_group 'place'
 end

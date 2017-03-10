@@ -48,7 +48,7 @@ function task:prepare()
   -- already have the required item(s)?
   local has_item = inventory.has_item( self.item, self.count_min or self.count )
   -- update inventory info if no count data or current count data can be higher than the actual count
-  if has_item == 'unsure' then self:newsub{ class = 'getinfo', inventory = 'forced' } return end
+  if has_item == 'unsure' then self:newsub{ class = 'get_info', inventory = 'forced' } return end
   -- complete the task if have enough item
   if has_item then self:complete() return end
   -- otherwise, try the best source available
@@ -108,7 +108,7 @@ function task:purchase( source )
 end
 
 function task:check_inventory()
-  self:newsub{ class = 'getinfo', inventory = 'forced', complete_func = task.check_source_result }
+  self:newsub{ class = 'get_info', inventory = 'forced', complete_func = task.check_source_result }
 end
 
 function task:check_source_result()

@@ -679,7 +679,7 @@ function handler:look( t )
 	for dir, roomname in pairs( exit ) do
 		table.insert( dir_list, dir )
 		if t.is_look_ok( roomname ) then
-			self:newsub{ class = 'getinfo', room = dir, complete_func = handler.look_around_result }
+			self:newsub{ class = 'get_info', room = dir, complete_func = handler.look_around_result }
 			coroutine.yield()
 		end
 	end
@@ -778,7 +778,7 @@ function handler:wdhs_conglin_look( t )
 	local room = room.get()
 	for dir, roomname in pairs( room.exit ) do
 		if roomname == room.name then
-			self:newsub{ class = 'getinfo', room = dir, complete_func = handler.wdhs_conglin_look_result }
+			self:newsub{ class = 'get_info', room = dir, complete_func = handler.wdhs_conglin_look_result }
 			coroutine.yield()
 		end
 	end
@@ -1107,7 +1107,7 @@ function handler:breadcrumb_look( t )
 	for _, dir in pairs( DIR4 ) do -- check 4 directions
 		local d = t.map[ t.curr ][ dir ]
 		if t.map[ t.curr ].is_reliable == false or not d or ( type( d ) == 'number' and t.map[ d ].is_reliable == false ) then -- if this room is unreliable, or we don't have data for a dir or the room in that dir is marked as unreliable, then look at it, but avoid exits with string labels
-			self:newsub{ class = 'getinfo', room = dir, complete_func = handler.breadcrumb_look_result }
+			self:newsub{ class = 'get_info', room = dir, complete_func = handler.breadcrumb_look_result }
 			coroutine.yield()
 		end
 	end
@@ -1212,7 +1212,7 @@ function handler:thd_mudao( t )
 						or nil
 		if t.offset == 'reset' then -- get time again if tried three hour variations
 			t.offset = 'reset_done'
-			self:newsub{ class = 'getinfo', time = 'forced', complete_func = handler.thd_mudao }
+			self:newsub{ class = 'get_info', time = 'forced', complete_func = handler.thd_mudao }
 			return
 		end
 		-- go down again
@@ -1251,7 +1251,7 @@ function handler:thd_liangyi( t )
 	t = self.step
 	if not t.has_time then -- update time info
 		t.has_time = true
-		self:newsub{ class = 'getinfo', time = 'forced', complete_func = handler.thd_liangyi }
+		self:newsub{ class = 'get_info', time = 'forced', complete_func = handler.thd_liangyi }
 		return
 	end
 	local room = room.get()
@@ -1370,7 +1370,7 @@ end
 local sld_yaopu_step_tbl = { 'northwest', 'north', 'northeast', 'east', 'southeast', 'south', 'southwest', 'west' }
 local sld_yaopu_pos_tbl = { 1, 7, 4, 5, 2, 6, 3, 8 }
 function handler:sld_yaopu()
-	if not time.uptime then self:newsub{ class = 'getinfo', uptime = 'forced', complete_func = handler.sld_yaopu } return end
+	if not time.uptime then self:newsub{ class = 'get_info', uptime = 'forced', complete_func = handler.sld_yaopu } return end
 	local offset, clist, step = math.modf( time.get_uptime() % 1800 / 225 ), {}
 	for i = 1, 8 do
 		step = sld_yaopu_pos_tbl[ i ] + offset

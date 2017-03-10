@@ -40,7 +40,7 @@ function task:_resume()
 
   self:listen{ event = 'room_object', id = 'task.find', func = task.check, persistent = true }
 
-  self:newweaksub{ class = 'traverse', loc = self.at, range = self.range, complete_func = self.last_check }
+  self:newweaksub{ class = 'go', to = self.at, range = self.range, complete_func = self.last_check }
 end
 
 function task:_complete()

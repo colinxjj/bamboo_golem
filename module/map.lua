@@ -156,10 +156,10 @@ end
 -- the loc param can be the long name, id, or table of a room
 function map.expand_loc( loc, range )
   -- get a list of rooms matching the loc
-  local base_list = longname_index[ loc ] or { map.get_room_by_id( loc ) } or { loc }
+  local base_list = type( loc ) == 'string' and ( longname_index[ loc ] or { map.get_room_by_id( loc ) } ) or { loc }
   assert( next( base_list ), 'map.expand_loc - invalid base room list' )
 
-  local result = {}
+  local result, req = {}, {}
   for _, start_room in pairs( base_list ) do
     local list, list_pos, distance, new_distance, from, to = { start_room }, 1, { [ start_room ] = 0 }
     while list[ list_pos ] do
@@ -175,12 +175,13 @@ function map.expand_loc( loc, range )
           distance[ to ] = new_distance
           list[ #list + 1 ] = to
           result[ to ] = true -- add the room to result list
+          if exit.req then req = map.add_req_to_list( req, exit.req, from, to ) end -- add exit req(s) to req list
         end
       end
       list_pos = list_pos + 1 -- move to next node
     end
   end
-  return result
+  return result, req
 end
 
 local function find_room( from, is_dest, prefer_furthest )
@@ -275,29 +276,34 @@ function map.is_block_valid( exit )
 end
 
 -- generate the list of items / flags needed to complete the path
-function map.get_path_req( path )
-  local list, from, to, entry = {}
+-- the optional "list" param is the list to append to
+function map.get_path_req( path, list )
+  local list, from, to, entry = list or {}
   for i = 1, #path - 1 do
     from, to = path[ i ], path[ i + 1 ]
     for _, exit in pairs( from.exit ) do
       if exit.req and exit.to == to.id and not exit.ignore
       -- check the exit cond because there can be multiple exits from a room to another and we need to get the requirement for the right exit
       and ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) then
-        for k, v in pairs( exit.req ) do
-          list[ k ] = list[ k ] or {}
-          entry = list[ k ]
-          if type( v ) == 'number' then -- a numeric value means that it's an item req
-            entry.item = k
-            entry.count = entry.count and entry.count + v or v -- this might result in preparing more than what we actually need but for now it should be OK
-          else -- otherwise it's flag req
-            entry.flag = k
-          end
-          entry[ #entry + 1 ]  = { from = from, to = to } -- add the from/to pair to the array part so that all exits that require this thing can be properly blocked until we've got the items / flags
-          list[ #list + 1 ] = entry -- also add the entry to the array part of the list for easy access
-        end
+        list = map.add_req_to_list( list, exit.req, from, to )
       end
     end
   end
+  return list
+end
+
+function map.add_req_to_list( list, req, from, to )
+  for k, v in pairs( req ) do
+    list[ k ] = list[ k ] or {}
+    entry = list[ k ]
+    if type( v ) == 'number' then -- a numeric value means that it's an item req
+      entry.item = k
+      entry.count = entry.count and entry.count + v or v -- this might result in preparing more than what we actually need but for now it should be OK
+    else -- otherwise it's flag req
+      entry.flag = k
+    end
+  end
+  entry[ #entry + 1 ]  = { from = from, to = to } -- add the from/to pair to the array part so that all exits that require this thing can be properly blocked until we've got the items / flags
   return list
 end
 

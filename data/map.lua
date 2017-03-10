@@ -2549,7 +2549,7 @@ local map = {
   desc =  [[这里是海边的一个小渔港，附近唯一可以出海的地方就是这里了。正要出海的渔民忙碌地来来往往，一个船老大摸样的人正在拼命呼喝着在船上做帮工的渔家孩子。]],
   exit = {
     w = { to = '牛家村土路#1E', },
-    hidden = { to = '牛家村船上', cmd = 'ask lao da about 桃花岛;ask lao da about 价钱;give 3 gold to lao da', req = { ['黄金'] = 3, thd_coord = true, }, },
+    hidden = { to = '牛家村船上', cmd = 'ask lao da about 桃花岛;ask lao da about 价钱;give 3 gold to lao da', no_wander= true, req = { ['黄金'] = 3, thd_coord = true, }, },
   },
 },
 
@@ -15053,7 +15053,7 @@ local map = {
   exit = {
     ne = { to = '神龙岛沙滩#E', },
     nw = { to = '神龙岛沙滩#W', },
-    hidden = { to = '神龙岛小帆船', handler = 'sld_leave', req = { ['通行令牌'] = 1 }, },
+    hidden = { to = '神龙岛小帆船', handler = 'sld_leave', no_wander= true, req = { ['通行令牌'] = 1 }, },
     n = { to = '神龙岛树林#2S', },
   },
 },
@@ -15241,7 +15241,7 @@ local map = {
   name = '海滩',
   desc =  [[这里是东海之滨的一个小海滩。放眼望去，一片无际的的茫茫大海，远处海天一线，你隐隐看到几只海鸥在海上飞翔。海滩的四周稀稀落落的有一些长得颇为茂盛的树木(tree)。]],
   exit = {
-    hidden = { to = '神龙岛小木筏', handler = 'sld_enter', req = { ['粗绳子'] = 1, sharp_weapon = 1 }, },
+    hidden = { to = '神龙岛小木筏', no_wander = true, handler = 'sld_enter', req = { ['粗绳子'] = 1, sharp_weapon = 1 }, },
     sw = { to = '神龙岛小路', },
   },
 },
@@ -26369,7 +26369,7 @@ local map = {
   desc =  [[山涧到这里就没有路了，你仰头望去，一片绝壁在你的头顶上，根本没有上去的可能，离你约莫四丈高的地方有一棵万年松(Songshu)正在随风摇摆。前面就是华山的万丈深渊。]],
   exit = {
     nw = { to = '华山山涧#C', },
-    hidden = { to = '华山万年松', handler = 'hs_pine', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 20', req = { ['绳子'] = 1 }, },
+    hidden = { to = '华山万年松', handler = 'hs_pine', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 20', no_wander = true, req = { ['绳子'] = 1 }, },
   },
 },
 
@@ -29241,7 +29241,7 @@ local map = {
   desc = [[黑黝黝的山洞里，有一股腥臭味。等眼睛适应了这里的弱光后，才发现地上有一条色彩斑斓的巨蟒。巨蟒旁有许多白惨惨的骨骇，令人胆寒。想必都是探险之人，误入山洞，为巨蟒所害。]],
   exit = {
     out = { to = '星宿海山石', },
-    hidden = { to = '星宿海山洞#2', cmd = 'use fire;#wb 3500;zuan', req = { ['火折'] = 1 }, },
+    hidden = { to = '星宿海山洞#2', cmd = 'use fire;#wb 3500;zuan', no_wander= true, req = { ['火折'] = 1 }, },
   },
 },
 
@@ -34842,7 +34842,7 @@ local map = {
     w = { to = '武当山榔梅祠', },
     se = { to = '武当后山小路#1', },
     hidden1 = { to = '武当山灌木丛', cmd = 'zuan guanmu', },
-    hidden2 = { to = '武当后山古道#1', handler = 'wdhs_gudao', cond = 'player.party == "武当派" and player.skill["基本内功"] and player.skill["基本内功"].level >= 20 and player.jingli >= 200 and player.neili >= 200', req = { ['药锄'] = 1, ['毛毯#WD'] = 1 }, },
+    hidden2 = { to = '武当后山古道#1', handler = 'wdhs_gudao', cond = 'player.party == "武当派" and player.skill["基本内功"] and player.skill["基本内功"].level >= 20 and player.jingli >= 200 and player.neili >= 200', no_wander= true, req = { ['药锄'] = 1, ['毛毯#WD'] = 1 }, },
   },
 },
 

@@ -7,16 +7,16 @@ local session = {}
 
 function session.initiate()
   player.temp_flag = {}
-  task.getinfo:new{ title = 'forced', complete_func = session.initiate_follow_up, priority = 1 }
+  task.get_info:new{ title = 'forced', complete_func = session.initiate_follow_up, priority = 1 }
 end
 
 event.listen{ event = 'connected', func = session.initiate, id = 'session.initiate', persistent = true }
 
 function session.initiate_follow_up()
   if not room.get() then
-    task.getinfo:new{ room = true, complete_func = session.initiate_follow_up, priority = 1 }
+    task.get_info:new{ room = true, complete_func = session.initiate_follow_up, priority = 1 }
   else
-    task.getinfo:new{ hp = 'forced', inventory = 'forced', score = 'forced', enable = 'forced', skills = 'forced', time = 'forced', set = 'forced', complete_func = session.initiate_done, priority = 1 }
+    task.get_info:new{ hp = 'forced', inventory = 'forced', score = 'forced', enable = 'forced', skills = 'forced', time = 'forced', set = 'forced', complete_func = session.initiate_done, priority = 1 }
   end
 end
 
@@ -32,7 +32,7 @@ local old_id
 
 function session.resume()
   old_id = player.id
-  task.getinfo:new{ room = true, title = 'forced', complete_func = session.resume_follow_up, priority = 1 }
+  task.get_info:new{ room = true, title = 'forced', complete_func = session.resume_follow_up, priority = 1 }
 end
 
 event.listen{ event = 'reconnected', func = session.resume, id = 'session.resume', persistent = true }

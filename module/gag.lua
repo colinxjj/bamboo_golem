@@ -45,11 +45,12 @@ function gag.once( group )
   local t = gag_def[ group ]
   if not t then message.debug( '未找到 gag 组定义：' .. group ); return end
   list[ group ] = 'not_started'
-  trigger.new{ name = 'gag_start_' .. group, match = t.startp or t.linep, func = gag.start, sequence = 50, enabled = true, keep_eval = true, omit = true, one_shot = true }
+  trigger.enable( 'gag_' .. group )
 end
 
 function gag.start( name )
-  local group = string.gsub( name, 'gag_start_', '' )
+  trigger.disable( name )
+  local group = string.gsub( name, 'gag_', '' )
   if not gag_def[ group ].endp then
     list[ group ] = nil
   else
@@ -78,6 +79,10 @@ function gag.blackhole()
 end
 
 trigger.new{ name = 'gag', match = '.', func = gag.blackhole, sequence = 50, keep_eval = true, omit = true }
+
+for group, t in pairs( gag_def ) do
+  trigger.new{ name = 'gag_' .. group, match = t.startp or t.linep, func = gag.start, sequence = 50, keep_eval = true, omit = true }
+end
 
 --------------------------------------------------------------------------------
 -- End of module

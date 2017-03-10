@@ -34,6 +34,10 @@ local heartbeat_count = 0
 local idle_hbcount = 0
 local cmd_processed
 
+function OnPluginTick()
+	heartbeat 'tick'
+end
+
 function heartbeat( source )
 	heartbeat_count = heartbeat_count + 1
 	-- PlaySound( 1, PPATH .. 'data/sound/ding.wav', false, 0, 0 )
@@ -52,9 +56,6 @@ function heartbeat( source )
 	end
 end
 
--- add the heartbeat timer
-world.AddTimer( 'heartbeat_timer', 0, 0, HEARTBEAT_INTERVAL, '', 1025, 'heartbeat' ) -- replace existing heartbeat timer
-
 function get_heartbeat_count()
 	return heartbeat_count
 end
@@ -65,14 +66,14 @@ end
 local busy_expire_hbcount
 
 function addbusy( sec )
-	message.debug( sec .. ' 秒 busy 开始' )
+	--message.debug( sec .. ' 秒 busy 开始' )
 	player.is_busy = true
 	busy_expire_hbcount = heartbeat_count + sec / HEARTBEAT_INTERVAL
 end
 
 function busy_expire()
 	if player.is_busy and heartbeat_count >= busy_expire_hbcount then
-		message.debug 'busy 结束'
+		--message.debug 'busy 结束'
 		player.is_busy = false
 		busy_expire_hbcount = nil
 	end

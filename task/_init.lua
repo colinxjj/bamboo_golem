@@ -5,10 +5,6 @@
 -- container for all task classes
 task = {}
 
--- load the helpers
-task.helper = {}
-task.helper.step_handler = require 'task.helper.step_handler'
-
 -- load the prototype
 task.prototype = require 'task._prototype'
 task.prototype.__index = task.prototype -- prepare it for inheritance
@@ -18,10 +14,9 @@ local task_class = {
   'manual', -- 手动
   'go', -- 行走
   'locate', -- 定位
-  'getinfo', -- 获取信息
+  'get_info', -- 获取信息
   'killtime', -- 混时间
   'find', -- 找人
-  'traverse', -- 遍历
   'manage_inventory', -- 管理物品
   'get_flag', -- 取得标记
 

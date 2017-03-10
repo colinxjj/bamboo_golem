@@ -78,7 +78,7 @@ cli.register{ cmd = 'ct', desc = '显示当前时辰。', func = parse_ct, no_prefix = 
 -- ll
 
 local function parse_ll()
-  taskmaster.current_manual_task:newsub{ class = 'getinfo', room = 'surrounding' }
+  taskmaster.current_manual_task:newsub{ class = 'get_info', room = 'surrounding' }
 end
 
 cli.register{ cmd = 'll', desc = '查看所有周边房间。', func = parse_ll, no_prefix = true }
@@ -107,7 +107,7 @@ local sp = lpeg.P ' '
 local patt = lpeg.C( any_but( sp )^1 ) * sp^1 * ( ( any_but( sp )^1 ) / tonumber )
 local function parse_tv( _, input )
   local loc, range = patt:match( input )
-  taskmaster.current_manual_task:newweaksub{ class = 'traverse', loc = loc or input, range = range or 2 }
+  taskmaster.current_manual_task:newweaksub{ class = 'go', to = loc or input, range = range or 2 }
 end
 
 cli.register{ cmd = 'tv', desc = '测试遍历。', func = parse_tv, no_prefix = true }

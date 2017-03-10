@@ -13,7 +13,7 @@ room = true: get info for current room
      = 'all': get info for all rooms including the current room and the surrounding rooms
 ----------------------------------------------------------------------------]]--
 
-task.class = 'getinfo'
+task.class = 'get_info'
 
 info_type = { 'hp', 'inventory', 'skills', 'score', 'enable', 'room', 'time', 'uptime', 'set', 'title' }
 
@@ -49,10 +49,10 @@ end
 
 function task:look_dir( dir )
   if dir == 'here' then
-    self:listen{ event = 'room', func = self.get_room_info, id = 'task.getinfo' }
+    self:listen{ event = 'room', func = self.get_room_info, id = 'task.get_info' }
     self:send{ 'l' }
   else
-    self:listen{ event = 'room', func = self.get_room_info, id = 'task.getinfo', sequence = 99, keep_eval = false }
+    self:listen{ event = 'room', func = self.get_room_info, id = 'task.get_info', sequence = 99, keep_eval = false }
     self:send{ 'l ' .. ( DIR_FULL[ dir ] or dir ) }
   end
   self.last_look, self.looked[ dir ] = dir, true
@@ -70,7 +70,7 @@ function task:_resume( evt )
           or not player[ type .. '_update_time' ] then -- get score, skills, enable, and time info only once
         self[ type ] = false -- to avoid repetition
         gag.once( type )
-        self:listen{ event = type, func = self.resume, id = 'task.getinfo' }
+        self:listen{ event = type, func = self.resume, id = 'task.get_info' }
         self:send{ type, no_echo = true }
         return
       end
