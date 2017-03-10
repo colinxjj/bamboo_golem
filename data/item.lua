@@ -302,6 +302,28 @@ local item = {
   },
 },
 
+['Ê÷ÌÙ'] = {
+  iname = 'Ê÷ÌÙ',
+	name = 'Ê÷ÌÙ',
+  id = 'teng',
+  alternate_id = { 'shuteng' },
+  weight = 1000,
+  source = {
+    { type = 'local_handler', handler = 'hs_shuteng', location = '»ªÉ½±Ú¶¥', },
+  },
+},
+
+['ÌÙ¿ð'] = {
+  iname = 'ÌÙ¿ð',
+	name = 'ÌÙ¿ð',
+  id = 'teng kuang',
+  alternate_id = { 'kuang', 'tengkuang' },
+  weight = 500,
+  source = {
+    { type = 'local_handler', handler = 'hs_kuang', location = '»ªÉ½±Ú¶¥', },
+  },
+},
+
 }
 
 return item

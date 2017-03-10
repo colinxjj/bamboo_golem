@@ -322,7 +322,7 @@ end
 -- 武当后山猢狲愁
 function handler:wdhs_husun()
 	if not inventory.has_item '绳子' then self:fail() return end
-	self:send{ 'tie song;climb down' }
+	self:send{ 'bang song;climb down' }
 end
 
 -- 武当后山山崖

@@ -15,7 +15,7 @@ task.class = 'get_item'
 local item_finder = require 'task.helper.item_finder'
 
 function task:get_id()
-  return 'get_item: ' ..  ' ' .. self.count .. ' ' .. self.item
+  return 'get_item: ' ..  ' ' .. ( self.count or 1 ) .. ' ' .. self.item
 end
 
 function task:_resume()

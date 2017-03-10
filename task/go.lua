@@ -61,7 +61,7 @@ function task:check_step()
   if self.is_step_need_desc and not room.desc then self:send{ 'l' }; return end
 
   -- stop being cautious if current location is exact
-  if #map.get_current_location() == 1 then self.be_cautious = nil end
+  if self.be_cautious and #map.get_current_location() == 1 then self.be_cautious = nil end
 
   local expected_room, prev_room = self.path[ self.step_num ], self.path[ self.step_num - 1 ]
   -- step ok?

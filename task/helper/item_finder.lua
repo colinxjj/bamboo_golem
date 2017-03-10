@@ -69,6 +69,31 @@ function finder:ty_boat_succeed()
 end
 trigger.new{ name = 'ty_boat_succeed', group = 'item_finder.ty_boat', match = '^(> )*渔人给了你一艘铁舟。', func = finder.ty_boat_succeed }
 
+-- 华山树藤
+function finder:hs_shuteng()
+  self:send{ 'zhe shuteng' }
+end
+function finder:hs_shuteng_succeed()
+  inventory.add_item '树藤'
+  self:complete()
+end
+function finder:hs_shuteng_fail()
+  self:fail()
+end
+trigger.new{ name = 'hs_shuteng_succeed', group = 'item_finder.hs_shuteng', match = '^(> )*你从树干上面折断了一些树藤。', func = finder.hs_shuteng_succeed }
+trigger.new{ name = 'hs_shuteng_fail', group = 'item_finder.hs_shuteng', match = '^(> )*树藤已经被你折光了。', func = finder.hs_shuteng_fail }
+
+-- 华山藤筐
+function finder:hs_kuang()
+  if not inventory.has_item '树藤' then
+    self:newsub{ class = 'get_item', item = '树藤' }
+  else
+    self:send{ 'weave kuang' }
+    inventory.add_item '藤筐'
+    self:complete()
+  end
+end
+
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------
