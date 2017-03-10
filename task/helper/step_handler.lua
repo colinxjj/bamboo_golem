@@ -514,8 +514,8 @@ local cord_tbl = {
 	['姑苏慕容库房'] = { x = 6, y = 7 }, -- 需要随机先天智力大于20
 	['姑苏慕容正堂'] = { x = -5, y = 6 },
 	['姑苏慕容地道#3'] = { x = 0, y = -50 },
-	['终南山灌木丛'] = { x = 6, y = 4 },
-	['终南山树林'] = { x = -6, y = 4 },
+	['终南山灌木丛'] = { x = 6, y = 3 },
+	['终南山树林'] = { x = -6, y = 3 },
 }
 function handler:cord( t )
 	t.dest = t.dest or cord_tbl[ t.to.id ]
@@ -1386,6 +1386,20 @@ end
 -- 华山秘洞
 
 -- 峨嵋山九老洞
+function handler:em_jiulao( t )
+	t = self.step
+	if t.to.id == '峨嵋山九老洞口' then
+		if inventory.has_item '火折' then
+			self:send{ 'drop fire'; complete_func = handler.em_jiulao }
+		else
+			self:send{ 'leave' }
+		end
+	elseif not t.wait then
+		t.wait = true
+		self:send{ 'use fire;n;ne;e;se;s;sw;w;nw;out' }
+		inventory.remove_item '火折'
+	end
+end
 
 -- 天山山道 (quest)
 

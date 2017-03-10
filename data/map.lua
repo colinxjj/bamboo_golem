@@ -16659,7 +16659,7 @@ local map = {
   desc =  [[你觉得眼前一亮，前方石室透过来一丝微弱的光，给了你一丝希望。但还是只听见远远传来你脚步的回音，空荡荡的感觉使你心中只有恐惧，甚至忘记孤独。四周如此寂然无声。只能靠摸索前行。]],
   exit = {
     w = { to = '终南山石室#M', handler = 'reset_data', },
-    enter = { to = '终南山灵室', },
+    enter = { to = '终南山灵室', cmd = '#wb 2500;enter', },
   },
 },
 
@@ -21607,7 +21607,18 @@ local map = {
     se = { to = '峨嵋山九老洞#M', unstable = true, },
     nw = { to = '峨嵋山九老洞#M', unstable = true, },
     n = { to = '峨嵋山九老洞#M', unstable = true, },
-    hidden = { to = '峨嵋山九老洞口', cmd = 'leave', },
+    out = { to = '峨嵋山山坡', unstable = true, handler = 'em_jiulao', req = { ['火折'] = 1 }, },
+    hidden = { to = '峨嵋山九老洞口', handler = 'em_jiulao', },
+  },
+},
+
+['峨嵋山山坡'] = {
+  id = '峨嵋山山坡',
+  area = '峨嵋山',
+  name = '山坡',
+  desc = [[眼前豁然一亮，原来是九老洞外的一个小山坡。山坡上杂草丛生，风很大，刮得树枝乱摇。一棵古树下放着几个骷髅，上面都插了五个手指洞，看起来阴森森的。]],
+  exit = {
+    enter = { to = '峨嵋山九老洞#M', },
   },
 },
 
