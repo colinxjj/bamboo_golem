@@ -126,8 +126,6 @@ function task:next_step()
   -- generate command list for the next step(s)
   repeat
     from, to = self.path[ i ], self.path[ i + 1 ]
-    -- if is traversing, mark current room as traversed
-    --if self.is_traversing then self.dest[ from ] = nil end
     -- move on to next dest if no further steps
     if not to then self:next_dest( from ) return end
 

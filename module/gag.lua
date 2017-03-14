@@ -11,10 +11,12 @@ local in_gag
 local gag_def = {
   score = {
     startp = '^╭━━【书剑个人资料卡】',
-    endp = 1 - lpeg.S '┃┠╰ ' },
+    endp = 1 - lpeg.S '┃┠╰ ',
+    exclude_endp = true },
   skills = {
     startp = '^(> )*【你的技能表】',
-    endp = lpeg.P '└────' },
+    endp = 1 - lpeg.S '┌│├└',
+    exclude_endp = true },
   hp = {
     startp = '^·精血·',
     endp = lpeg.P '·饮水·' },

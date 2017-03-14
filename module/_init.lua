@@ -21,7 +21,6 @@ end
 
 -- load data
 dofile( CWD .. 'data/constant.lua' )
-kungfu = require 'data.kungfu'
 npc = require 'data.npc'
 
 -- load default config
@@ -69,6 +68,7 @@ require 'module.parser.connection'
 require 'module.parser.uptime'
 require 'module.parser.set'
 require 'module.parser.title'
+require 'module.parser.force'
 
 -- load task classes
 dofile( CWD .. 'task/_init.lua' )

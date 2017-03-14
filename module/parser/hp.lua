@@ -31,6 +31,7 @@ local function parse_line_4( _, t )
   player.food = tonumber( t[ 1 ] )
   player.pot = tonumber( t[ 2 ] )
   player.pot_max = tonumber( t[ 3 ] )
+  player.level = player.pot_max - 100
 end
 
 local function parse_line_5( _, t )
