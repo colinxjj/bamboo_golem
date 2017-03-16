@@ -170,7 +170,7 @@ cli.register{ cmd = 'gi', desc = '获取指定的物品。支持中文名和 ID。例如：gi 500 
 -- tt
 
 local function parse_tt( _, input )
-  taskmaster.current_manual_task:newweaksub{ class = 'manage_inventory', action = 'wield', item = 'sword' }
+  taskmaster.current_manual_task:newweaksub{ class = 'get_info', score = 'forced', hp = 'forced', inventory = 'forced', skills = 'forced' }
 end
 
 

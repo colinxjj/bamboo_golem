@@ -142,15 +142,21 @@ function kungfu.is_compatible( a, b )
   if not a or not b then return end
   local i = 1
   repeat
+    local cpt_count, incpt_count = 0, 0
     for _, fn in pairs( a.fn or {} ) do
+      local is_cpt = true
       for enable_type, enable_name in pairs( fn.req.enable or {} ) do
         local b_type = kungfu.get_skill_type( b.name )
-        if enable_type == b_type and enable_name ~= b.name then
-          print( a.name, '与', b.name, '不兼容' )
-          return false
-        end
+        if enable_type == b_type and enable_name ~= b.name then is_cpt = false end
+      end
+      --print( a.name, '的', fn.name, '与', b.name, ( is_cpt and '' or '不' ) .. '兼容' )
+      if is_cpt then
+        cpt_count = cpt_count + 1
+      else
+        incpt_count = incpt_count + 1
       end
     end
+    if cpt_count == 0 and incpt_count > 0 then return false end
     i = i + 1
     a, b = b, a
   until i > 2

@@ -20,6 +20,7 @@ local task_class = {
   'manage_inventory', -- 管理随身物品
   'get_flag', -- 取得标记
   'get_item', -- 取得物品
+  'recover', -- 恢复HP
 
   'job.wuguan', -- 襄阳武馆
 }
