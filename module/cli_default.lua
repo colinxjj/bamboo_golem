@@ -167,11 +167,10 @@ end
 cli.register{ cmd = 'gi', desc = '获取指定的物品。支持中文名和 ID。例如：gi 500 coin 或 gi 木棉袈裟', func = parse_gi, no_prefix = true }
 
 --------------------------------------------------------------------------------
--- tt
+-- t
 
-local function parse_tt( _, input )
-  taskmaster.current_manual_task:newweaksub{ class = 'get_info', score = 'forced', hp = 'forced', inventory = 'forced', skills = 'forced' }
+local function parse_t( _, input )
+  taskmaster.current_manual_task:newweaksub{ class = 'recover', neili = 'double', all = 'full' }
 end
 
-
-cli.register{ cmd = 'tt', desc = '测试', func = parse_tt, no_prefix = true }
+cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }

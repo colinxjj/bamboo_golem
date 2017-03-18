@@ -425,6 +425,21 @@ function map.is_reachable_from_prev_location_with_cmd( map_room, cmd )
   return is_reachable
 end
 
+function map.check_cond( cond )
+  return cond_checker[ cond ]()
+end
+
+function map.is_at_sleep_loc()
+  local loc = map.get_current_location()[ 1 ]
+  if player.party == 'Ø¤°ï' and ( not loc.label or not loc.label.non_sleep ) then return true end
+  return loc.label and loc.label.sleep
+end
+
+function map.is_at_dazuo_loc()
+  local loc = map.get_current_location()[ 1 ]
+  return not loc.label or ( not loc.label.sleep and not loc.label.no_fight )
+end
+
 --------------------------------------------------------------------------------
 -- helper functions
 

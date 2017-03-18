@@ -73,11 +73,11 @@ local function convert_to_unit( t )
   s = sep_patt:match( s ) -- remove leading ';' and substitute ';' with '|'
   if not s then return end
   local result = { unit_patt:match( s ) } -- split commands into units
-  for i, unit in pairs( result ) do
+  for i, unit in ipairs( result ) do
     unit = extra_sep_patt:match( unit ) -- remove leading and trailing '|'
     local type = has_sep:match( unit ) and 'batch' or cmd.extract_core( unit )
     unit = type == 'batch' and ( 'ado ' .. unit ) or unit
-    result[ i ] = { cmd = unit, status = 'pending', type = type }
+    result[ i ] = { cmd = unit, status = 'pending', type = type, complete_func = ( i == #result and t.complete_func or false ) } -- make sure only the last unit in a batch triggers the complete_func
     setmetatable( result[ i ], t ) -- units inherit values from the original table, .e.g add_time, ignore_result
   end
   return result

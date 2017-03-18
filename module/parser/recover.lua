@@ -39,6 +39,7 @@ end
 
 local function parse_sleep_end()
   player.lasting_action = false
+  player.last_sleep_time = os.time()
   event.new 'sleep_end'
 end
 

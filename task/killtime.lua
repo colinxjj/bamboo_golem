@@ -6,7 +6,8 @@ local task = {}
 --[[----------------------------------------------------------------------------
 Params:
 duration = 10: length of time to kill in seconds (optional, default: 10)
-can_move = true: player can move during the period (optional, default: false) -- TODO undefined yet
+can_move = true: player can move during the period (optional, default: false) -- TODO not yet implemented
+idle_only = true: do nothing during the period (optional, default: false) -- TODO not yet implemented
 ----------------------------------------------------------------------------]]--
 
 task.class = 'killtime'
