@@ -15,7 +15,7 @@ local task_class = {
   'go', -- 行走
   'locate', -- 定位
   'get_info', -- 获取信息
-  'killtime', -- 混时间
+  'kill_time', -- 混时间
   'find', -- 找人
   'manage_inventory', -- 管理随身物品
   'get_flag', -- 取得标记

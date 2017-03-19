@@ -49,7 +49,7 @@ function handler:cross_cj( t )
 		if t.to_yell[ t.curr_loc ] then -- yell at current location
 			self:send{ 'yell boat' }
 			t.to_yell[ t.curr_loc ] = nil
-			self:newweaksub{ class = 'killtime', duration = 1, complete_func = handler.cross_cj }
+			self:newweaksub{ class = 'kill_time', duration = 1, complete_func = handler.cross_cj }
 		elseif next( t.to_yell ) then -- go to next location and yell
 			local c = t.curr_loc == t.loc.w and 'e'
 						 or t.curr_loc == t.loc.e and 'w'
@@ -59,7 +59,7 @@ function handler:cross_cj( t )
  			self:send{ c }
 		else -- kill time and do another round of yell
 			t.to_yell = nil
-			self:newweaksub{ class = 'killtime', complete_func = handler.cross_cj }
+			self:newweaksub{ class = 'kill_time', complete_func = handler.cross_cj }
 		end
 	end
 end
@@ -82,13 +82,13 @@ function handler:fly()
 	-- since this handler is always called by other handlers, it needs to take care of trigger enabling itself
 	self:enable_trigger_group 'step_handler.fly'
 	if room.get().exit.enter then
-		self:newsub{ class = 'killtime', complete_func = handler.fly }
+		self:newsub{ class = 'kill_time', complete_func = handler.fly }
 	else
 		self:send{ self.step.yell_cmd or 'yell boat', self.step.cmd }
 	end
 end
 function handler:fly_wait()
-	self:newsub{ class = 'killtime', complete_func = handler.fly }
+	self:newsub{ class = 'kill_time', complete_func = handler.fly }
 end
 function handler:fly_done()
 	self:disable_trigger_group 'step_handler.fly'
@@ -101,13 +101,13 @@ trigger.new{ name = 'fly_done', group = 'step_handler.fly', match = '^(> )*你在(
 function handler:embark()
 	if room.get().exit.enter then self:send{ 'enter' } return end
 	self:send{ self.step.cmd ~= 'enter' and self.step.cmd or 'yell boat' }
-	self:newweaksub{ class = 'killtime', complete_func = handler.embark }
+	self:newweaksub{ class = 'kill_time', complete_func = handler.embark }
 end
 
 -- 下船。渡船、竹篓、藤筐等
 function handler:disembark()
 	self:listen{ event = 'ferry_arrived', func = handler.getout, id = 'disembark' }
-	self:newweaksub{ class = 'killtime', complete_func = handler.disembark }
+	self:newweaksub{ class = 'kill_time', complete_func = handler.disembark }
 end
 function handler:getout()
 	self:send{ 'out' }
@@ -210,7 +210,7 @@ function handler:jqg_river( t )
 		local room = room.get()
 		if not room.desc then self:send{ 'l' } return end
 		if not string.find( room.desc, '你沿岸迂回数次，发现溪中好象有艘小舟。' ) then
-			self:newsub{ class = 'killtime', complete_func = handler.look_again }
+			self:newsub{ class = 'kill_time', complete_func = handler.look_again }
 		else
 			self:send{ t.cmd }
 		end
@@ -315,7 +315,7 @@ function handler:wdhs_gudao()
 		self:send{ 'give yao chu to caiyao daozhang' }
 		inventory.add_item '绳子'
 	else
-		self:newsub{ class = 'killtime', duration = 60, can_move = true, complete_func = handler.look_again }
+		self:newsub{ class = 'kill_time', duration = 60, can_move = true, complete_func = handler.look_again }
 	end
 end
 
@@ -373,7 +373,7 @@ function handler:ty_waterfall_look_result( _, t )
 	if t[ 2 ] == '你目光顺着瀑布往下流动' then -- no people in the waterfall
 		self:send{ 'tiao pubu' }
 	else
-		self:newsub{ class = 'killtime', complete_func = handler.ty_enter_waterfall_look_again }
+		self:newsub{ class = 'kill_time', complete_func = handler.ty_enter_waterfall_look_again }
 	end
 end
 function handler:ty_enter_waterfall_look_again()
@@ -386,7 +386,7 @@ function handler:ty_waterfall_to_boat()
 	self:send{ 'zhi boat' }
 end
 function handler:ty_waterfall_to_boat_fail()
-	self:newsub{ class = 'killtime', complete_func = handler.ty_waterfall_to_boat }
+	self:newsub{ class = 'kill_time', complete_func = handler.ty_waterfall_to_boat }
 end
 trigger.new{ name = 'ty_waterfall_to_boat_fail', group = 'step_handler.ty_waterfall_to_boat', match = '^(> )*瀑布的水流过于湍急，现在已经有艘铁舟在河中了，你还是先等会吧。', func = handler.ty_waterfall_to_boat_fail }
 
@@ -410,12 +410,12 @@ function handler:ty_qiaozi()
 		self:send{ 'answer 青山相待，白云相爱。梦不到紫罗袍共黄金带。一茅斋，野花开，管甚谁家兴废谁成败？陋巷单瓢亦乐哉。贫，气不改！达，志不改！;pa teng' }
 		handler.data.ty_qiaozi_prompt = nil
 	else
-		self:newsub{ class = 'killtime', complete_func = handler.ty_qiaozi }
+		self:newsub{ class = 'kill_time', complete_func = handler.ty_qiaozi }
 	end
 end
 function handler:ty_qiaozi_prompt()
 	handler.data.ty_qiaozi_prompt = true
-	-- interrupt killtime subtask when got direction prompt
+	-- interrupt kill_time subtask when got direction prompt
 	if self.status == 'running' or self.status == 'lurking' then self:resume() end
 end
 trigger.new{ name = 'ty_qiaozi_prompt', group = 'step_handler.ty_qiaozi', match = '^(> )*樵子说道：「峰峦如聚，波涛如怒，山河表里潼关路。望西都，意踟蹰。', func = handler.ty_qiaozi_prompt, penetrate = 'suspended' } -- this trigger works even when the task is suspended, to get the prompt whenever possible
@@ -822,7 +822,7 @@ function handler:wd_xiaojing( t )
 		t.waited, handler.data.wd_xiaojing_dir = nil
 	elseif not t.waited then
 		t.waited = true
-		self:newweaksub{ class = 'killtime', complete_func = handler.wd_xiaojing }
+		self:newweaksub{ class = 'kill_time', complete_func = handler.wd_xiaojing }
 	else
 		t.waited = nil
 		self:send{ DIR4[ math.random( 4 ) ] }
@@ -830,7 +830,7 @@ function handler:wd_xiaojing( t )
 end
 function handler:wd_xiaojing_prompt( _, t )
 	handler.data.wd_xiaojing_dir = CN_DIR[ t[ 2 ] ]
-	-- interrupt killtime subtask when got direction prompt
+	-- interrupt kill_time subtask when got direction prompt
 	if self.status == 'running' or self.status == 'lurking' then self:resume() end
 end
 trigger.new{ name = 'wd_xiaojing_prompt', group = 'step_handler.wd_xiaojing', match = '^(> )*你站在小径上，四周打量，仿佛看见(\\S+)面有些亮光。$', func = handler.wd_xiaojing_prompt, penetrate = 'suspended' } -- this trigger works even when the task is suspended, to get the prompt whenever possible
@@ -1236,7 +1236,7 @@ function handler:thd_mudao( t )
 	-- wait if hour is 0, since there's no exit during this hour
 	if hour < 1 then
 		local sec = ( 1 - hour ) * 60 + 5 -- wait until 1 am
-		self:newsub{ class = 'killtime', duration = sec, complete_func = handler.thd_mudao }
+		self:newsub{ class = 'kill_time', duration = sec, complete_func = handler.thd_mudao }
 		return
 	end
 	hour = math.floor( hour )

@@ -179,6 +179,61 @@ function kungfu.get_tuna_rate()
   return rate
 end
 
+function kungfu.get_min_dazuo_value()
+  return player.qi_max > 1000 and math.floor( player.qi_max / 5 ) or 10
+end
+
+function kungfu.get_best_dazuo_value( target )
+  local gap = target - player.neili
+  assert( gap > 0, 'kungfu.get_best_dazuo_value - dazuo neili target must be greater than current neili' )
+  local min = kungfu.get_min_dazuo_value()
+  local tick, best_val = kungfu.get_dazuo_rate()
+  for i = 1, math.ceil( gap / tick ) do
+    local val = tick * i
+    if val >= min and val <= player.qi then best_val = val end
+  end
+  local alt_val = gap <= player.qi - 10 and gap or player.qi - 10
+  alt_val = alt_val >= min and alt_val or min
+  return best_val or alt_val
+end
+
+function kungfu.get_current_total_converted_jing()
+  local lvl = player.enable.force and player.enable.force.level or 0
+  local total_jing = math.floor( player.neili * ( lvl / 100 ) + player.jing )
+  return total_jing
+end
+
+-- if tuna X value, will player (with yun jing) be able to dazuo after tuna?
+function kungfu.is_tuna_value_safe_for_subsequent_dazuo( val )
+  local total_jing = kungfu.get_current_total_converted_jing()
+  return total_jing - val >= player.jing_max * 0.7
+end
+
+function kungfu.get_best_tuna_value( target )
+  local gap = target - player.jing
+  assert( gap > 0, 'kungfu.get_best_tuna_value - tuna jingli target must be greater than current jingli' )
+  local tick, best_val = kungfu.get_tuna_rate()
+  for i = 1, math.ceil( gap / tick ) do
+    local val = tick * i
+    if val >= 10 and val <= player.jing then best_val = val end
+  end
+  local alt_val = gap <= player.jing - 10 and gap or player.jing - 10
+  alt_val = alt_val >= 10 and alt_val or 10
+  -- if there won't be enough jing to dazuo after tuna, then adjust tuna value
+  if not kungfu.is_tuna_value_safe_for_subsequent_dazuo( best_val or alt_val ) then
+    best_val = math.floor( kungfu.get_current_total_converted_jing() - player.jing_max * 0.7 )
+  end
+  return best_val or alt_val
+end
+
+function kungfu.has_enough_qi_for_dazuo()
+  if player.qi_max > 1000 then
+    return player.qi / player.qi_max >= 0.2
+  else
+    return player.qi >= 10
+  end
+end
+
 --------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------

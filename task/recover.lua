@@ -71,14 +71,6 @@ local function is_heal_needed( self )
   return player.qi_perc < 100
 end
 
-local function has_sufficient_qi_for_dazuo()
-  if player.qi_max > 1000 then
-    return player.qi / player.qi_max >= 0.2
-  else
-    return player.qi >= 10
-  end
-end
-
 local function is_sleep_needed( self )
   local has_recently_slept = os.time() - 180 < ( player.last_sleep_time or 0 )
   -- don't sleep if last sleep is less than 3 minutes ago
@@ -89,7 +81,7 @@ local function is_sleep_needed( self )
   -- if not enough jing to dazuo and no neili to recover it
   if player.neili < 20 and player.jing / player.jing_max < 0.7 then return true end
   -- if qi is depleted and no neili, or no positive loop dazuo, go to sleep
-  if not has_sufficient_qi_for_dazuo() and ( not player.enable.force or player.enable.force.level < 120 or player.neili < 20 ) then return true end
+  if not kungfu.has_enough_qi_for_dazuo() and ( not player.enable.force or player.enable.force.level < 150 or player.neili < 20 ) then return true end
 end
 
 local function convert_tgt_to_num( self, attr )
@@ -105,33 +97,24 @@ local function is_exert_needed( self )
   if player.neili < 20 then return false end
   for _, attr in pairs( convertable_attr ) do
     if not has_reached_target( self, attr ) and not is_full( attr ) then return true end
-    if attr == 'qi' and not is_full 'qi' and player.enable.force.level >= 120 and not has_reached_target( self, 'neili' ) then return true end
+    if attr == 'qi' and not is_full 'qi' and player.enable.force.level >= 150 and not has_reached_target( self, 'neili' ) then return true end
     if attr == 'jing' and not is_full 'jing' and convert_tgt_to_num( self, 'jingli' ) > player.jingli_max and not has_reached_target( self, 'jingli' ) then return true end
     if attr == 'jing' and player.jing < player.jing_max * 0.7 and not has_reached_target( self, 'neili' ) then return true end
   end
-end
-
-local function get_min_dazuo_value()
-  return player.qi_max > 1000 and math.floor( player.qi_max / 5 ) or 10
-end
-
-local function get_converted_total_jing()
-  local ratio = player.enable.force.level / 100
-  local result = player.neili * ratio + player.jing
-  return math.floor( result )
 end
 
 local function is_tuna_needed( self )
   -- if not enough qi or jing, don't tuna
   if player.qi / player.qi_max < 0.7 or player.jing < 10 then return false end
   -- if there won't be enough jing to dazuo even after yun jing, don't tuna
-  if get_converted_total_jing() - 10 < player.jing_max * 0.7 then return false end
-  if not has_reached_target( self, 'jingli' ) then return true end
+  if not kungfu.is_tuna_value_safe_for_subsequent_dazuo( 10 ) then return false end
+  -- tuna only if jingli is full or force level is so low that yun jingli is inefficient (otherwise yun jingli with neili is more efficient)
+  if not has_reached_target( self, 'jingli' ) and ( is_full 'jingli' or player.enable.force.level < 100 ) then return true end
 end
 
 local function is_dazuo_needed( self )
   -- if not enough qi or jing, don't dazuo
-  if player.jing / player.jing_max < 0.7 or player.qi < get_min_dazuo_value() then return false end
+  if player.jing / player.jing_max < 0.7 or player.qi < kungfu.get_min_dazuo_value() then return false end
   if not has_reached_target( self, 'neili' ) then return true end
   for _, attr in pairs( convertable_attr ) do
     if self[ attr ] and not has_reached_target( self, attr ) and not is_full( attr ) and player.neili < 20 then return true end
@@ -164,7 +147,7 @@ function task:_resume()
   end
   -- otherwise, wait
   self.has_updated_hp = false
-  self:newsub{ class = 'killtime', duration = 20, idle_only = true }
+  self:newsub{ class = 'kill_time', duration = 20, idle_only = true }
 end
 
 function task:_complete()
@@ -173,14 +156,14 @@ function task:_complete()
 end
 
 function task:heal()
-
+  print 'heal placeholder'
 end
 
 function task:exert()
   local c = {}
   for _, attr in pairs( convertable_attr ) do
     if ( self[ attr ] and not has_reached_target( self, attr ) and not is_full( attr ) )
-    or ( attr == 'qi' and not is_full 'qi' and player.enable.force.level >= 120 and not has_reached_target( self, 'neili' ) )
+    or ( attr == 'qi' and not is_full 'qi' and player.enable.force.level >= 150 and not has_reached_target( self, 'neili' ) )
     or ( attr == 'jing' and not is_full 'jing' and convert_tgt_to_num( self, 'jingli' ) > player.jingli_max and not has_reached_target( self, 'jingli' ) )
     or ( attr == 'jing' and player.jing < player.jing_max * 0.7 and not has_reached_target( self, 'neili' ) ) then
       c[ #c + 1 ] = 'yun ' .. attr
@@ -209,23 +192,11 @@ function task:go_to_sleep()
   end
 end
 
-local function get_best_dazuo_value( tgt )
-  local min = get_min_dazuo_value()
-  local tick, best_val = kungfu.get_dazuo_rate()
-  for i = 1, math.ceil( tgt / tick ) do
-    local val = tick * i
-    if val >= min and val <= player.qi then best_val = val end
-  end
-  local alt_val = tgt <= player.qi - 10 and tgt or player.qi - 10
-  alt_val = alt_val >= min and alt_val or min
-  return best_val or alt_val
-end
-
 local function is_valid_dazuo_tuna_room( room )
   return not room.label or ( not room.label.sleep and not room.label.no_fight )
 end
 
-local function go_to_dazuo_tuna_loc( self )
+local function go_to_dazuo_tuna_room( self )
   local loc = map.get_current_location()[ 1 ]
   local dest = map.find_nearest( loc, is_valid_dazuo_tuna_room )
   self:newsub{ class = 'go', to = dest }
@@ -234,39 +205,24 @@ end
 function task:dazuo()
   if map.is_at_dazuo_tuna_loc() then
     local tgt = self.neili and convert_tgt_to_num( self, 'neili' ) or player.neili_max
-    local val = get_best_dazuo_value( tgt - player.neili )
+    local val = kungfu.get_best_dazuo_value( tgt )
     self:listen{ event = 'dazuo_end', func = self.resume, id = 'task.recover' }
     self.has_updated_hp = false
     self:send{ 'dazuo ' .. val }
   else
-    go_to_dazuo_tuna_loc( self )
+    go_to_dazuo_tuna_room( self )
   end
-end
-
-local function get_best_tuna_value( tgt )
-  local tick, best_val = kungfu.get_tuna_rate()
-  for i = 1, math.ceil( tgt / tick ) do
-    local val = tick * i
-    if val >= 10 and val <= player.jing then best_val = val end
-  end
-  local alt_val = tgt <= player.jing - 10 and tgt or player.jing - 10
-  alt_val = alt_val >= 10 and alt_val or 10
-  -- if there won't be enough jing to dazuo after tuna, then adjust tuna value
-  if get_converted_total_jing() - ( best_val or alt_val ) < player.jing_max * 0.7 then
-    best_val = math.floor( get_converted_total_jing() - player.jing_max * 0.7 )
-  end
-  return best_val or alt_val
 end
 
 function task:tuna()
   if map.is_at_dazuo_tuna_loc() then
     local tgt = self.jingli and convert_tgt_to_num( self, 'jingli' )
-    local val = get_best_tuna_value( tgt - player.jingli )
+    local val = kungfu.get_best_tuna_value( tgt )
     self:listen{ event = 'tuna_end', func = self.resume, id = 'task.recover' }
     self.has_updated_hp = false
     self:send{ 'tuna ' .. val }
   else
-    go_to_dazuo_tuna_loc( self )
+    go_to_dazuo_tuna_room( self )
   end
 end
 

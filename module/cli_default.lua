@@ -167,6 +167,14 @@ end
 cli.register{ cmd = 'gi', desc = '获取指定的物品。支持中文名和 ID。例如：gi 500 coin 或 gi 木棉袈裟', func = parse_gi, no_prefix = true }
 
 --------------------------------------------------------------------------------
+-- r
+
+local function parse_r( _, input )
+  taskmaster.current_manual_task:newweaksub{ class = 'recover', all = 'full', neili = 'double' }
+end
+
+cli.register{ cmd = 'r', desc = '恢复HP。', func = parse_r, no_prefix = true }
+--------------------------------------------------------------------------------
 -- t
 
 local function parse_t( _, input )

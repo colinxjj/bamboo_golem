@@ -95,9 +95,10 @@ function finder:hs_kuang()
 end
 
 -- ºÚÄ¾ÑÂºÚÔ¿³×
+-- TODO kill the guy who might appear when open shu
 function finder:hmy_key()
   finder.data.hmy_key = 1
-  self:send{ 'l Êé¼Ü;l Êé¼®;na shu 1 from jia;fankan shu' }
+  self:send{ 'l shujia;l shuji;na shu 1 from jia;fankan shu' }
 end
 function finder:hmy_key_fail()
   finder.data.hmy_key = finder.data.hmy_key < 5 and finder.data.hmy_key + 1 or 1

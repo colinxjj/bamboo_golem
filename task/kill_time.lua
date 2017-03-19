@@ -10,10 +10,10 @@ can_move = true: player can move during the period (optional, default: false) --
 idle_only = true: do nothing during the period (optional, default: false) -- TODO not yet implemented
 ----------------------------------------------------------------------------]]--
 
-task.class = 'killtime'
+task.class = 'kill_time'
 
 function task:get_id()
-  return 'killtime for ' .. ( self.duration or 10 ) .. ' sec'
+  return 'kill_time for ' .. ( self.duration or 10 ) .. ' sec'
 end
 
 function task:_resume()
@@ -24,14 +24,14 @@ function task:_resume()
 
   -- task complete if end time is passed
   if self.timer_set then
-    message.debug( 'killtime 任务：已度过 ' .. self.duration .. ' 秒时间' )
+    message.debug( 'kill_time 任务：已度过 ' .. self.duration .. ' 秒时间' )
     if os.time() - self.end_time >= -1 then self:complete(); return end
   end
 
   -- TODO for now just use a timer to idle
-  message.debug( 'killtime 任务：开始度过 ' .. self.duration .. ' 秒时间' )
+  message.debug( 'kill_time 任务：开始度过 ' .. self.duration .. ' 秒时间' )
   self.timer_set = true
-  self:timer{ id = 'killtime_timer', duration = self.duration, func = self.resume }
+  self:timer{ id = 'kill_time_timer', duration = self.duration, func = self.resume }
 end
 
 --------------------------------------------------------------------------------
