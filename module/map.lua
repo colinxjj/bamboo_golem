@@ -428,7 +428,7 @@ function map.is_at_sleep_loc()
   return loc.label and loc.label.sleep
 end
 
-function map.is_at_dazuo_loc()
+function map.is_at_dazuo_tuna_loc()
   local loc = map.get_current_location()[ 1 ]
   return not loc.label or ( not loc.label.sleep and not loc.label.no_fight )
 end

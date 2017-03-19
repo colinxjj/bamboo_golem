@@ -170,7 +170,7 @@ cli.register{ cmd = 'gi', desc = '获取指定的物品。支持中文名和 ID。例如：gi 500 
 -- t
 
 local function parse_t( _, input )
-  taskmaster.current_manual_task:newweaksub{ class = 'recover', neili = 'double', all = 'full' }
+  taskmaster.current_manual_task:newweaksub{ class = 'recover', neili = 'double', jingli = 'double' }
 end
 
 cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }
