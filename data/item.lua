@@ -324,6 +324,17 @@ local item = {
   },
 },
 
+['ºÚÔ¿³×'] = {
+  iname = 'ºÚÔ¿³×',
+	name = 'ºÚÔ¿³×',
+  id = 'hei yaoshi',
+  alternate_id = { 'yaoshi', 'key' },
+  weight = 1000,
+  source = {
+    { type = 'local_handler', handler = 'hmy_key', location = 'ºÚÄ¾ÑÂÊé·¿', },
+  },
+},
+
 }
 
 return item

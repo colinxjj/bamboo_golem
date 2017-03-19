@@ -11,9 +11,6 @@ local index = require 'data.map'
 -- load all exit conditions from map index as functions
 local cond_checker = {}
 for id, room in pairs( index ) do
-  if room.use_cond and not cond_checker[ room.use_cond ] then
-    cond_checker[ room.use_cond ] = loadstring( 'return ' .. room.use_cond )
-  end
   for dir, exit in pairs( room.exit ) do
     if exit.cond and not cond_checker[ exit.cond ] then
       cond_checker[ exit.cond ] = loadstring( 'return ' .. exit.cond )
@@ -425,13 +422,9 @@ function map.is_reachable_from_prev_location_with_cmd( map_room, cmd )
   return is_reachable
 end
 
-function map.check_cond( cond )
-  return cond_checker[ cond ]()
-end
-
 function map.is_at_sleep_loc()
   local loc = map.get_current_location()[ 1 ]
-  if player.party == 'Ø¤°ï' and ( not loc.label or not loc.label.non_sleep ) then return true end
+  if player.party == 'Ø¤°ï' and ( not loc.label or not loc.label.no_sleep ) then return true end
   return loc.label and loc.label.sleep
 end
 
@@ -681,8 +674,7 @@ function map.serialize_map_room( room )
   id = '%s',
   area = '%s',
   name = '%s',
-  use_cond = '%s',
-  desc = ]], room.id, room.id, room.area, room.name, room.use_cond or '' ) ..
+  desc = ]], room.id, room.id, room.area, room.name ) ..
   ( type( room.desc ) == 'string' and
   string.format( [=[ [[%s]],]=], room.desc ) or
   string.format( [=[{ [[%s]], [[%s]] },]=], room.desc[ 1 ], room.desc[ 2 ] ) ) ..

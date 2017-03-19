@@ -53,6 +53,7 @@ trigger.new{ name = 'tuna_end', match = '^(> )*你吐纳完毕，睁开双眼，站了起来。'
 trigger.new{ name = 'tuna_halt', match = '^(> )*你猛吸几口大气，站了起来。', func = parse_tuna_halt, enabled = true }
 
 trigger.new{ name = 'sleep_start', match = '^(> )*你往(床上|地下角落)一躺，开始睡觉。', func = parse_sleep_start, enabled = true }
+trigger.new{ name = 'sleep_start2', match = '^(> )*你一歪身，倒在床上，不一会便鼾声大作，进入了梦乡。', func = parse_sleep_start, enabled = true }
 trigger.new{ name = 'sleep_end', match = '^(> )*你一觉醒来', func = parse_sleep_end, enabled = true }
 
 --------------------------------------------------------------------------------

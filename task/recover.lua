@@ -37,7 +37,7 @@ local function validate_recover_param( self )
     if ( attr == 'qi' or attr == 'jing' ) and tgt == 'double' then self[ attr ] = 'full' end -- qi and jing doesn't support 'double' recover level
     -- raise error and adjust targets if numeric targets exceed what is achievable
     if type( tgt ) == 'number' and ( tgt >= max * 2 or ( ( attr == 'qi' or attr == 'jing' ) and tgt > max ) ) then
-      local new_tgt = ( attr == 'qi' or attr == 'jing' ) and max or max * 2 - 1
+      local new_tgt = ( attr == 'qi' or attr == 'jing' ) and max or max * 2
       message.warning( 'RECOVER 任务：' .. attr .. ' 恢复目标 ' .. tgt .. ' 超出了能达到的上限，调整为 ' .. new_tgt )
       self[ attr ] = new_tgt
     end
@@ -48,10 +48,10 @@ local function has_reached_target( self, attr )
   local tgt, val, max = self[ attr ], player[ attr ], player[ attr .. '_max' ]
   local pct = val / max
   return not tgt
-      or ( tgt == 'double' and pct > 1.9 )
-      or ( tgt == 'full' and pct > 0.9 )
-      or ( tgt == 'half' and pct > 0.4 )
-      or ( tgt == 'a_little' and pct > 0.1 )
+      or ( tgt == 'double' and pct >= 1.9 )
+      or ( tgt == 'full' and pct >= 0.9 )
+      or ( tgt == 'half' and pct >= 0.4 )
+      or ( tgt == 'a_little' and pct >= 0.1 )
       or ( type( tgt ) == 'number' and val >= tgt )
 end
 
@@ -158,7 +158,7 @@ end
 
 local function is_valid_sleep_room( room )
   if room.label and room.label.sleep then
-    return not room.use_cond or map.check_cond( room.use_cond )
+    return room.label.sleep == true or room.label.sleep == player.party
   end
 end
 
@@ -177,13 +177,14 @@ end
 local function convert_tgt_to_num( self, attr )
   local tgt, max = self[ attr ], player[ attr .. '_max' ]
   return ( type( tgt ) == 'number' and tgt )
-      or ( tgt == 'double' and max * 2 - 1 )
+      or ( tgt == 'double' and max * 2 )
       or ( tgt == 'full' and max )
       or ( tgt == 'half' and max * 0.5 )
       or ( tgt == 'a_little' and max * 0.1 )
 end
 
-local function get_best_dazuo_value( min, tgt )
+local function get_best_dazuo_value( tgt )
+  local min = player.qi_max > 1000 and math.floor( player.qi_max / 5 ) or 10
   local tick, best_val = kungfu.get_dazuo_rate()
   for i = 1, math.ceil( tgt / tick ) do
     local val = tick * i
@@ -201,9 +202,7 @@ end
 function task:dazuo()
   if map.is_at_dazuo_loc() then
     local tgt = self.neili and convert_tgt_to_num( self, 'neili' ) or player.neili_max
-    local until_tgt = tgt - player.neili
-    local min = player.qi_max > 1000 and math.floor( player.qi_max / 5 ) or 10
-    local val = get_best_dazuo_value( min, until_tgt )
+    local val = get_best_dazuo_value( tgt - player.neili )
     self:listen{ event = 'dazuo_end', func = self.resume, id = 'task.recover' }
     self.has_updated_hp = false
     self:send{ 'dazuo ' .. val }

@@ -94,6 +94,26 @@ function finder:hs_kuang()
   end
 end
 
+-- 黑木崖黑钥匙
+function finder:hmy_key()
+  finder.data.hmy_key = 1
+  self:send{ 'l 书架;l 书籍;na shu 1 from jia;fankan shu' }
+end
+function finder:hmy_key_fail()
+  finder.data.hmy_key = finder.data.hmy_key < 5 and finder.data.hmy_key + 1 or 1
+  self:send{ ( 'na shu %d from jia;fankan shu' ):format( finder.data.hmy_key ) }
+end
+function finder:hmy_key_succeed()
+  self:send{ '#wb 1500;open shu' }
+end
+function finder:hmy_key_done()
+  inventory.add_item '黑钥匙'
+  self:complete()
+end
+trigger.new{ name = 'hmy_key_fail', group = 'item_finder.hmy_key', match = '^你翻看了几页，并没有什么特别之处，于是又放了回去。', func = finder.hmy_key_fail }
+trigger.new{ name = 'hmy_key_succeed', group = 'item_finder.hmy_key', match = '^你突然发现这本古籍似乎重量和别的有些不同，好像有什么东西藏在这本书中。', func = finder.hmy_key_succeed }
+trigger.new{ name = 'hmy_key_done', group = 'item_finder.hmy_key', match = '^你缓缓打开手中古籍的夹层，取出了钥匙。', func = finder.hmy_key_done }
+
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------

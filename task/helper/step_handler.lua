@@ -451,6 +451,19 @@ end
 
 -- 大雪山绝顶
 
+-- 佛山镇密室
+
+-- 成都城书房
+
+-- 黑木崖小石屋
+function handler:hmy_shiwu()
+	if room.get().exit.d then
+		self:send{ 'd' }
+	else
+		self:send{ 'tui qiang;open men;d' }
+		inventory.remove_item '黑钥匙'
+	end
+end
 
 --------------------------------------------------------------------------------
 -- Maze handlers
