@@ -39,7 +39,7 @@ local function parse_g( _, input )
   end
 end
 
-cli.register{ cmd = 'g', desc = '前往指定地点。例如：g 扬州城中央广场', func = parse_g, no_prefix = true }
+cli.register{ cmd = 'g', desc = '前往指定地点。例如：g 扬州城中央广场 或 g 中央广场', func = parse_g, no_prefix = true }
 
 --------------------------------------------------------------------------------
 -- loc
@@ -163,7 +163,6 @@ local function parse_gi( _, input )
   end
 end
 
-
 cli.register{ cmd = 'gi', desc = '获取指定的物品。支持中文名和 ID。例如：gi 500 coin 或 gi 木棉袈裟', func = parse_gi, no_prefix = true }
 
 --------------------------------------------------------------------------------
@@ -178,7 +177,7 @@ cli.register{ cmd = 'r', desc = '恢复HP。', func = parse_r, no_prefix = true }
 -- t
 
 local function parse_t( _, input )
-  taskmaster.current_manual_task:newweaksub{ class = 'recover', neili = 'double', jingli = 'double' }
+  taskmaster.current_manual_task:newweaksub{ class = 'recover', food = 'full', water = 'full' }
 end
 
 cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }

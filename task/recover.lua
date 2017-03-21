@@ -6,12 +6,14 @@ local task = {}
 --[[----------------------------------------------------------------------------
 Params:
 all, neili, jingli, jing, qi = 'double', 'full', 'half', 'a_little', 900 -- one or more of these params set to one of the valid recover levels or a exact number. 'all' covers all four attributes, but its value will be overridden by individual values if any is set. Only neili and jingli support the 'double' recover level (required)
+food = 'full', 'half', 'a_little', -- 'all' doesn't cover this and it needs to be set explicitly (optional)
+water = 'double', 'full', 'half', 'a_little', 'all' doesn't cover this and it needs to be set explicitly (optional)
 stay_here = true -- should player stay where he/she is during the recover process? (optional, default: false)
 ----------------------------------------------------------------------------]]--
 
 task.class = 'recover'
 
-local valid_param = { all = true, jing = true, jingli = true, qi = true, neili = true }
+local valid_param = { all = true, jing = true, jingli = true, qi = true, neili = true, food = true, water = true }
 
 local function get_param_string( self )
   local s = ''
@@ -26,18 +28,18 @@ function task:get_id()
   return 'recover: ' .. get_param_string( self )
 end
 
-local all_attr = { 'jing', 'qi', 'jingli', 'neili' }
+local all_attr = { 'jing', 'qi', 'jingli', 'neili', 'food', 'water' }
 local convertable_attr = { 'jing', 'qi', 'jingli' }
 
 local function validate_recover_param( self )
   for _, attr in pairs( all_attr ) do
-    local tgt, max = self[ attr ], player[ attr .. '_max' ]
+    local tgt, max = self[ attr ], player[ attr .. '_max' ] or 100
     -- convert 'all' param to individual params
     if self.all and not tgt then self[ attr ] = self.all end
     if ( attr == 'qi' or attr == 'jing' ) and tgt == 'double' then self[ attr ] = 'full' end -- qi and jing doesn't support 'double' recover level
     -- raise error and adjust targets if numeric targets exceed what is achievable
-    if type( tgt ) == 'number' and ( tgt >= max * 2 or ( ( attr == 'qi' or attr == 'jing' ) and tgt > max ) ) then
-      local new_tgt = ( attr == 'qi' or attr == 'jing' ) and max or max * 2
+    if type( tgt ) == 'number' and ( tgt >= max * 2 or ( ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and tgt > max ) ) then
+      local new_tgt = ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and max or max * 2
       message.warning( 'RECOVER 任务：' .. attr .. ' 恢复目标 ' .. tgt .. ' 超出了能达到的上限，调整为 ' .. new_tgt )
       self[ attr ] = new_tgt
     end
@@ -45,10 +47,10 @@ local function validate_recover_param( self )
 end
 
 local function has_reached_target( self, attr )
-  local tgt, val, max = self[ attr ], player[ attr ], player[ attr .. '_max' ]
+  local tgt, val, max = self[ attr ], player[ attr ], player[ attr .. '_max' ] or 100
   local pct = val / max
   return not tgt
-      or ( tgt == 'double' and pct >= 1.9 )
+      or ( tgt == 'double' and pct >= 1.8 )
       or ( tgt == 'full' and pct >= 0.9 )
       or ( tgt == 'half' and pct >= 0.4 )
       or ( tgt == 'a_little' and pct >= 0.1 )
@@ -65,6 +67,19 @@ end
 local function is_full( attr )
   local val, max = player[ attr ], player[ attr .. '_max' ]
   return val / max > 0.95 or max - val < 10
+end
+
+local function is_eat_needed( self )
+  return ( player.food < 90 and self.food == 'full' )
+      or ( player.food < 40 and self.food == 'half' )
+      or ( player.food < 10 and self.food == 'a_little' )
+end
+
+local function is_drink_needed( self )
+  return ( player.water < 180 and self.water == 'double' )
+      or ( player.water < 90 and self.water == 'full' )
+      or ( player.water < 40 and self.water == 'half' )
+      or ( player.water < 10 and self.water == 'a_little' )
 end
 
 local function is_heal_needed( self )
@@ -84,21 +99,12 @@ local function is_sleep_needed( self )
   if not kungfu.has_enough_qi_for_dazuo() and ( not player.enable.force or player.enable.force.level < 150 or player.neili < 20 ) then return true end
 end
 
-local function convert_tgt_to_num( self, attr )
-  local tgt, max = self[ attr ], player[ attr .. '_max' ]
-  return ( type( tgt ) == 'number' and tgt )
-      or ( tgt == 'double' and max * 2 )
-      or ( tgt == 'full' and max )
-      or ( tgt == 'half' and max * 0.5 )
-      or ( tgt == 'a_little' and max * 0.1 )
-end
-
 local function is_exert_needed( self )
   if player.neili < 20 then return false end
   for _, attr in pairs( convertable_attr ) do
     if not has_reached_target( self, attr ) and not is_full( attr ) then return true end
     if attr == 'qi' and not is_full 'qi' and player.enable.force.level >= 150 and not has_reached_target( self, 'neili' ) then return true end
-    if attr == 'jing' and not is_full 'jing' and convert_tgt_to_num( self, 'jingli' ) > player.jingli_max and not has_reached_target( self, 'jingli' ) then return true end
+    if attr == 'jing' and not is_full 'jing' and not has_reached_target( self, 'jingli' ) and ( is_full 'jingli' or player.enable.force.level < 100 ) then return true end
     if attr == 'jing' and player.jing < player.jing_max * 0.7 and not has_reached_target( self, 'neili' ) then return true end
   end
 end
@@ -127,32 +133,58 @@ function task:_resume()
     self.has_updated_hp = true
     -- check if param values are valid and convert the "all" param
     validate_recover_param( self )
-    if not player.set[ '积蓄' ] then cmd.new{ 'set 积蓄' } end -- use cmd.new to make sure the cmd will be sent even when the task is not active
     self:newsub{ class = 'get_info', hp = 'forced' }
     return
   end
   -- if all targets have been reached then complete
   if has_reached_all_target( self ) then self:complete() return end
-  -- if player needs to sleep, go to sleep
+  -- evaluate each type of action in order
+  if is_eat_needed( self ) or is_drink_needed( self ) then self:eat_drink() return end
   if is_heal_needed( self ) then self:heal() return end
-  -- if player needs to sleep, go to sleep
   if is_sleep_needed( self ) then self:go_to_sleep() return end
   if player.enable.force then
-    -- try to recover jing, qi, jingli with neili
     if is_exert_needed( self ) then self:exert() return end
-    -- try to recover jingli through tuna
     if is_tuna_needed( self ) then self:tuna() return end
-    -- try to recover neili through dazuo
     if is_dazuo_needed( self ) then self:dazuo() return end
   end
-  -- otherwise, wait
+  -- if no action is possbile at the moment, wait
   self.has_updated_hp = false
   self:newsub{ class = 'kill_time', duration = 20, idle_only = true }
 end
 
 function task:_complete()
-  cmd.new{ 'unset 积蓄' }
+  if player.set[ '积蓄' ] then cmd.new{ 'unset 积蓄' } end
   message.verbose( '完成恢复任务：' .. get_param_string( self ) )
+end
+
+function task:eat_drink()
+  local choice
+  if is_eat_needed( self ) and not is_drink_needed( self ) then
+    choice = 'food'
+  elseif is_drink_needed( self ) and not is_eat_needed( self ) then
+    choice = 'drink'
+  else
+    local curr_loc = map.get_current_location()[ 1 ].id
+    local best_food_source = item.get_best_source 'food'
+    local best_drink_source = item.get_best_source 'drink'
+    choice = ( best_food_source.location == curr_loc and 'food' )
+                or ( best_drink_source.location == curr_loc and 'drink' )
+                or ( best_food_source.score > best_drink_source.score and 'food' )
+                or 'drink'
+  end
+  self:newsub{ class = 'get_item', item = choice, complete_func = task.consume }
+end
+
+function task:consume( name )
+  self.has_updated_hp = false
+  if name == '清水' then
+    self:resume()
+  else
+    local it = item.get( name )
+    local count, id = it.consume_count or 1, it.id
+    local action = it.type == 'food' and 'eat' or 'drink'
+    self:send{ ( '#%d %s %s' ):format( count, action, id ); complete_func = self.resume }
+  end
 end
 
 function task:heal()
@@ -164,7 +196,7 @@ function task:exert()
   for _, attr in pairs( convertable_attr ) do
     if ( self[ attr ] and not has_reached_target( self, attr ) and not is_full( attr ) )
     or ( attr == 'qi' and not is_full 'qi' and player.enable.force.level >= 150 and not has_reached_target( self, 'neili' ) )
-    or ( attr == 'jing' and not is_full 'jing' and convert_tgt_to_num( self, 'jingli' ) > player.jingli_max and not has_reached_target( self, 'jingli' ) )
+    or ( attr == 'jing' and not is_full 'jing' and not has_reached_target( self, 'jingli' ) and ( is_full 'jingli' or player.enable.force.level < 100 ) )
     or ( attr == 'jing' and player.jing < player.jing_max * 0.7 and not has_reached_target( self, 'neili' ) ) then
       c[ #c + 1 ] = 'yun ' .. attr
     end
@@ -192,6 +224,15 @@ function task:go_to_sleep()
   end
 end
 
+local function convert_tgt_to_num( self, attr )
+  local tgt, max = self[ attr ], player[ attr .. '_max' ]
+  return ( type( tgt ) == 'number' and tgt )
+      or ( tgt == 'double' and max * 2 )
+      or ( tgt == 'full' and max )
+      or ( tgt == 'half' and max * 0.5 )
+      or ( tgt == 'a_little' and max * 0.1 )
+end
+
 local function is_valid_dazuo_tuna_room( room )
   return not room.label or ( not room.label.sleep and not room.label.no_fight )
 end
@@ -208,6 +249,7 @@ function task:dazuo()
     local val = kungfu.get_best_dazuo_value( tgt )
     self:listen{ event = 'dazuo_end', func = self.resume, id = 'task.recover' }
     self.has_updated_hp = false
+    if tgt > player.neili_max * 1.8 and not player.set[ '积蓄' ] then self:send{ 'set 积蓄' } end
     self:send{ 'dazuo ' .. val }
   else
     go_to_dazuo_tuna_room( self )
@@ -216,10 +258,11 @@ end
 
 function task:tuna()
   if map.is_at_dazuo_tuna_loc() then
-    local tgt = self.jingli and convert_tgt_to_num( self, 'jingli' )
+    local tgt = convert_tgt_to_num( self, 'jingli' )
     local val = kungfu.get_best_tuna_value( tgt )
     self:listen{ event = 'tuna_end', func = self.resume, id = 'task.recover' }
     self.has_updated_hp = false
+    if tgt > player.jingli_max * 1.8 and not player.set[ '积蓄' ] then self:send{ 'set 积蓄' } end
     self:send{ 'tuna ' .. val }
   else
     go_to_dazuo_tuna_room( self )
