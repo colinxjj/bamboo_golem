@@ -22,10 +22,10 @@ function task:_resume()
   self.count = self.count or 1
   -- already have the required item(s)?
   local has_item = inventory.has_item( self.item, self.count_min or self.count )
-  -- update inventory info if no count data or current count data can be higher than the actual count
+  -- update inventory info if no count data or current count data can be higher than the actual count TODO inventory.has_item currently doesn't return 'unsure'
   if has_item == 'unsure' then self:newsub{ class = 'get_info', inventory = 'forced' } return end
   -- complete the task if have enough item
-  if has_item then self:complete() return end
+  if has_item then self.result = has_item; self:complete() return end
   -- otherwise, try the best source available
   local source = item.get_best_source( self.item )
   if not source then self:fail() return end
@@ -47,6 +47,16 @@ function task:handle_source( source )
   -- first go to the source location if we're not already there
   local loc = map.get_current_location()[ 1 ]
   if loc.id ~= source.location then
+    -- prepare money first for shop sources
+    if source.type == 'shop' then
+      local value = item.get_value( source.item )
+      if not inventory.has_cash( value ) then
+        local money, count = item.get_approx_money_by_cash( value * 5 )
+        self:newsub{ class = 'get_item', item = money, count = count }
+        return
+      end
+    end
+    -- go to source location
     self:newsub{ class = 'go' , to = source.location }
   elseif source.npc and not room.has_object( source.npc ) then
     item.mark_invalid_source( source )
@@ -79,14 +89,7 @@ end
 
 -- purchase item from shop
 function task:purchase( source )
-  local id
-  if item.is_valid_type( self.item ) then
-    for _, iname in pairs( npc[ source.npc ].catalogue ) do
-      if item.is_type( iname, self.item ) then id = item.get_id( iname ); break end
-    end
-  else
-    id = item.get_id( self.item )
-  end
+  local id = item.get_id( source.item )
   self:send{ 'buy ' .. id; complete_func = self.check_inventory }
 end
 
@@ -96,6 +99,7 @@ end
 
 function task:check_source_result()
   if inventory.has_item( self.item, self.count_min or self.count ) then
+    self.result = current_source.item
     self:complete()
   else
     item.mark_invalid_source( current_source )

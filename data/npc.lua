@@ -665,6 +665,33 @@ local npc = {
   catalogue = { '清水葫芦', '竹剑', '火折', '长剑' }
 },
 
+['跑堂#XY'] = {
+  name = '跑堂',
+  id = 'pao tang',
+  alternate_id = { 'waiter', 'pao', 'tang' },
+  location = '襄阳城小吃店',
+  label = { shop = true, },
+  catalogue = { '面汤', '馒头', '月饼' }
+},
+
+['茶博士#XY'] = {
+  name = '茶博士',
+  id = 'cha boshi',
+  alternate_id = { 'boshi' },
+  location = '襄阳城天香楼',
+  label = { shop = true, },
+  catalogue = { '五香花生' }
+},
+
+['跑堂#YZ'] = {
+  name = '跑堂',
+  id = 'pao tang',
+  alternate_id = { 'waiter', 'paotang' },
+  location = '扬州城小吃店',
+  label = { shop = true, },
+  catalogue = { '烤鸡腿', '烤鸭', '月饼', '包子', '牛皮酒袋', '花雕酒袋' }
+},
+
 --------------------------------------------------------------------------------
 -- Groceries
 

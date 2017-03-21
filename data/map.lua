@@ -21235,6 +21235,17 @@ local map = {
     sw = { to = '峨嵋山黑龙江栈道#1', },
     nw = { to = '峨嵋山白龙洞', },
     se = { to = '峨嵋山中峰寺', },
+    hidden = { to = '峨嵋山牛心石', cmd = 'tiao 牛心石;#wb 1500', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 30 or player.dex >= 28', prep = { jingli = 200 } },
+  },
+},
+
+['峨嵋山牛心石'] = {
+  id = '峨嵋山牛心石',
+  area = '峨嵋山',
+  name = '牛心石',
+  desc = [[你落脚处乃是块黑褐色的巨石，黑龙白龙二江在此和流。水拍牛心，浪花飞溅，声震山谷。你立于此，眼望两江之水从脚下奔腾而过，不由心魂飞荡，两腿发软，不可自持。]],
+  exit = {
+    hidden = { to = '峨嵋山清音阁', cmd = 'tiao back;#wb 3500', },
   },
 },
 

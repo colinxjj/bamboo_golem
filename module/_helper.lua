@@ -47,7 +47,7 @@ local num = lpeg.C( ( lpeg.P 'Ò»' + '¶þ' + 'Èý' + 'ËÄ' + 'Îå' + 'Áù' + 'Æß' + '°
 local unit = lpeg.C( lpeg.P '¶§»Æ½ð'  + 'Á½°×Òø' + 'ÎÄÍ­Ç®' ) * lpeg.P 'ÓÖ'^-1
 local patt = lpeg.Ct( num * unit )^1
 
-function cn_amount_to_coin( text )
+function cn_amount_to_cash( text )
 	local t, result, n, u = { patt:match( text ) }, 0, 1
 	for i = #t, 1, -1 do
 		n, u = t[ i ][ 1 ], t[ i ][ 2 ]
@@ -69,26 +69,6 @@ function cn_amount_to_money( text )
 		result[ u ] = n
 	end
 	return result
-end
-
--- convert a table of amount of gold, silver and coin to number of coins
-function money_to_coin( t )
-  local amount = 0
-  if t[ '»Æ½ð' ] and t[ '»Æ½ð' ].count then amount = amount + t[ '»Æ½ð' ].count * 10000 end
-  if t[ '°×Òø' ] and t[ '°×Òø' ].count then amount = amount + t[ '°×Òø' ].count * 100 end
-  if t[ 'Í­Ç®' ] and t[ 'Í­Ç®' ].count then amount = amount + t[ 'Í­Ç®' ].count end
-  return amount
-end
-
--- convert num of coins to a table of amount of gold, silver and coin
-function coin_to_money( amount )
-  local t = {}
-  t[ '»Æ½ð' ] = math.modf( amount / 10000 )
-  amount = amount - t[ '»Æ½ð' ] * 10000
-  t[ '°×Òø' ] = math.modf( amount / 100 )
-  amount = amount - t[ '°×Òø' ] * 100
-  t[ 'Í­Ç®' ] = amount
-  return t
 end
 
 -- extract name from strings like Ø¤°ïµÚÊ®¾Å´úµÜ×Ó ºÎÊ¦ÎÒ

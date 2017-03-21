@@ -64,7 +64,7 @@ local armor_type = { cloth = 'ÒÂ·þ', armor = '»¤¼×', shoes = 'Ð¬×Ó', helm = 'Í·¿
 
 local sharp_weapon_type = { blade = true, sword = true, dagger = true, hook = true, axe = true, }
 
-local valid_type = { weapon = 'ÎäÆ÷', armor = '·À¾ß', sharp_weapon = '·æÀûÎäÆ÷',
+local valid_type = { food = 'Ê³Îï', drink = 'ÒûË®', drink_container = 'Ê¢Ë®ÈÝÆ÷', weapon = 'ÎäÆ÷', armor = '·À¾ß', sharp_weapon = '·æÀûÎäÆ÷',
 	blade = 'µ¶', sword = '½£', dagger = 'Ø°Ê×', flute = 'óï', hook = '¹³', axe = '¸«', brush = '±Ê',
 	staff = 'ÕÈ', club = '¹÷', stick = '°ô', hammer = '´¸', whip = '±Þ', throwing = '°µÆ÷',
 	cloth = 'ÒÂ·þ', armor = '»¤¼×', shoes = 'Ð¬×Ó', helm = 'Í·¿ø', mantle = 'Åû·ç', waist = 'Ñü´ø', wrist = '»¤Íó',
@@ -146,9 +146,8 @@ end
 
 function item.get_id( name )
 	assert( type( name ) == 'string', 'item.get_id - param must be a string' )
-  for _, it in pairs( index ) do
-    if it.name == name or iname == name then return it.id end -- only returns the id of the first item matching the name
-  end
+	local it = item.get( name )
+	return it.id
 end
 
 function item.get_type( name )
@@ -186,6 +185,41 @@ function item.is_valid_type( name )
 	return valid_type[ name ]
 end
 
+function item.get_value( name )
+	assert( type( name ) == 'string', 'item.get_value - param must be a string' )
+	local it = item.get( name )
+	return it.value
+end
+
+-- convert a table of amount of gold, silver and coin (mostly player.inventory) to cash value
+function item.get_cash_by_money( t )
+	local cash = 0
+  if t[ '»Æ½ð' ] and t[ '»Æ½ð' ].count then cash = cash + t[ '»Æ½ð' ].count * 10000 end
+  if t[ '°×Òø' ] and t[ '°×Òø' ].count then cash = cash + t[ '°×Òø' ].count * 100 end
+  if t[ 'Í­Ç®' ] and t[ 'Í­Ç®' ].count then cash = cash + t[ 'Í­Ç®' ].count end
+  return cash
+end
+
+-- convert a cash value to a table of amount of gold, silver and coin
+function item.get_money_by_cash( cash )
+	local t = {}
+  t[ '»Æ½ð' ] = math.modf( cash / 10000 )
+  cash = cash - t[ '»Æ½ð' ] * 10000
+  t[ '°×Òø' ] = math.modf( cash / 100 )
+  cash = cash - t[ '°×Òø' ] * 100
+  t[ 'Í­Ç®' ] = cash
+  return t
+end
+
+function item.get_approx_money_by_cash( cash )
+	local money = item.get_money_by_cash( cash )
+	for _, m in pairs( money_list ) do
+		if money[ m ] > 0 then return m, money[ m ] + 1 end
+	end
+end
+
+--------------------------------------------------------------------------------
+
 local function cleanup_temp_source( slist )
 	local i, source = 1
 	while slist[ i ] do
@@ -202,25 +236,34 @@ end
 
 function item.get_all_source( name )
 	assert( type( name ) == 'string', 'item.get_all_source - param must be a string' )
-	if not item.is_valid_type( name ) then
+	if not item.is_valid_type( name ) then -- get sources for a specific item
 		for iname, it in pairs( index ) do
 			if it.name == name or iname == name then
 				cleanup_temp_source( it.source )
 				return it.source
 			end
 		end
-	else
+	else -- get sources for a type of items
 		local item_list = item.get_by_type( name )
 		if not item_list then return end
 		local slist = {}
 		for iname, it in pairs( item_list ) do
-			cleanup_temp_source( it.source )
-			for _, source in pairs( it.source ) do
-				slist[ #slist + 1 ] = source
+			if it.source then
+				cleanup_temp_source( it.source )
+				for _, source in pairs( it.source ) do
+					slist[ #slist + 1 ] = source
+				end
 			end
 		end
 		return slist
 	end
+end
+
+local function calculate_item_quality_score( it )
+	-- if item has quality value, just return it
+	if it.quality then return it.quality end
+	-- for food and drinks, quality is based its total supply
+	if it.supply then return ( it.remaining or 1 ) * it.supply * 0.2 end
 end
 
 local function calculate_source_score( source, is_quality_ignored )
@@ -249,7 +292,7 @@ local function calculate_source_score( source, is_quality_ignored )
 		--print( 'price score: -' .. silver )
 	end
 	-- quality score
-	local quality = item.get( source.item ).quality
+	local quality = calculate_item_quality_score( item.get( source.item ) )
 	if quality and not is_quality_ignored then
 		score = score + quality
 		--print( 'quality score: +' .. quality )

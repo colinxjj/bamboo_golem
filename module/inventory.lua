@@ -11,11 +11,11 @@ function inventory.has_item( name, count )
 	if not item.is_valid_type( name ) then
 		local it = item.get( name )
 		name = it and it.name or name
-		return ( player.inventory[ name ] and ( player.inventory[ name ].count or 1 ) >= ( count or 1 ) ) and true or false
+		return ( player.inventory[ name ] and ( player.inventory[ name ].count or 1 ) >= ( count or 1 ) ) and name
 	else
 		-- TODO also check for item count of the specified type
 		for iname in pairs( player.inventory ) do
-			if item.is_type( iname, name ) then return true end
+			if item.is_type( iname, name ) then return iname end
 		end
 	end
 end
@@ -45,6 +45,10 @@ function inventory.get_item_id ( name )
 	for iname, it in pairs( player.inventory ) do
 		if iname == name then return it.id end
 	end
+end
+
+function inventory.has_cash( value )
+	return player.cash >= value
 end
 
 --------------------------------------------------------------------------------

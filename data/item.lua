@@ -25,6 +25,209 @@ local item = {
 },
 
 --------------------------------------------------------------------------------
+-- food
+
+['面汤'] = {
+  iname = '面汤',
+	name = '面汤',
+  id = 'miantang',
+  type = 'food',
+  weight = 100,
+  value = 50,
+  consume_count = 1,
+  supply = 30,
+},
+
+['馒头'] = {
+  iname = '馒头',
+	name = '馒头',
+  id = 'man tou',
+  alternate_id = { 'mantou', 'tou' },
+  type = 'food',
+  weight = 50,
+  value = 40,
+  consume_count = 2,
+  supply = 40,
+},
+
+['月饼'] = {
+  iname = '月饼',
+	name = '月饼',
+  id = 'yue bing',
+  alternate_id = { 'yuebing', 'bing' },
+  type = 'food',
+  weight = 200,
+  value = 150,
+  consume_count = 3,
+  supply = 60,
+},
+
+['五香花生'] = {
+  iname = '五香花生',
+	name = '五香花生',
+  id = 'huasheng',
+  alternate_id = { 'peanut' },
+  type = 'food',
+  weight = 60,
+  value = 20,
+  consume_count = 1,
+  supply = 30,
+},
+
+['烤鸡腿'] = {
+  iname = '烤鸡腿',
+	name = '烤鸡腿',
+  id = 'ji tui',
+  alternate_id = { 'jitui', 'tui' },
+  type = 'food',
+  weight = 350,
+  value = 30,
+  consume_count = 4,
+  supply = 40,
+},
+
+['烤鸭'] = {
+  iname = '烤鸭',
+	name = '烤鸭',
+  id = 'kao ya',
+  alternate_id = { 'kaoya', 'ya' },
+  type = 'food',
+  weight = 200,
+  value = 150,
+  consume_count = 3,
+  supply = 60,
+},
+
+['包子'] = {
+  iname = '包子',
+	name = '包子',
+  id = 'bao zi',
+  alternate_id = { 'baozi', 'dumpling' },
+  type = 'food',
+  weight = 80,
+  value = 30,
+  consume_count = 3,
+  supply = 20,
+},
+
+['粽子'] = {
+  iname = '粽子',
+	name = '粽子',
+  id = 'zong zi',
+  alternate_id = { 'zongzi', 'zong' },
+  type = 'food',
+  weight = 150,
+  value = 100,
+  consume_count = 3,
+  supply = 30,
+},
+
+--------------------------------------------------------------------------------
+-- drinks
+
+['清水'] = {
+  iname = '清水',
+	name = '清水',
+  id = 'water',
+  type = 'drink',
+  supply = 120,
+  source = {
+    { type = 'local_handler', handler = 'drink', location = '伊犁城客栈', limit = 200, },
+    { type = 'local_handler', handler = 'drink', location = '星宿海月牙泉', },
+    { type = 'local_handler', handler = 'drink', location = '福州城茶楼', },
+    { type = 'local_handler', handler = 'drink', location = '福州城茶楼二楼', },
+    { type = 'local_handler', handler = 'drink', location = '襄阳城天香楼', },
+    { type = 'local_handler', handler = 'drink', location = '武当山茶亭', },
+    { type = 'local_handler', handler = 'drink', location = '天龙寺天龙寺斋堂#E', },
+    { type = 'local_handler', handler = 'drink', location = '天龙寺无心井', },
+    { type = 'local_handler', handler = 'drink', location = '天龙寺点苍十九峰#3', },
+    { type = 'local_handler', handler = 'drink', location = '天龙寺点苍十九峰#2', },
+    { type = 'local_handler', handler = 'drink', location = '天龙寺点苍十九峰#1', },
+    { type = 'local_handler', handler = 'drink', location = '桃花岛饭厅#2', },
+    { type = 'local_handler', handler = 'drink', location = '泰山白鹤泉', },
+    { type = 'local_handler', handler = 'drink', location = '苏州城憨憨泉', },
+    { type = 'local_handler', handler = 'drink', location = '苏州城茶馆', },
+    { type = 'local_handler', handler = 'drink', location = '嵩山少林佛心井', },
+    { type = 'local_handler', handler = 'drink', location = '燕子坞厨房', },
+    { type = 'local_handler', handler = 'drink', location = '曼佗罗山庄后花园', },
+    { type = 'local_handler', handler = 'drink', location = '姑苏慕容厨房#D', },
+    { type = 'local_handler', handler = 'drink', location = '明教沙漠绿洲', limit = 200, },
+    { type = 'local_handler', handler = 'drink', location = '兰州城营盘水', },
+    { type = 'local_handler', handler = 'drink', location = '华山玉女祠', },
+    { type = 'local_handler', handler = 'drink', location = '华山瀑布', },
+    { type = 'local_handler', handler = 'drink', location = '黑木崖百丈泉', },
+    { type = 'local_handler', handler = 'drink', location = '回疆坎儿井', limit = 200, },
+    { type = 'local_handler', handler = 'drink', location = '回疆马棚', },
+    { type = 'local_handler', handler = 'drink', location = '回疆黑石围子', },
+    { type = 'local_handler', handler = 'drink', location = '恒山苦甜井', },
+    { type = 'local_handler', handler = 'drink', location = '终南山果园', limit = 200, },
+    { type = 'local_handler', handler = 'drink', location = '昆仑山瀑布', },
+    { type = 'local_handler', handler = 'drink', location = '无量山东湖边', limit = 200, },
+    { type = 'local_handler', handler = 'drink', location = '无量山北湖边', limit = 200, },
+    { type = 'local_handler', handler = 'drink', location = '无量山南湖边', limit = 200, },
+    { type = 'local_handler', handler = 'drink', location = '无量山西湖边', limit = 200, },
+    { type = 'local_handler', handler = 'drink', location = '无量山山中小溪', limit = 200, },
+    { type = 'local_handler', handler = 'drink', location = '大理城茶馆', },
+    { type = 'local_handler', handler = 'drink', location = '扬州城小墓室', },
+    { type = 'local_handler', handler = 'drink', location = '扬州城茶馆', },
+    { type = 'local_handler', handler = 'drink', location = '成都城后院', },
+    { type = 'local_handler', handler = 'drink', location = '长安城茶馆', },
+    { type = 'local_handler', handler = 'drink', location = '沧州城厅堂', },
+    { type = 'local_handler', handler = 'drink', location = '白驼山空地', },
+    { type = 'local_handler', handler = 'instant_full', location = '绝情谷水潭表面', },
+  },
+},
+
+['酸梅汤'] = {
+  iname = '酸梅汤',
+	name = '酸梅汤',
+  id = 'suanmei tang',
+  alternate_id = { 'tang' },
+  type = 'drink',
+  weight = 50,
+  value = 10,
+  consume_count = 3,
+  supply = 30,
+},
+
+
+--------------------------------------------------------------------------------
+-- drink containers
+
+['清水葫芦'] = {
+  iname = '清水葫芦',
+	name = '清水葫芦',
+  id = 'qingshui hulu',
+  alternate_id = { 'hulu' },
+  type = 'drink_container',
+  weight = 700,
+  value = 100,
+  capacity = 15,
+},
+
+['牛皮酒袋'] = {
+  iname = '牛皮酒袋',
+	name = '牛皮酒袋',
+  id = 'jiu dai',
+  alternate_id = { 'jiudai', 'wineskin', 'dai' },
+  type = 'drink_container',
+  weight = 700,
+  value = 20,
+  capacity = 15,
+},
+
+['花雕酒袋'] = {
+  iname = '花雕酒袋',
+	name = '花雕酒袋',
+  id = 'huadiao jiudai',
+  alternate_id = { 'jiu dai', 'huadiao', 'dai' },
+  type = 'drink_container',
+  weight = 700,
+  value = 120,
+  capacity = 20,
+},
+
+--------------------------------------------------------------------------------
 -- normal weapon
 
 ['长剑'] = {
@@ -107,42 +310,6 @@ local item = {
 },
 
 --------------------------------------------------------------------------------
--- vendor drinks
-
-['清水葫芦'] = {
-  iname = '清水葫芦',
-	name = '清水葫芦',
-  id = 'qingshui hulu',
-  alternate_id = { 'hulu' },
-  type = 'bottle',
-  weight = 700,
-  value = 100,
-  capacity = 15,
-},
-
---------------------------------------------------------------------------------
--- vendor misc goods
-
-['粗绳子'] = {
-  iname = '粗绳子',
-	name = '粗绳子',
-  id = 'cu shengzi',
-  value = 1000,
-},
-
-['火折'] = {
-  iname = '火折',
-	name = '火折',
-  id = 'fire',
-  weight = 80,
-  value = 100,
-  source = {
-    { type = 'get', location = '终南山灵室', },
-    { type = 'get', location = '星宿海天然石洞', },
-  },
-},
-
---------------------------------------------------------------------------------
 -- normal armor
 
 ['铁甲'] = {
@@ -202,6 +369,25 @@ local item = {
 
 --------------------------------------------------------------------------------
 -- misc
+
+['粗绳子'] = {
+  iname = '粗绳子',
+	name = '粗绳子',
+  id = 'cu shengzi',
+  value = 1000,
+},
+
+['火折'] = {
+  iname = '火折',
+	name = '火折',
+  id = 'fire',
+  weight = 80,
+  value = 100,
+  source = {
+    { type = 'get', location = '终南山灵室', },
+    { type = 'get', location = '星宿海天然石洞', },
+  },
+},
 
 ['毛毯#WD'] = {
   iname = '毛毯#WD',

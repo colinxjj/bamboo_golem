@@ -15,6 +15,22 @@ function finder:withdraw()
   self:send{ 'qu ' .. count .. ' ' .. item.get_id( self.item ); complete_func = self.check_source_result }
 end
 
+-- drink water from source
+function finder:drink()
+  self:send{ 'drink' }
+end
+function finder:drink_full()
+  self.result = '清水'
+  self:complete()
+end
+trigger.new{ name = 'drink_succeed', group = 'item_finder.drink', match = '^(> )*你(喝了一口|趴在|捧起一|舀了一口|端起杯香茶|从蒙恬井中|用水瓢舀了一口)', func = finder.drink }
+trigger.new{ name = 'drink_full', group = 'item_finder.drink', match = '^(> )*(你喝太多了|你已经喝得太多了|你再也喝不下了|喝那么多的凉水|虽然你还想喝)', func = finder.drink_full }
+
+-- when player water level is automatically set to full upon entering the room
+function finder:instant_full()
+  finder.drink_full( self )
+end
+
 -- 神龙岛通行令牌
 function finder:sld_lingpai()
 	self:send{ 'steal 通行令牌'; complete_func = finder.sld_lingpai_check }

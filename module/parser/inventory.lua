@@ -13,7 +13,7 @@ local function parse_prompt()
     end
   end
 
-  player.cash = money_to_coin( cache )
+  player.cash = item.get_cash_by_money( cache )
   player.inventory, cache = cache, false -- move cache data to player.inventory and clear cache
   player.inventory_update_time = os.time()
   trigger.disable 'inventory2'
@@ -55,7 +55,7 @@ end
 
 local function parse_balance( _, t )
   trigger.disable 'inventory_balance'
-  player.bank_balance = cn_amount_to_coin( t[ 1 ] )
+  player.bank_balance = cn_amount_to_cash( t[ 1 ] )
   event.new 'inventory'
 end
 
@@ -111,8 +111,8 @@ local function parse_buy( _, t )
   player.inventory[ name ] = player.inventory[ name ] or { name = name, id = item.get_id( name ), count = 0, type = item.get_type( name ) }
   player.inventory[ name ].count = player.inventory[ name ].count + 1
   if player.cash then
-    player.cash = player.cash - cn_amount_to_coin( price )
-    local new_money = coin_to_money( player.cash )
+    player.cash = player.cash - cn_amount_to_cash( price )
+    local new_money = item.get_money_by_cash( player.cash )
     for k, v in pairs( new_money ) do -- update inventory money amount
 			player.inventory[ k ] = player.inventory[ k ] or { name = k, id = item.get_id( k ), type = 'money' }
       player.inventory[ k ].count = v
@@ -130,7 +130,7 @@ local function parse_sell( _, t )
     if it.count < 1 then player.inventory[ name ] = nil end
   end
   if player.cash then
-    player.cash = player.cash + cn_amount_to_coin( price )
+    player.cash = player.cash + cn_amount_to_cash( price )
     local added_money = cn_amount_to_money( price )
     for k, v in pairs( added_money ) do -- update inventory money amount
       player.inventory[ k ].count = player.inventory[ k ].count + v
