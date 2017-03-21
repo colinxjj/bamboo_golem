@@ -35,7 +35,7 @@ local item = {
   weight = 100,
   value = 50,
   consume_count = 1,
-  supply = 30,
+  food_supply = 30,
 },
 
 ['ÂøÍ·'] = {
@@ -47,7 +47,12 @@ local item = {
   weight = 50,
   value = 40,
   consume_count = 2,
-  supply = 40,
+  food_supply = 40,
+  source = {
+    { type = 'get', location = 'ÑïÖİ³ÇĞ¡Ä¹ÊÒ', cond = 'player.party == "Ø¤°ï"', },
+    { type = 'get', location = '³É¶¼³ÇºóÔº', cond = 'player.party == "Ø¤°ï"', },
+    { type = 'get', location = '²×Öİ³ÇÌüÌÃ', cond = 'player.party == "Ø¤°ï"', },
+  },
 },
 
 ['ÔÂ±ı'] = {
@@ -59,7 +64,7 @@ local item = {
   weight = 200,
   value = 150,
   consume_count = 3,
-  supply = 60,
+  food_supply = 60,
 },
 
 ['ÎåÏã»¨Éú'] = {
@@ -71,7 +76,67 @@ local item = {
   weight = 60,
   value = 20,
   consume_count = 1,
-  supply = 30,
+  food_supply = 30,
+},
+
+['ÎåÏã»¨Éú#YZ'] = {
+  iname = 'ÎåÏã»¨Éú#YZ',
+	name = 'ÎåÏã»¨Éú',
+  id = 'huasheng',
+  alternate_id = { 'peanut' },
+  type = 'food',
+  weight = 60,
+  value = 30,
+  consume_count = 1,
+  food_supply = 30,
+},
+
+['ôä´ä¶¹¸¯'] = {
+  iname = 'ôä´ä¶¹¸¯',
+	name = 'ôä´ä¶¹¸¯',
+  id = 'doufu',
+  alternate_id = { 'tofu' },
+  type = 'food',
+  weight = 40,
+  value = 40,
+  consume_count = 1,
+  food_supply = 50,
+},
+
+['ôä´ä¶¹¸¯#DL'] = {
+  iname = 'ôä´ä¶¹¸¯#DL',
+	name = 'ôä´ä¶¹¸¯',
+  id = 'feicui doufu',
+  alternate_id = { 'doufu' },
+  type = 'food',
+  weight = 40,
+  value = 100,
+  consume_count = 2,
+  food_supply = 50,
+},
+
+['°å¶¹¸¯'] = {
+  iname = '°å¶¹¸¯',
+	name = '°å¶¹¸¯',
+  id = 'ban doufu',
+  alternate_id = { 'doufu' },
+  type = 'food',
+  weight = 40,
+  value = 70,
+  consume_count = 1,
+  food_supply = 80,
+},
+
+['¶¹¸¯¸É'] = {
+  iname = '¶¹¸¯¸É',
+	name = '¶¹¸¯¸É',
+  id = 'doufu gan',
+  alternate_id = { 'doufu' },
+  type = 'food',
+  weight = 40,
+  value = 40,
+  consume_count = 1,
+  food_supply = 50,
 },
 
 ['¿¾¼¦ÍÈ'] = {
@@ -83,7 +148,7 @@ local item = {
   weight = 350,
   value = 30,
   consume_count = 4,
-  supply = 40,
+  food_supply = 40,
 },
 
 ['¿¾Ñ¼'] = {
@@ -95,7 +160,19 @@ local item = {
   weight = 200,
   value = 150,
   consume_count = 3,
-  supply = 60,
+  food_supply = 60,
+},
+
+['¿¾Ñ¼#DL'] = {
+  iname = '¿¾Ñ¼#DL',
+	name = '¿¾Ñ¼',
+  id = 'kaoya',
+  alternate_id = { 'ya' },
+  type = 'food',
+  weight = 200,
+  value = 150,
+  consume_count = 3,
+  food_supply = 60,
 },
 
 ['°ü×Ó'] = {
@@ -107,7 +184,19 @@ local item = {
   weight = 80,
   value = 30,
   consume_count = 3,
-  supply = 20,
+  food_supply = 20,
+},
+
+['°ü×Ó#HZ'] = {
+  iname = '°ü×Ó#HZ',
+	name = '°ü×Ó',
+  id = 'baozi',
+  alternate_id = { 'dumpling' },
+  type = 'food',
+  weight = 80,
+  value = 50,
+  consume_count = 3,
+  food_supply = 20,
 },
 
 ['ôÕ×Ó'] = {
@@ -119,7 +208,164 @@ local item = {
   weight = 150,
   value = 100,
   consume_count = 3,
-  supply = 30,
+  food_supply = 30,
+},
+
+['¹·²»Àí°ü×Ó'] = {
+  iname = '¹·²»Àí°ü×Ó',
+	name = '¹·²»Àí°ü×Ó',
+  id = 'goubuli baozi',
+  alternate_id = { 'baozi' },
+  type = 'food',
+  weight = 200,
+  value = 150,
+  consume_count = 3,
+  food_supply = 60,
+},
+
+['¶«É½Ñò'] = {
+  iname = '¶«É½Ñò',
+	name = '¶«É½Ñò',
+  id = 'dong shanyang',
+  alternate_id = { 'dong', 'shanyang' },
+  type = 'food',
+  weight = 200,
+  value = 150,
+  consume_count = 3,
+  food_supply = 60,
+},
+
+['Áú³­ÊÖ'] = {
+  iname = 'Áú³­ÊÖ',
+	name = 'Áú³­ÊÖ',
+  id = 'long chaoshou',
+  alternate_id = { 'chaoshou' },
+  type = 'food',
+  weight = 200,
+  value = 200,
+  consume_count = 3,
+  food_supply = 30,
+},
+
+['ÑòÈâÅİâÉ'] = {
+  iname = 'ÑòÈâÅİâÉ',
+	name = 'ÑòÈâÅİâÉ',
+  id = 'yangrou paomo',
+  alternate_id = { 'paomo' },
+  type = 'food',
+  weight = 200,
+  value = 150,
+  consume_count = 3,
+  food_supply = 50,
+},
+
+['É½¼¦Èâ'] = {
+  iname = 'É½¼¦Èâ',
+	name = 'É½¼¦Èâ',
+  id = 'shanji rou',
+  alternate_id = { 'rou' },
+  type = 'food',
+  weight = 200,
+  value = 150,
+  consume_count = 3,
+  food_supply = 60,
+},
+
+['ËÖÓÍ²è'] = {
+  iname = 'ËÖÓÍ²è',
+	name = 'ËÖÓÍ²è',
+  id = 'suyou cha',
+  alternate_id = { 'tea', 'cha' },
+  type = 'food',
+  weight = 200,
+  value = 80,
+  consume_count = 3,
+  food_supply = 10,
+  water_supply = 10,
+},
+
+['Ë®ÃÛÌÒ'] = {
+  iname = 'Ë®ÃÛÌÒ',
+	name = 'Ë®ÃÛÌÒ',
+  id = 'mi tao',
+  alternate_id = { 'mitao', 'tao' },
+  type = 'food',
+  weight = 40,
+  value = 1,
+  consume_count = 4,
+  food_supply = 30,
+},
+
+['Áâ°×ÏºÈÊ'] = {
+  iname = 'Áâ°×ÏºÈÊ',
+	name = 'Áâ°×ÏºÈÊ',
+  id = 'lingbai xiaren',
+  alternate_id = { 'xiaren' },
+  type = 'food',
+  weight = 200,
+  value = 150,
+  consume_count = 4,
+  food_supply = 40,
+},
+
+['Ó£ÌÒ»ğÍÈ'] = {
+  iname = 'Ó£ÌÒ»ğÍÈ',
+	name = 'Ó£ÌÒ»ğÍÈ',
+  id = 'yingtao huotui',
+  alternate_id = { 'huotui' },
+  type = 'food',
+  weight = 200,
+  value = 150,
+  consume_count = 4,
+  food_supply = 40,
+},
+
+['ºÊÒ¶¶¬ËñÌÀ'] = {
+  iname = 'ºÊÒ¶¶¬ËñÌÀ',
+	name = 'ºÊÒ¶¶¬ËñÌÀ',
+  id = 'dongsun-tang',
+  alternate_id = { 'tang' },
+  type = 'food',
+  weight = 200,
+  value = 150,
+  consume_count = 4,
+  food_supply = 40,
+},
+
+['ÉÕ±ı'] = {
+  iname = 'ÉÕ±ı',
+	name = 'ÉÕ±ı',
+  id = 'shao bing',
+  alternate_id = { 'bing' },
+  type = 'food',
+  weight = 100,
+  value = 200,
+  consume_count = 3,
+  food_supply = 35,
+},
+
+['ÓÍÌõ'] = {
+  iname = 'ÓÍÌõ',
+	name = 'ÓÍÌõ',
+  id = 'you tiao',
+  alternate_id = { 'youtiao' },
+  type = 'food',
+  weight = 100,
+  value = 180,
+  consume_count = 4,
+  food_supply = 28,
+},
+
+['Âé»¨±è×Ó'] = {
+  iname = 'Âé»¨±è×Ó',
+	name = 'Âé»¨±è×Ó',
+  id = 'mahua bianzi',
+  alternate_id = { 'mahua', 'bianzi' },
+  type = 'food',
+  weight = 100,
+  value = 120,
+  consume_count = 4,
+  food_supply = 22,
 },
 
 --------------------------------------------------------------------------------
@@ -130,7 +376,7 @@ local item = {
 	name = 'ÇåË®',
   id = 'water',
   type = 'drink',
-  supply = 120,
+  water_supply = 120,
   source = {
     { type = 'local_handler', handler = 'drink', location = 'ÒÁÀç³Ç¿ÍÕ»', limit = 200, },
     { type = 'local_handler', handler = 'drink', location = 'ĞÇËŞº£ÔÂÑÀÈª', },
@@ -187,7 +433,7 @@ local item = {
   weight = 50,
   value = 10,
   consume_count = 3,
-  supply = 30,
+  water_supply = 30,
 },
 
 
@@ -225,6 +471,28 @@ local item = {
   weight = 700,
   value = 120,
   capacity = 20,
+},
+
+['»¨µñ¾Æ´ü#DL'] = {
+  iname = '»¨µñ¾Æ´ü#DL',
+	name = '»¨µñ¾Æ´ü',
+  id = 'jiudai',
+  alternate_id = { 'skin', 'huadiao' },
+  type = 'drink_container',
+  weight = 700,
+  value = 120,
+  capacity = 20,
+},
+
+['´É²èÍë'] = {
+  iname = '´É²èÍë',
+	name = '´É²èÍë',
+  id = 'ci chawan',
+  alternate_id = { 'chawan', 'ci' },
+  type = 'drink_container',
+  weight = 100,
+  value = 100,
+  capacity = 4,
 },
 
 --------------------------------------------------------------------------------
@@ -351,6 +619,17 @@ local item = {
   type = 'waist',
   weight = 500,
   quality = 4,
+},
+
+['÷è÷ëÌ¤ÔÆËø'] = {
+  iname = '÷è÷ëÌ¤ÔÆËø',
+	name = '÷è÷ëÌ¤ÔÆËø',
+  id = 'qilin suo',
+  alternate_id = { 'suo' },
+  type = 'neck',
+  weight = 600,
+  value = 3000,
+  quality = 5,
 },
 
 --------------------------------------------------------------------------------

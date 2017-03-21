@@ -665,6 +665,18 @@ local npc = {
   catalogue = { '清水葫芦', '竹剑', '火折', '长剑' }
 },
 
+['江来福'] = {
+  name = '江来福',
+  id = 'jiang laifu',
+  alternate_id = { 'jiang', 'jianglaifu', 'laifu' },
+  location = '大雪山来福杂货',
+  label = { shop = true, },
+  catalogue = { '火折', '酥油茶', '麒麟踏云锁' }
+},
+
+--------------------------------------------------------------------------------
+-- Food shops
+
 ['跑堂#XY'] = {
   name = '跑堂',
   id = 'pao tang',
@@ -690,6 +702,96 @@ local npc = {
   location = '扬州城小吃店',
   label = { shop = true, },
   catalogue = { '烤鸡腿', '烤鸭', '月饼', '包子', '牛皮酒袋', '花雕酒袋' }
+},
+
+['茶博士#YZ'] = {
+  name = '茶博士',
+  id = 'cha boshi',
+  alternate_id = { 'boshi' },
+  location = '扬州城茶馆',
+  label = { shop = true, },
+  catalogue = { '五香花生#YZ', '翡翠豆腐' }
+},
+
+['茶博士#DL'] = {
+  name = '茶博士',
+  id = 'cha boshi',
+  alternate_id = { 'boshi' },
+  location = '大理城茶馆',
+  label = { shop = true, },
+  catalogue = { '五香花生#YZ', '翡翠豆腐' }
+},
+
+['张千'] = {
+  name = '张千',
+  id = 'zhang qian',
+  alternate_id = { 'zhang', 'qian' },
+  location = '大理城风味小吃店',
+  label = { shop = true, },
+  catalogue = { '狗不理包子', '东山羊', '龙抄手', '羊肉泡馍' }
+},
+
+['豆腐西施'] = {
+  name = '豆腐西施',
+  id = 'doufu xishi',
+  alternate_id = { 'xishi' },
+  location = '大理城豆腐坊',
+  label = { shop = true, },
+  catalogue = { '翡翠豆腐#DL', '板豆腐', '豆腐干' }
+},
+
+['欧阳老板'] = {
+  name = '欧阳老板',
+  id = 'ouyang laoban',
+  alternate_id = { 'ouyang' },
+  location = '大理城豆腐坊',
+  label = { shop = true, },
+  catalogue = { '花雕酒袋#DL', '山鸡肉', '烤鸭#DL' }
+},
+
+['侍女#SZ'] = {
+  name = '侍女',
+  id = 'shi nv',
+  alternate_id = { 'nv', 'waiter' },
+  location = '苏州城茶馆',
+  label = { shop = true, },
+  catalogue = { '水蜜桃', '瓷茶碗' }
+},
+
+['店小二#HZTXL'] = {
+  name = '店小二',
+  id = 'xiao er',
+  alternate_id = { 'xiao', 'waiter' },
+  location = '杭州城天香楼',
+  label = { shop = true, },
+  catalogue = { '菱白虾仁', '樱桃火腿', '菏叶冬笋汤', '烤鸭', '花雕酒袋', '包子#HZ' }
+},
+
+['跑堂#JX'] = {
+  name = '跑堂',
+  id = 'paotang',
+  alternate_id = { 'waiter' },
+  location = '嘉兴城烟雨楼#1',
+  label = { shop = true, },
+  catalogue = { '烤鸡腿', '烤鸭', '月饼', '包子', '牛皮酒袋', '花雕酒袋' }
+},
+
+['跑堂#FZ'] = {
+  name = '跑堂',
+  id = 'pao tang',
+  alternate_id = { 'waiter', 'pao' },
+  location = '福州城酒馆',
+  label = { shop = true, },
+  catalogue = { '馒头', '烤鸭', '月饼', '包子', '牛皮酒袋', '花雕酒袋' }
+},
+
+['王老汉'] = {
+  name = '王老汉',
+  id = 'wang laohan',
+  alternate_id = { 'wang' },
+  location = '佛山镇烧饼摊',
+  label = { shop = true, },
+  catalogue = { '烧饼', '油条', '麻花辫子' }
 },
 
 --------------------------------------------------------------------------------

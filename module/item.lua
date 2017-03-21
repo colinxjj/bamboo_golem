@@ -60,14 +60,14 @@ local weapon_type = {
 	blade = '刀', sword = '剑', dagger = '匕首', flute = '箫', hook = '钩', axe = '斧', brush = '笔',
 	staff = '杖', club = '棍', stick = '棒', hammer = '锤', whip = '鞭', throwing = '暗器' }
 
-local armor_type = { cloth = '衣服', armor = '护甲', shoes = '鞋子', helm = '头盔', mantle = '披风', waist = '腰带', wrist = '护腕' }
+local armor_type = { cloth = '衣服', armor = '护甲', shoes = '鞋子', helm = '头盔', mantle = '披风', waist = '腰带', wrist = '护腕', neck = '项链' }
 
 local sharp_weapon_type = { blade = true, sword = true, dagger = true, hook = true, axe = true, }
 
 local valid_type = { food = '食物', drink = '饮水', drink_container = '盛水容器', weapon = '武器', armor = '防具', sharp_weapon = '锋利武器',
 	blade = '刀', sword = '剑', dagger = '匕首', flute = '箫', hook = '钩', axe = '斧', brush = '笔',
 	staff = '杖', club = '棍', stick = '棒', hammer = '锤', whip = '鞭', throwing = '暗器',
-	cloth = '衣服', armor = '护甲', shoes = '鞋子', helm = '头盔', mantle = '披风', waist = '腰带', wrist = '护腕',
+	cloth = '衣服', armor = '护甲', shoes = '鞋子', helm = '头盔', mantle = '披风', waist = '腰带', wrist = '护腕', neck = '项链'
 }
 
 local stackable_item = {
@@ -263,7 +263,7 @@ local function calculate_item_quality_score( it )
 	-- if item has quality value, just return it
 	if it.quality then return it.quality end
 	-- for food and drinks, quality is based its total supply
-	if it.supply then return ( it.remaining or 1 ) * it.supply * 0.2 end
+	if it.food_supply or it.water_supply then return ( it.consume_count or 1 ) * ( ( it.food_supply or 0 ) + ( it.water_supply or 0 ) ) * 0.2 end
 end
 
 local function calculate_source_score( source, is_quality_ignored )
