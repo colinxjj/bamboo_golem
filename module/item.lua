@@ -64,7 +64,7 @@ local armor_type = { cloth = 'ÒÂ·ş', armor = '»¤¼×', shoes = 'Ğ¬×Ó', helm = 'Í·¿
 
 local sharp_weapon_type = { blade = true, sword = true, dagger = true, hook = true, axe = true, }
 
-local valid_type = { food = 'Ê³Îï', drink = 'ÒûË®', drink_container = 'Ê¢Ë®ÈİÆ÷', weapon = 'ÎäÆ÷', armor = '·À¾ß', sharp_weapon = '·æÀûÎäÆ÷',
+local valid_type = { food = 'Ê³Îï', drink = 'ÒûË®', drink_container = 'Ê¢Ë®ÈİÆ÷', drug = 'Ò©Îï', weapon = 'ÎäÆ÷', armor = '·À¾ß', sharp_weapon = '·æÀûÎäÆ÷',
 	blade = 'µ¶', sword = '½£', dagger = 'Ø°Ê×', flute = 'óï', hook = '¹³', axe = '¸«', brush = '±Ê',
 	staff = 'ÕÈ', club = '¹÷', stick = '°ô', hammer = '´¸', whip = '±Ş', throwing = '°µÆ÷',
 	cloth = 'ÒÂ·ş', armor = '»¤¼×', shoes = 'Ğ¬×Ó', helm = 'Í·¿ø', mantle = 'Åû·ç', waist = 'Ñü´ø', wrist = '»¤Íó', neck = 'ÏîÁ´'
@@ -147,7 +147,7 @@ end
 function item.get_id( name )
 	assert( type( name ) == 'string', 'item.get_id - param must be a string' )
 	local it = item.get( name )
-	return it.id
+	return it and it.id
 end
 
 function item.get_type( name )

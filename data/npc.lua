@@ -65,6 +65,47 @@ local npc = {
   range = 2,
 },
 
+['奚长老'] = {
+  name = '奚长老',
+  id = 'xi zhanglao',
+  alternate_id = { 'xi', 'zhanglao' },
+  location = '扬州城墓室',
+},
+
+--------------------------------------------------------------------------------
+-- 大理
+
+['褚万里'] = {
+  name = '褚万里',
+  id = 'zhu wanli',
+  alternate_id = { 'zhu', 'wanli' },
+  location = '大理城驿站',
+},
+
+['段正淳'] = {
+  name = '段正淳',
+  id = 'duan zhengchun',
+  alternate_id = { 'duan', 'master' },
+  location = '大理王府暖阁',
+},
+
+['段正明'] = {
+  name = '段正明',
+  id = 'duan zhengming',
+  alternate_id = { 'duan', 'master' },
+  location = '大理皇宫正厅',
+},
+
+--------------------------------------------------------------------------------
+-- 天龙寺
+
+['枯荣长老'] = {
+  name = '枯荣长老',
+  id = 'kurong zhanglao',
+  alternate_id = { 'kurong', 'zhanglao' },
+  location = '天龙寺龙树院',
+},
+
 --------------------------------------------------------------------------------
 -- 黄河流域
 
@@ -620,13 +661,22 @@ local npc = {
 --------------------------------------------------------------------------------
 -- Shops
 
-['商人'] = {
+['商人#SLD'] = {
   name = '商人',
   id = 'shang ren',
   alternate_id = { 'shang', 'ren' },
   location = '神龙岛海滩',
   label = { shop = true, },
   catalogue = { '粗绳子', '火折', }
+},
+
+['商人#TS'] = {
+  name = '商人',
+  id = 'shang ren',
+  alternate_id = { 'ren' },
+  location = '泰山岱宗坊',
+  label = { shop = true, },
+  catalogue = { '养精丹', '火折', }
 },
 
 ['铁匠#TG'] = {
@@ -636,6 +686,33 @@ local npc = {
   location = '塘沽城武器铺',
   label = { shop = true, },
   catalogue = { '长剑', '钢剑', '铁甲', '钢刀', }
+},
+
+['铁匠#SZ'] = {
+  name = '铁匠',
+  id = 'tie jiang',
+  alternate_id = { 'tie', 'jiang' },
+  location = '苏州城打铁铺',
+  label = { shop = true, },
+  catalogue = { '长剑#SZ', '钢剑', '菜刀#SZ', '钢刀#SZ', '铁锤#SZ', '匕首#SZ' }
+},
+
+['刀疤张'] = {
+  name = '刀疤张',
+  id = 'zhujian shi',
+  alternate_id = { 'shi' },
+  location = '中原神州兵器铺',
+  label = { shop = true, },
+  catalogue = { '长剑#YZ', '钢刀', '流星锤', '铁棍', '钢杖', '长鞭', '单钩', '竹棒#YZ', '钢斧' }
+},
+
+['铸剑师'] = {
+  name = '铸剑师',
+  id = 'daoba zhang',
+  alternate_id = { 'daoba', 'zhang' },
+  location = '中原神州兵器铺',
+  label = { shop = true, },
+  catalogue = { '长剑#YZ', '钢刀', '流星锤', '铁棍', '钢杖', '长鞭', '单钩', '竹棒#YZ', '钢斧', '暗杀匕首' }
 },
 
 ['木匠#XY'] = {
@@ -653,7 +730,7 @@ local npc = {
   alternate_id = { 'xiao', 'fan' },
   location = '苏州城宝带桥',
   label = { shop = true, },
-  catalogue = { '清水葫芦', '竹剑', '火折', '竹棒' }
+  catalogue = { '清水葫芦', '竹剑#SZ', '火折', '竹棒#SZ' }
 },
 
 ['小贩子#EM'] = {
@@ -662,7 +739,16 @@ local npc = {
   alternate_id = { 'xiao', 'fan' },
   location = '峨嵋山草棚',
   label = { shop = true, },
-  catalogue = { '清水葫芦', '竹剑', '火折', '长剑' }
+  catalogue = { '清水葫芦#EM', '竹剑', '火折', '长剑', '铁锹' }
+},
+
+['小贩子#MJ'] = {
+  name = '小贩子',
+  id = 'xiao fan',
+  alternate_id = { 'xiao', 'fan' },
+  location = '峨嵋山草棚',
+  label = { shop = true, },
+  catalogue = { '牛皮酒袋', '包子', '竹壶' }
 },
 
 ['江来福'] = {
@@ -672,6 +758,105 @@ local npc = {
   location = '大雪山来福杂货',
   label = { shop = true, },
   catalogue = { '火折', '酥油茶', '麒麟踏云锁' }
+},
+
+['沈铁匠'] = {
+  name = '沈铁匠',
+  id = 'shen tiejiang',
+  alternate_id = { 'shen', 'smith' },
+  location = '佛山镇铁匠铺',
+  label = { shop = true, },
+  catalogue = { '百节链', '单刃匕', '磬石锤', '四明铲', '鹰嘴斧' }
+},
+
+['小二#FZ'] = {
+  name = '小二',
+  id = 'xiao er',
+  alternate_id = { 'xiao', 'waiter' },
+  location = '福州城吉祥客栈',
+  label = { shop = true, },
+  catalogue = { '火折' }
+},
+
+['小二#XY'] = {
+  name = '小二',
+  id = 'xiao er',
+  alternate_id = { 'xiao', 'waiter' },
+  location = '襄阳城江湖客栈',
+  label = { shop = true, },
+  catalogue = { '火折' }
+},
+
+['朱老板'] = {
+  name = '朱老板',
+  id = 'zhu laoban',
+  alternate_id = { 'zhu', 'laoban' },
+  location = '扬州城珠宝店',
+  label = { shop = true, },
+  catalogue = { '玉箫' }
+},
+
+['珠宝商#CA'] = {
+  name = '珠宝商',
+  id = 'zhubao shang',
+  alternate_id = { 'shang', 'laoban' },
+  location = '长安城珠宝行',
+  label = { shop = true, },
+  catalogue = { '玉箫' }
+},
+
+['萧老板'] = {
+  name = '萧老板',
+  id = 'xiao laoban',
+  alternate_id = { 'xiao', 'laoban' },
+  location = '扬州城乐器店',
+  label = { shop = true, },
+  catalogue = { '箫' }
+},
+
+['于三娘'] = {
+  name = '于三娘',
+  id = 'yu sanniang',
+  alternate_id = { 'yu', 'sanniang' },
+  location = '襄阳城成衣铺',
+  label = { shop = true, },
+  catalogue = { '锦虎披风' }
+},
+
+['小贩#NY'] = {
+  name = '小贩',
+  id = 'xiao fan',
+  alternate_id = { 'xiao', 'fan' },
+  location = '南阳城城中心',
+  label = { shop = true, },
+  catalogue = { '水壶' }
+},
+
+['老裁缝#CA'] = {
+  name = '老裁缝',
+  id = 'lao caifeng',
+  alternate_id = { 'caifeng' },
+  location = '长安城裁缝铺',
+  label = { shop = true, },
+  catalogue = { '锦虎披风' }
+},
+
+['买卖提'] = {
+  name = '买卖提',
+  id = 'maimaiti',
+  alternate_id = { 'seller' },
+  location = '伊犁城商铺',
+  label = { shop = true, },
+  catalogue = { '火折', '青葫芦', '大酒囊', '水囊', '乳酪', '马刀', '马鞭', '寓意草', '阿拉伯弯刀', '硫磺', '坛子' }
+},
+
+['波斯生意人'] = {
+  name = '波斯生意人',
+  id = 'shengyi ren',
+  alternate_id = { 'dealer', 'ren' },
+  location = '回疆哈萨克小店',
+  label = { shop = true, },
+  catalogue = { '哈密瓜', '大酒囊', '水囊', '乳酪', '马刀', '马鞭', '阿拉伯弯刀' }
 },
 
 --------------------------------------------------------------------------------
@@ -686,15 +871,6 @@ local npc = {
   catalogue = { '面汤', '馒头', '月饼' }
 },
 
-['茶博士#XY'] = {
-  name = '茶博士',
-  id = 'cha boshi',
-  alternate_id = { 'boshi' },
-  location = '襄阳城天香楼',
-  label = { shop = true, },
-  catalogue = { '五香花生' }
-},
-
 ['跑堂#YZ'] = {
   name = '跑堂',
   id = 'pao tang',
@@ -702,6 +878,51 @@ local npc = {
   location = '扬州城小吃店',
   label = { shop = true, },
   catalogue = { '烤鸡腿', '烤鸭', '月饼', '包子', '牛皮酒袋', '花雕酒袋' }
+},
+
+['跑堂#JX'] = {
+  name = '跑堂',
+  id = 'paotang',
+  alternate_id = { 'waiter' },
+  location = '嘉兴城烟雨楼#1',
+  label = { shop = true, },
+  catalogue = { '烤鸡腿', '烤鸭', '月饼', '包子', '牛皮酒袋', '花雕酒袋' }
+},
+
+['跑堂#FZ'] = {
+  name = '跑堂',
+  id = 'pao tang',
+  alternate_id = { 'waiter', 'pao' },
+  location = '福州城酒馆',
+  label = { shop = true, },
+  catalogue = { '馒头', '烤鸭', '月饼', '包子', '牛皮酒袋', '花雕酒袋' }
+},
+
+['跑堂#PDZ'] = {
+  name = '跑堂',
+  id = 'paotang',
+  alternate_id = { 'waiter' },
+  location = '福州城酒馆',
+  label = { shop = true, },
+  catalogue = { '烤鸡腿', '烤鸭', '包子', '牛皮酒袋', '花雕酒袋' }
+},
+
+['跑堂#TG'] = {
+  name = '跑堂',
+  id = 'paotang',
+  alternate_id = { 'waiter' },
+  location = '塘沽城小酒馆',
+  label = { shop = true, },
+  catalogue = { '烤鸡腿', '烤鸭', '包子', '月饼', '牛皮酒袋', '花雕酒袋' }
+},
+
+['茶博士#XY'] = {
+  name = '茶博士',
+  id = 'cha boshi',
+  alternate_id = { 'boshi' },
+  location = '襄阳城天香楼',
+  label = { shop = true, },
+  catalogue = { '五香花生' }
 },
 
 ['茶博士#YZ'] = {
@@ -720,6 +941,51 @@ local npc = {
   location = '大理城茶馆',
   label = { shop = true, },
   catalogue = { '五香花生#YZ', '翡翠豆腐' }
+},
+
+['茶博士#FZ'] = {
+  name = '茶博士',
+  id = 'cha boshi',
+  alternate_id = { 'boshi' },
+  location = '福州城茶楼',
+  label = { shop = true, },
+  catalogue = { '五香花生' }
+},
+
+['茶馆小二'] = {
+  name = '茶馆小二',
+  id = 'chaguan xiaoer',
+  alternate_id = { 'xiaoer', 'waiter' },
+  location = '长安城茶馆',
+  label = { shop = true, },
+  catalogue = { '五香花生', '茶壶' }
+},
+
+['店小二#HZTXL'] = {
+  name = '店小二',
+  id = 'xiao er',
+  alternate_id = { 'xiao', 'waiter' },
+  location = '杭州城天香楼',
+  label = { shop = true, },
+  catalogue = { '菱白虾仁', '樱桃火腿', '菏叶冬笋汤', '烤鸭', '花雕酒袋', '包子#HZ' }
+},
+
+['店小二#SZ'] = {
+  name = '店小二',
+  id = 'xiao er',
+  alternate_id = { 'xiao', 'waiter' },
+  location = '苏州城春在楼',
+  label = { shop = true, },
+  catalogue = { '菱白虾仁', '樱桃火腿', '菏叶冬笋汤', '烤鸭', '牛皮酒袋', '包子#HZ' }
+},
+
+['店小二#LZZ'] = {
+  name = '店小二',
+  id = 'xiao er',
+  alternate_id = { 'xiao', 'waiter' },
+  location = '柳宗镇四季小吃店',
+  label = { shop = true, },
+  catalogue = { '烤鸡腿', '馒头', '面汤', '包子', '牛皮酒袋' }
 },
 
 ['张千'] = {
@@ -755,34 +1021,7 @@ local npc = {
   alternate_id = { 'nv', 'waiter' },
   location = '苏州城茶馆',
   label = { shop = true, },
-  catalogue = { '水蜜桃', '瓷茶碗' }
-},
-
-['店小二#HZTXL'] = {
-  name = '店小二',
-  id = 'xiao er',
-  alternate_id = { 'xiao', 'waiter' },
-  location = '杭州城天香楼',
-  label = { shop = true, },
-  catalogue = { '菱白虾仁', '樱桃火腿', '菏叶冬笋汤', '烤鸭', '花雕酒袋', '包子#HZ' }
-},
-
-['跑堂#JX'] = {
-  name = '跑堂',
-  id = 'paotang',
-  alternate_id = { 'waiter' },
-  location = '嘉兴城烟雨楼#1',
-  label = { shop = true, },
-  catalogue = { '烤鸡腿', '烤鸭', '月饼', '包子', '牛皮酒袋', '花雕酒袋' }
-},
-
-['跑堂#FZ'] = {
-  name = '跑堂',
-  id = 'pao tang',
-  alternate_id = { 'waiter', 'pao' },
-  location = '福州城酒馆',
-  label = { shop = true, },
-  catalogue = { '馒头', '烤鸭', '月饼', '包子', '牛皮酒袋', '花雕酒袋' }
+  catalogue = { '水蜜桃#SZ', '瓷茶碗' }
 },
 
 ['王老汉'] = {
@@ -792,6 +1031,170 @@ local npc = {
   location = '佛山镇烧饼摊',
   label = { shop = true, },
   catalogue = { '烧饼', '油条', '麻花辫子' }
+},
+
+['万老板'] = {
+  name = '万老板',
+  id = 'wan laoban',
+  alternate_id = { 'laoban' },
+  location = '佛山镇英雄楼',
+  label = { shop = true, },
+  catalogue = { '素煎饺', '牛皮酒袋' }
+},
+
+['萨老板'] = {
+  name = '萨老板',
+  id = 'sa laoban',
+  alternate_id = { 'sa', 'laoban' },
+  location = '福州城小酒馆',
+  label = { shop = true, },
+  catalogue = { '牛皮酒袋', '花雕酒袋', '烤鸡腿', '粽子#FZ', '臭鸭蛋' }
+},
+
+['烧饼刘'] = {
+  name = '烧饼刘',
+  id = 'shaobing liu',
+  alternate_id = { 'liu' },
+  location = '襄阳城烧饼铺',
+  label = { shop = true, },
+  catalogue = { '烧饼' }
+},
+
+['包子王'] = {
+  name = '包子王',
+  id = 'baozi wang',
+  alternate_id = { 'wang' },
+  location = '襄阳城包子铺',
+  label = { shop = true, },
+  catalogue = { '包子' }
+},
+
+['胡贵'] = {
+  name = '胡贵',
+  id = 'hu gui',
+  alternate_id = { 'hu', 'gui', 'hugui' },
+  location = '大雪山溢香楼',
+  label = { shop = true, },
+  catalogue = { '烧酒', '大王肉饼' }
+},
+
+['胖嫂'] = {
+  name = '胖嫂',
+  id = 'pang sao',
+  alternate_id = { 'pangsao', 'sao' },
+  location = '长安城水果店',
+  label = { shop = true, },
+  catalogue = { '苹果', '白梨', '芒果', '水蜜桃', '荔枝', '哈蜜瓜', '桔子' }
+},
+
+['阿拉木罕'] = {
+  name = '阿拉木罕',
+  id = 'alamuhan',
+  alternate_id = { 'ala', 'muhan' },
+  location = '伊犁城客栈',
+  label = { shop = true, },
+  catalogue = { '羊肉串', '馕', '哈密瓜#XX' }
+},
+
+--------------------------------------------------------------------------------
+-- Pharmacies
+
+['老者#FZ'] = {
+  name = '老者',
+  id = 'lao zhe',
+  alternate_id = { 'lao', 'zhe' },
+  location = '福州城药铺',
+  label = { shop = true, },
+  catalogue = { '金创药', '养精丹', '百草丹' }
+},
+
+['药铺伙计#HZ'] = {
+  name = '药铺伙计',
+  id = 'yaopu huoji',
+  alternate_id = { 'huoji' },
+  location = '杭州城万年春',
+  label = { shop = true, },
+  catalogue = { '莲子丸', '正气丹' }
+},
+
+['药铺伙计#SZ'] = {
+  name = '药铺伙计',
+  id = 'yaopu huoji',
+  alternate_id = { 'huoji' },
+  location = '苏州城立春堂',
+  label = { shop = true, },
+  catalogue = { '莲子丸', '正气丹' }
+},
+
+['药铺伙计#YZ'] = {
+  name = '药铺伙计',
+  id = 'yaopu huoji',
+  alternate_id = { 'huoji' },
+  location = '扬州城药铺',
+  label = { shop = true, },
+  catalogue = { '金创药', '养精丹', '金元散', '肘後备急方' }
+},
+
+['药铺伙计#PDZ'] = {
+  name = '药铺伙计',
+  id = 'yaopu huoji',
+  alternate_id = { 'huoji' },
+  location = '平定州药铺',
+  label = { shop = true, },
+  catalogue = { '金创药', '养精丹', '肘後备急方' }
+},
+
+['伙计#LZ'] = {
+  name = '伙计',
+  id = 'huoji',
+  location = '兰州城皮货药材店',
+  label = { shop = true, },
+  catalogue = { '金创药' }
+},
+
+['平一指'] = {
+  name = '平一指',
+  id = 'ping yizhi',
+  alternate_id = { 'ping' },
+  location = '襄阳城药材铺',
+  label = { shop = true, },
+  catalogue = { '金创药', '回阳五龙膏' }
+},
+
+['薛慕华'] = {
+  name = '薛慕华',
+  id = 'xue muhua',
+  alternate_id = { 'xue' },
+  location = '柳宗镇正厅#2',
+  label = { shop = true, },
+  catalogue = { '金创药', '回阳五龙膏' }
+},
+
+['药师#SS'] = {
+  name = '药师',
+  id = 'yao shi',
+  alternate_id = { 'yao', 'shi' },
+  location = '嵩山药房',
+  label = { shop = true, },
+  catalogue = { '金创药', '回阳五龙膏' }
+},
+
+['药师#MJ'] = {
+  name = '药师',
+  id = 'yao shi',
+  alternate_id = { 'yao', 'shi' },
+  location = '明教药房',
+  label = { shop = true, },
+  catalogue = { '金创药', '回阳五龙膏', '暗杀匕首', '玉洞黑石丹', '三黄宝腊丸', '玉真散', '三冈识略' }
+},
+
+['胡青牛'] = {
+  name = '胡青牛',
+  id = 'hu qingniu',
+  alternate_id = { 'hu' },
+  location = '蝴蝶谷厢房#N',
+  label = { shop = true, },
+  catalogue = { '金创药', '回阳五龙膏', '玉洞黑石丹', '三黄宝腊丸', '玉真散', '玉露清新散', '天王护心丹', '百草丹', '玉灵散' }
 },
 
 --------------------------------------------------------------------------------
@@ -862,7 +1265,8 @@ local npc = {
   name = '小贩',
   id = 'xiao fan',
   location = '华山村杂货铺',
-  label = { grocery = true, },
+  label = { shop = true, grocery = true, },
+  catalogue = { '水壶' }
 },
 
 ['伙计#TG'] = {
@@ -871,6 +1275,15 @@ local npc = {
   alternate_id = { 'huoji' },
   location = '塘沽城杂货铺',
   label = { grocery = true, },
+},
+
+['李老板#FS'] = {
+  name = '李老板',
+  id = 'li',
+  alternate_id = { 'laoban' },
+  location = '佛山镇杂货店',
+  label = { shop = true, grocery = true, },
+  catalogue = { '火折', '剃刀' }
 },
 
 --------------------------------------------------------------------------------

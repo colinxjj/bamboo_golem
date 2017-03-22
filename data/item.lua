@@ -211,6 +211,17 @@ local item = {
   food_supply = 30,
 },
 
+['ôÕ×Ó#FZ'] = {
+  iname = 'ôÕ×Ó#FZ',
+	name = 'ôÕ×Ó',
+  id = 'zongzi',
+  type = 'food',
+  weight = 100,
+  value = 100,
+  consume_count = 3,
+  food_supply = 50,
+},
+
 ['¹·²»Àí°ü×Ó'] = {
   iname = '¹·²»Àí°ü×Ó',
 	name = '¹·²»Àí°ü×Ó',
@@ -284,8 +295,8 @@ local item = {
   water_supply = 10,
 },
 
-['Ë®ÃÛÌÒ'] = {
-  iname = 'Ë®ÃÛÌÒ',
+['Ë®ÃÛÌÒ#SZ'] = {
+  iname = 'Ë®ÃÛÌÒ#SZ',
 	name = 'Ë®ÃÛÌÒ',
   id = 'mi tao',
   alternate_id = { 'mitao', 'tao' },
@@ -368,6 +379,174 @@ local item = {
   food_supply = 22,
 },
 
+['ËØ¼å½È'] = {
+  iname = 'ËØ¼å½È',
+	name = 'ËØ¼å½È',
+  id = 'jian jiao',
+  alternate_id = { 'jiao', 'dumpling' },
+  type = 'food',
+  weight = 100,
+  value = 200,
+  consume_count = 5,
+  food_supply = 35,
+},
+
+['³ôÑ¼µ°'] = {
+  iname = '³ôÑ¼µ°',
+	name = '³ôÑ¼µ°',
+  id = 'chou yadan',
+  alternate_id = { 'yadan', 'egg' },
+  type = 'food',
+  weight = 70,
+  value = 80,
+  consume_count = 1,
+  food_supply = 80,
+},
+
+['´óÍõÈâ±ý'] = {
+  iname = '´óÍõÈâ±ý',
+	name = '´óÍõÈâ±ý',
+  id = 'rou bing',
+  alternate_id = { 'roubing' },
+  type = 'food',
+  weight = 300,
+  value = 200,
+  consume_count = 3,
+  food_supply = 40,
+},
+
+['Æ»¹û'] = {
+  iname = 'Æ»¹û',
+	name = 'Æ»¹û',
+  id = 'ping guo',
+  alternate_id = { 'pingguo', 'guo' },
+  type = 'food',
+  weight = 40,
+  value = 40,
+  consume_count = 2,
+  food_supply = 25,
+},
+
+['°×Àæ'] = {
+  iname = '°×Àæ',
+	name = '°×Àæ',
+  id = 'bai li',
+  alternate_id = { 'baili', 'li' },
+  type = 'food',
+  weight = 40,
+  value = 40,
+  consume_count = 2,
+  food_supply = 25,
+},
+
+['Ã¢¹û'] = {
+  iname = 'Ã¢¹û',
+	name = 'Ã¢¹û',
+  id = 'mang guo',
+  alternate_id = { 'mangguo', 'guo' },
+  type = 'food',
+  weight = 40,
+  value = 40,
+  consume_count = 2,
+  food_supply = 25,
+},
+
+['Ë®ÃÛÌÒ'] = {
+  iname = 'Ë®ÃÛÌÒ',
+	name = 'Ë®ÃÛÌÒ',
+  id = 'shuimi tao',
+  alternate_id = { 'shuimitao', 'tao' },
+  type = 'food',
+  weight = 40,
+  value = 40,
+  consume_count = 2,
+  food_supply = 25,
+},
+
+['ÀóÖ¦'] = {
+  iname = 'ÀóÖ¦',
+	name = 'ÀóÖ¦',
+  id = 'li zhi',
+  alternate_id = { 'lizhi' },
+  type = 'food',
+  weight = 40,
+  value = 40,
+  consume_count = 2,
+  food_supply = 25,
+},
+
+['¹þÃÛ¹Ï'] = {
+  iname = '¹þÃÛ¹Ï',
+	name = '¹þÃÛ¹Ï',
+  id = 'hami gua',
+  alternate_id = { 'hamigua', 'gua' },
+  type = 'food',
+  weight = 40,
+  value = 40,
+  consume_count = 2,
+  food_supply = 25,
+},
+
+['½Û×Ó'] = {
+  iname = '½Û×Ó',
+	name = '½Û×Ó',
+  id = 'ju zi',
+  alternate_id = { 'juzi' },
+  type = 'food',
+  weight = 40,
+  value = 40,
+  consume_count = 2,
+  food_supply = 25,
+},
+
+['ÑòÈâ´®'] = {
+  iname = 'ÑòÈâ´®',
+	name = 'ÑòÈâ´®',
+  id = 'yangrou chuan',
+  alternate_id = { 'yangrou', 'chuan' },
+  type = 'food',
+  weight = 300,
+  value = 200,
+  consume_count = 3,
+  food_supply = 50,
+},
+
+['âÎ'] = {
+  iname = 'âÎ',
+	name = 'âÎ',
+  id = 'nang',
+  alternate_id = { 'cake' },
+  type = 'food',
+  weight = 80,
+  value = 50,
+  consume_count = 3,
+  food_supply = 20,
+},
+
+['¹þÃÜ¹Ï'] = {
+  iname = '¹þÃÜ¹Ï',
+	name = '¹þÃÜ¹Ï',
+  id = 'hami gua',
+  alternate_id = { 'hamigua', 'gua' },
+  type = 'food',
+  weight = 40,
+  value = 40,
+  consume_count = 2,
+  food_supply = 25,
+},
+
+['¹þÃÜ¹Ï#XX'] = {
+  iname = '¹þÃÜ¹Ï#XX',
+	name = '¹þÃÜ¹Ï',
+  id = 'hamigua',
+  alternate_id = { 'gua', 'melon' },
+  type = 'food',
+  weight = 40,
+  value = 40,
+  consume_count = 1,
+  food_supply = 50,
+},
+
 --------------------------------------------------------------------------------
 -- drinks
 
@@ -436,6 +615,18 @@ local item = {
   water_supply = 30,
 },
 
+['ÈéÀÒ'] = {
+  iname = 'ÈéÀÒ',
+	name = 'ÈéÀÒ',
+  id = 'ru lao',
+  alternate_id = { 'cheese' },
+  type = 'drink',
+  weight = 700,
+  value = 5000,
+  consume_count = 1,
+  food_supply = 200,
+  water_supply = 200,
+},
 
 --------------------------------------------------------------------------------
 -- drink containers
@@ -449,6 +640,17 @@ local item = {
   weight = 700,
   value = 100,
   capacity = 15,
+},
+
+['ÇåË®ºùÂ«#EM'] = {
+  iname = 'ÇåË®ºùÂ«#EM',
+	name = 'ÇåË®ºùÂ«',
+  id = 'qingshui hulu',
+  alternate_id = { 'hulu', 'bottle' },
+  type = 'drink_container',
+  weight = 700,
+  value = 100,
+  capacity = 10,
 },
 
 ['Å£Æ¤¾Æ´ü'] = {
@@ -495,8 +697,233 @@ local item = {
   capacity = 4,
 },
 
+['Ë®ºø'] = {
+  iname = 'Ë®ºø',
+	name = 'Ë®ºø',
+  id = 'water bottle',
+  alternate_id = { 'bottle' },
+  type = 'drink_container',
+  weight = 700,
+  value = 100,
+  capacity = 10,
+},
+
+['ÉÕ¾Æ'] = {
+  iname = 'ÉÕ¾Æ',
+	name = 'ÉÕ¾Æ',
+  id = 'shao jiu',
+  alternate_id = { 'shaojiu' },
+  type = 'drink_container',
+  weight = 700,
+  value = 80,
+  capacity = 15,
+},
+
+['²èºø'] = {
+  iname = '²èºø',
+	name = '²èºø',
+  id = 'cha hu',
+  alternate_id = { 'hu' },
+  type = 'drink_container',
+  weight = 400,
+  value = 80,
+  capacity = 40,
+},
+
+['ÇàºùÂ«'] = {
+  iname = 'ÇàºùÂ«',
+	name = 'ÇàºùÂ«',
+  id = 'qing hulu',
+  alternate_id = { 'hulu' },
+  type = 'drink_container',
+  weight = 400,
+  value = 80,
+  capacity = 60,
+},
+
+['´ó¾ÆÄÒ'] = {
+  iname = '´ó¾ÆÄÒ',
+	name = '´ó¾ÆÄÒ',
+  id = 'jiunang',
+  alternate_id = { 'wineskin', 'skin' },
+  type = 'drink_container',
+  weight = 700,
+  value = 250,
+  capacity = 400,
+},
+
+['Ë®ÄÒ'] = {
+  iname = 'Ë®ÄÒ',
+	name = 'Ë®ÄÒ',
+  id = 'shuinang',
+  alternate_id = { 'wineskin', 'skin' },
+  type = 'drink_container',
+  weight = 500,
+  value = 200,
+  capacity = 300,
+},
+
+['Öñºø'] = {
+  iname = 'Öñºø',
+	name = 'Öñºø',
+  id = 'zhuhu',
+  alternate_id = { 'hu' },
+  type = 'drink_container',
+  weight = 700,
+  value = 100,
+  capacity = 15,
+},
+
 --------------------------------------------------------------------------------
--- normal weapon
+-- drugs
+
+['½ð´´Ò©'] = {
+  iname = '½ð´´Ò©',
+	name = '½ð´´Ò©',
+  id = 'jinchuang yao',
+  alternate_id = { 'jin', 'jinchuang', 'yao' },
+  type = 'drug',
+  weight = 30,
+  value = 3000,
+  cure = { qi_max = 50 },
+},
+
+['Ñø¾«µ¤'] = {
+  iname = 'Ñø¾«µ¤',
+	name = 'Ñø¾«µ¤',
+  id = 'yangjing dan',
+  alternate_id = { 'dan' },
+  type = 'drug',
+  value = 100,
+  delayed_effect = true,
+  cure = { jing_max = 100 },
+},
+
+['°Ù²Ýµ¤'] = {
+  iname = '°Ù²Ýµ¤',
+	name = '°Ù²Ýµ¤',
+  id = 'baicao dan',
+  alternate_id = { 'baicao', 'dan' },
+  type = 'drug',
+  weight = 200,
+  value = 1500,
+  cure = { qi = 90, qi_max = 90, jing = 90, jing_max = 90 },
+},
+
+['Á«×ÓÍè'] = {
+  iname = 'Á«×ÓÍè',
+	name = 'Á«×ÓÍè',
+  id = 'lianzi wan',
+  alternate_id = { 'lianzi', 'wan' },
+  type = 'drug',
+  weight = 100,
+  value = 5000,
+  cure = { qi_max = 200 },
+},
+
+['ÕýÆøµ¤'] = {
+  iname = 'ÕýÆøµ¤',
+	name = 'ÕýÆøµ¤',
+  id = 'zhengqi dan',
+  alternate_id = { 'dan' },
+  type = 'drug',
+  weight = 100,
+  value = 100,
+  delayed_effect = true,
+  cure = { jing_max = 100 },
+},
+
+['½ðÔªÉ¢'] = {
+  iname = '½ðÔªÉ¢',
+	name = '½ðÔªÉ¢',
+  id = 'jinyuan san',
+  alternate_id = { 'jinyuan', 'san' },
+  type = 'drug',
+  weight = 30,
+  value = 5000,
+  cure = { illness = true },
+},
+
+['»ØÑôÎåÁú¸à'] = {
+  iname = '»ØÑôÎåÁú¸à',
+	name = '»ØÑôÎåÁú¸à',
+  id = 'wulong gao',
+  alternate_id = { 'huiyang', 'wulong', 'gao' },
+  type = 'drug',
+  weight = 500,
+  value = 3000,
+  cure = { qi_max = 150 },
+},
+
+['Óñ¶´ºÚÊ¯µ¤'] = {
+  iname = 'Óñ¶´ºÚÊ¯µ¤',
+	name = 'Óñ¶´ºÚÊ¯µ¤',
+  id = 'heishi dan',
+  alternate_id = { 'heishi', 'dan' },
+  type = 'drug',
+  value = 5000,
+  cure = { hb_poison = true },
+},
+
+['Èý»Æ±¦À°Íè'] = {
+  iname = 'Èý»Æ±¦À°Íè',
+	name = 'Èý»Æ±¦À°Íè',
+  id = 'baola wan',
+  alternate_id = { 'sanhuang', 'baola', 'wan' },
+  type = 'drug',
+  weight = 20,
+  value = 15000,
+  cure = { qi_max = 300 },
+},
+
+['ÓñÕæÉ¢'] = {
+  iname = 'ÓñÕæÉ¢',
+	name = 'ÓñÕæÉ¢',
+  id = 'yuzhen san',
+  alternate_id = { 'yuzhen', 'san' },
+  type = 'drug',
+  weight = 100,
+  value = 5000,
+  cure = { qi_max = 90 },
+},
+
+['ÓñÂ¶ÇåÐÂÉ¢'] = {
+  iname = 'ÓñÂ¶ÇåÐÂÉ¢',
+	name = 'ÓñÂ¶ÇåÐÂÉ¢',
+  id = 'qingxin san',
+  alternate_id = { 'san' },
+  type = 'drug',
+  value = 10000,
+  improve = { jingli_max = 1 },
+  cond = 'player.enable.force and player.enable.force.skill == ["ÉñÔª¹¦"]',
+},
+
+['ÌìÍõ»¤ÐÄµ¤'] = {
+  iname = 'ÌìÍõ»¤ÐÄµ¤',
+	name = 'ÌìÍõ»¤ÐÄµ¤',
+  id = 'huxin dan',
+  alternate_id = { 'dan' },
+  no_give = true,
+  type = 'drug',
+  weight = 25,
+  value = 10,
+  cure = { qi = 'max', qi_max = 'max' },
+  cond = 'player.party == "Îäµ±ÅÉ" and player.exp >= 100000 and player.skill["ë³ëµ×ÏÆø"] and player.skill["ë³ëµ×ÏÆø"].level >= 80 and player.skill["±¾²ÝÊõÀí"] and player.skill["±¾²ÝÊõÀí"].level >= 60',
+},
+
+['ÓñÁéÉ¢'] = {
+  iname = 'ÓñÁéÉ¢',
+	name = 'ÓñÁéÉ¢',
+  id = 'yuling san',
+  alternate_id = { 'yuling', 'san' },
+  type = 'drug',
+  weight = 30,
+  value = 20000,
+  cure = { hot_poison = true },
+},
+
+--------------------------------------------------------------------------------
+-- normal swords
 
 ['³¤½£'] = {
   iname = '³¤½£',
@@ -509,6 +936,28 @@ local item = {
   quality = 20,
 },
 
+['³¤½£#YZ'] = {
+  iname = '³¤½£#YZ',
+	name = '³¤½£',
+  id = 'changjian',
+  alternate_id = { 'jian' },
+  type = 'sword',
+  weight = 5000,
+  value = 1500,
+  quality = 20,
+},
+
+['³¤½£#SZ'] = {
+  iname = '³¤½£#SZ',
+	name = '³¤½£',
+  id = 'changjian',
+  alternate_id = { 'jian' },
+  type = 'sword',
+  weight = 5000,
+  value = 1500,
+  quality = 25,
+},
+
 ['¸Ö½£'] = {
   iname = '¸Ö½£',
 	name = '¸Ö½£',
@@ -518,20 +967,6 @@ local item = {
   weight = 6000,
   value = 2000,
   quality = 30,
-},
-
-['¸Öµ¶'] = {
-  iname = '¸Öµ¶',
-	name = '¸Öµ¶',
-  id = 'blade',
-  alternate_id = { 'dao' },
-  type = 'blade',
-  weight = 5000,
-  value = 1000,
-  quality = 20,
-  source = {
-    { type = 'cmd', cmd = 'na dao', location = 'ÌìÉ½±øÆ÷ÊÒ', }
-  }
 },
 
 ['Ä¾½£'] = {
@@ -549,21 +984,22 @@ local item = {
   iname = 'Öñ½£',
 	name = 'Öñ½£',
   id = 'zhu jian',
-  alternate_id = { 'jian', 'sword' },
+  alternate_id = { 'zhujian', 'jian', 'sword' },
   type = 'sword',
   weight = 1000,
   value = 100,
   quality = 5,
 },
 
-['Öñ°ô'] = {
-  iname = 'Öñ°ô',
-	name = 'Öñ°ô',
-  id = 'zhubang',
-  type = 'stick',
-  weight = 3000,
-  value = 200,
-  quality = 25,
+['Öñ½£#SZ'] = {
+  iname = 'Öñ½£#SZ',
+	name = 'Öñ½£',
+  id = 'zhu jian',
+  alternate_id = { 'jian', 'sword' },
+  type = 'sword',
+  weight = 1000,
+  value = 100,
+  quality = 10,
 },
 
 ['Ðå»¨Õë'] = {
@@ -575,6 +1011,319 @@ local item = {
   weight = 500,
   value = 200,
   quality = 10,
+},
+
+--------------------------------------------------------------------------------
+-- normal blades
+
+['¸Öµ¶'] = {
+  iname = '¸Öµ¶',
+	name = '¸Öµ¶',
+  id = 'blade',
+  alternate_id = { 'dao' },
+  type = 'blade',
+  weight = 5000,
+  value = 1000,
+  quality = 20,
+  source = {
+    { type = 'cmd', cmd = 'na dao', location = 'ÌìÉ½±øÆ÷ÊÒ', }
+  }
+},
+
+['¸Öµ¶#SZ'] = {
+  iname = '¸Öµ¶#SZ',
+	name = '¸Öµ¶',
+  id = 'blade',
+  type = 'blade',
+  weight = 7000,
+  value = 1000,
+  quality = 20,
+},
+
+['²Ëµ¶#SZ'] = {
+  iname = '²Ëµ¶#SZ',
+	name = '²Ëµ¶',
+  id = 'cai dao',
+  alternate_id = { 'dao' },
+  type = 'blade',
+  weight = 4000,
+  value = 1500,
+  quality = 15,
+},
+
+['Ìêµ¶'] = {
+  iname = 'Ìêµ¶',
+	name = 'Ìêµ¶',
+  id = 'ti dao',
+  alternate_id = { 'dao', 'blade' },
+  type = 'blade',
+  weight = 100,
+  value = 1000,
+  quality = 2,
+},
+
+['Âíµ¶'] = {
+  iname = 'Âíµ¶',
+	name = 'Âíµ¶',
+  id = 'ma dao',
+  alternate_id = { 'dao', 'blade', 'madao' },
+  type = 'blade',
+  weight = 12000,
+  value = 1500,
+  quality = 20,
+},
+
+['°¢À­²®Íäµ¶'] = {
+  iname = '°¢À­²®Íäµ¶',
+	name = '°¢À­²®Íäµ¶',
+  id = 'wandao',
+  type = 'blade',
+  weight = 6000,
+  value = 1500,
+  quality = 20,
+},
+
+--------------------------------------------------------------------------------
+-- normal hammers
+
+['Ìú´¸#SZ'] = {
+  iname = 'Ìú´¸#SZ',
+	name = 'Ìú´¸',
+  id = 'tie chui',
+  alternate_id = { 'chui' },
+  type = 'hammer',
+  weight = 7000,
+  value = 1500,
+  quality = 30,
+},
+
+['Á÷ÐÇ´¸'] = {
+  iname = 'Á÷ÐÇ´¸',
+	name = 'Á÷ÐÇ´¸',
+  id = 'liuxing chui',
+  alternate_id = { 'chui', 'hammer' },
+  type = 'hammer',
+  weight = 10000,
+  value = 1000,
+  quality = 36,
+},
+
+['íàÊ¯´¸'] = {
+  iname = 'íàÊ¯´¸',
+	name = 'íàÊ¯´¸',
+  id = 'qingshi chui',
+  alternate_id = { 'chui', 'hammer' },
+  type = 'hammer',
+  weight = 1200,
+  value = 130,
+  quality = 24,
+},
+
+--------------------------------------------------------------------------------
+-- normal clubs
+
+['Ìú¹÷'] = {
+  iname = 'Ìú¹÷',
+	name = 'Ìú¹÷',
+  id = 'tiegun',
+  alternate_id = { 'gun' },
+  type = 'club',
+  weight = 5000,
+  value = 100,
+  quality = 20,
+},
+
+--------------------------------------------------------------------------------
+-- normal daggers
+
+['Ø°Ê×#SZ'] = {
+  iname = 'Ø°Ê×#SZ',
+	name = 'Ø°Ê×',
+  id = 'bi shou',
+  alternate_id = { 'shou' },
+  type = 'dagger',
+  weight = 4000,
+  value = 1000,
+  quality = 10,
+},
+
+['µ¥ÈÐØ°'] = {
+  iname = 'µ¥ÈÐØ°',
+	name = 'µ¥ÈÐØ°',
+  id = 'danren bi',
+  alternate_id = { 'bi', 'dagger' },
+  type = 'dagger',
+  weight = 600,
+  value = 120,
+  quality = 15,
+},
+
+['°µÉ±Ø°Ê×'] = {
+  iname = '°µÉ±Ø°Ê×',
+	name = '°µÉ±Ø°Ê×',
+  id = 'ansha bishou',
+  alternate_id = { 'bishou', 'dagger' },
+  type = 'dagger',
+  weight = 500,
+  value = 1000,
+  quality = 20,
+},
+
+--------------------------------------------------------------------------------
+-- normal flutes
+
+['Óñóï'] = {
+  iname = 'Óñóï',
+	name = 'Óñóï',
+  id = 'yu xiao',
+  alternate_id = { 'xiao' },
+  type = 'flute',
+  weight = 250,
+  value = 2000,
+  quality = 25,
+},
+
+['óï'] = {
+  iname = 'óï',
+	name = 'óï',
+  id = 'xiao',
+  type = 'flute',
+  weight = 150,
+  value = 600,
+  quality = 15,
+},
+
+--------------------------------------------------------------------------------
+-- normal sticks
+
+['Öñ°ô'] = {
+  iname = 'Öñ°ô',
+	name = 'Öñ°ô',
+  id = 'zhu bang',
+  alternate_id = { 'zhubang', 'bang' },
+  type = 'stick',
+  weight = 1500,
+  value = 200,
+  quality = 20,
+},
+
+['Öñ°ô#YZ'] = {
+  iname = 'Öñ°ô#YZ',
+	name = 'Öñ°ô',
+  id = 'zhubang',
+  type = 'stick',
+  weight = 5000,
+  value = 200,
+  quality = 20,
+},
+
+['Öñ°ô#SZ'] = {
+  iname = 'Öñ°ô#SZ',
+	name = 'Öñ°ô',
+  id = 'zhubang',
+  type = 'stick',
+  weight = 3000,
+  value = 200,
+  quality = 25,
+},
+
+--------------------------------------------------------------------------------
+-- normal whips
+
+['°Ù½ÚÁ´'] = {
+  iname = '°Ù½ÚÁ´',
+	name = '°Ù½ÚÁ´',
+  id = 'baijie lian',
+  alternate_id = { 'lian', 'whip' },
+  type = 'whip',
+  weight = 900,
+  value = 140,
+  quality = 26,
+},
+
+['³¤±Þ'] = {
+  iname = '³¤±Þ',
+	name = '³¤±Þ',
+  id = 'changbian',
+  alternate_id = { 'bian' },
+  type = 'whip',
+  weight = 5000,
+  value = 100,
+  quality = 20,
+},
+
+['Âí±Þ'] = {
+  iname = 'Âí±Þ',
+	name = 'Âí±Þ',
+  id = 'mabian',
+  alternate_id = { 'bian' },
+  type = 'whip',
+  weight = 500,
+  value = 300,
+  quality = 20,
+},
+
+--------------------------------------------------------------------------------
+-- normal hooks
+
+['µ¥¹³'] = {
+  iname = 'µ¥¹³',
+	name = 'µ¥¹³',
+  id = 'hook',
+  alternate_id = { 'gou' },
+  type = 'hook',
+  weight = 5000,
+  value = 4000,
+  quality = 30,
+},
+
+--------------------------------------------------------------------------------
+-- normal staffs
+
+['ËÄÃ÷²ù'] = {
+  iname = 'ËÄÃ÷²ù',
+	name = 'ËÄÃ÷²ù',
+  id = 'siming chan',
+  alternate_id = { 'chan', 'staff' },
+  type = 'staff',
+  weight = 4000,
+  value = 3500,
+  quality = 65,
+},
+
+['¸ÖÕÈ'] = {
+  iname = '¸ÖÕÈ',
+	name = '¸ÖÕÈ',
+  id = 'gangzhang',
+  type = 'staff',
+  weight = 5000,
+  value = 1000,
+  quality = 25,
+},
+
+--------------------------------------------------------------------------------
+-- normal axes
+
+['Ó¥×ì¸«'] = {
+  iname = 'Ó¥×ì¸«',
+	name = 'Ó¥×ì¸«',
+  id = 'yingzui fu',
+  alternate_id = { 'fu', 'axe' },
+  type = 'axe',
+  weight = 1100,
+  value = 130,
+  quality = 28,
+},
+
+['¸Ö¸«'] = {
+  iname = '¸Ö¸«',
+	name = '¸Ö¸«',
+  id = 'gang fu',
+  alternate_id = { 'fu', 'axe' },
+  type = 'axe',
+  weight = 40000,
+  value = 2000,
+  quality = 30,
 },
 
 --------------------------------------------------------------------------------
@@ -632,6 +1381,18 @@ local item = {
   quality = 5,
 },
 
+['½õ»¢Åû·ç'] = {
+  iname = '½õ»¢Åû·ç',
+	name = '½õ»¢Åû·ç',
+  id = 'jinhu pifeng',
+  alternate_id = { 'pifeng' },
+  type = 'mantle',
+  weight = 300,
+  value = 300,
+  quality = 10,
+  attr = { dodge = 2 },
+},
+
 --------------------------------------------------------------------------------
 -- treasure armor
 
@@ -644,6 +1405,45 @@ local item = {
   weight = 5000,
   quality = 150,
   vanish_on_drop = true,
+},
+
+--------------------------------------------------------------------------------
+-- books
+
+['Öâáá±¸¼±·½'] = {
+  iname = 'Öâáá±¸¼±·½',
+	name = 'Öâáá±¸¼±·½',
+  id = 'ji fang',
+  alternate_id = { 'medicine book' },
+  type = 'book',
+  weight = 500,
+  value = 2500,
+  read = { exp_required = 5000, jing_cost = 20, difficulty = 22, },
+  skill = { name = '±¾²ÝÊõÀí', min = 0, max = 31 },
+},
+
+['Ô¢Òâ²Ý'] = {
+  iname = 'Ô¢Òâ²Ý',
+	name = 'Ô¢Òâ²Ý',
+  id = 'yuyi cao',
+  alternate_id = { 'medicine book' },
+  type = 'book',
+  weight = 500,
+  value = 5000,
+  read = { exp_required = 6000, jing_cost = 25, difficulty = 23, },
+  skill = { name = '±¾²ÝÊõÀí', min = 30, max = 41 },
+},
+
+['Èý¸ÔÊ¶ÂÔ'] = {
+  iname = 'Èý¸ÔÊ¶ÂÔ',
+	name = 'Èý¸ÔÊ¶ÂÔ',
+  id = 'sangang shilue',
+  alternate_id = { 'medicine book' },
+  type = 'book',
+  weight = 500,
+  value = 6000,
+  read = { exp_required = 10000, jing_cost = 30, difficulty = 24, },
+  skill = { name = '±¾²ÝÊõÀí', min = 40, max = 51 },
 },
 
 --------------------------------------------------------------------------------
@@ -798,6 +1598,33 @@ local item = {
   source = {
     { type = 'local_handler', handler = 'hmy_key', location = 'ºÚÄ¾ÑÂÊé·¿', },
   },
+},
+
+['ÌúÇÂ'] = {
+  iname = 'ÌúÇÂ',
+	name = 'ÌúÇÂ',
+  id = 'tie qiao',
+  alternate_id = { 'qiao' },
+  weight = 1500,
+  value = 2000,
+},
+
+['Áò»Ç'] = {
+  iname = 'Áò»Ç',
+	name = 'Áò»Ç',
+  id = 'liu huang',
+  alternate_id = { 'liuhuang' },
+  weight = 80,
+  value = 99,
+},
+
+['Ì³×Ó'] = {
+  iname = 'Ì³×Ó',
+	name = 'Ì³×Ó',
+  id = 'tan zi',
+  alternate_id = { 'tanzi' },
+  weight = 1000,
+  value = 499,
 },
 
 }

@@ -191,6 +191,8 @@ trigger.new{ name = 'inventory_get', match = '^(> )*你捡起(\\S+)。$', func = par
 
 trigger.new{ name = 'inventory_lost', match = '^(> )*你突然发现(?:身上的)?(\\S+)不见了！', func = parse_lost, enabled = true }
 trigger.new{ name = 'inventory_lost2', match = '^(> )*你一时想不起(\\S+)有什么用处，就随手把它丢掉了。', func = parse_lost, enabled = true }
+-- 月饼整个腐烂掉了。
+-- 你将剩下的烤鸭吃得干干净净。
 
 trigger.new{ name = 'inventory_buy', match = '^(> )*你以(\\S+)的价格从(\\S+)那里买下了一\\S\\S(\\S+)。', func = parse_buy, enabled = true }
 trigger.new{ name = 'inventory_sell', match = '^(> )*你以(\\S+)的价格卖掉了一\\S\\S(\\S+)给(\\S+)。', func = parse_sell, enabled = true }
@@ -200,9 +202,11 @@ trigger.new{ name = 'inventory_give2', match = '^(> )*你拿出(\\S+)\\(\\w+\\)给(\
 trigger.new{ name = 'inventory_accept', match = '^(> )*([^、，]+)给你(\\S+)。', func = parse_accept, enabled = true }
 
 trigger.new{ name = 'inventory_dazao_wield', match = '^(> )*你将手一挥，一柄(\\S+)从身后飞出，电光一闪，已经握在了你手中。', func = parse_wield, enabled = true }
-trigger.new{ name = 'inventory_normal_wield', match = '^(> )*你「唰」的一声抽出一柄(\\S+)握在手中。', func = parse_wield, enabled = true }
+trigger.new{ name = 'inventory_normal_wield', match = '^(> )*你「唰」的一声\\S\\S出一柄(\\S+)握在手中。', func = parse_wield, enabled = true }
 trigger.new{ name = 'inventory_zhujian_wield', match = '^(> )*你拿出一把(\\S+)，握在手中。', func = parse_wield, enabled = true }
 trigger.new{ name = 'inventory_zhen_wield', match = '^(> )*你用右手大拇指和食指捻起一枚(\\S+)。', func = parse_wield, enabled = true }
+-- 操起$n握在手里。
+-- 「唰」的一声将$n抽出握在手中。
 
 trigger.new{ name = 'inventory_dazao_unwield', match = '^(> )*你将手中的\\S+一弹，电光闪耀中，已不见了\\S+的踪迹。', func = parse_unwield, enabled = true }
 trigger.new{ name = 'inventory_normal_unwield', match = '^(> )*你将手中的\\S+插回\\S\\S鞘。', func = parse_unwield, enabled = true }
