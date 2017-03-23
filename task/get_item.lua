@@ -27,7 +27,7 @@ function task:_resume()
   -- complete the task if have enough item
   if has_item then self.result = has_item; self:complete() return end
   -- otherwise, try the best source available
-  local source = item.get_best_source( self.item )
+  local source = item.get_best_source{ item = self.item }
   if not source then self:fail() return end
   self:handle_source( source )
 end

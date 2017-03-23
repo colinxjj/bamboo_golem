@@ -157,6 +157,25 @@ function task:_complete()
   message.verbose( 'ÕÍ≥…ª÷∏¥»ŒŒÒ£∫' .. get_param_string( self ) )
 end
 
+local function food_source_evaluator( source )
+  local it = item.get( source.item )
+  local food_supply = ( it.consume_count or 1 ) * it.food_supply * 0.5
+  -- demote food with excessive supply
+  local gap = 100 - player.food
+  if food_supply > gap then return ( gap - food_supply ) * 0.5 end
+  -- demote food with too low supply
+  if gap / food_supply > 2 then return 0 - ( gap - food_supply ) * 0.5 end
+end
+
+local function drink_source_evaluator( source )
+  if source.item == '»È¿“' then
+    -- if food and water levels are both low, »È¿“ is a more attractive choice
+    if player.food < 50 and player.water < 50 then return 20 end
+    -- if food or water level is above 100, then completely ignore »È¿“
+    if player.food >= 100 or player.water >= 100 then return -1000000 end
+  end
+end
+
 function task:eat_drink()
   local choice
   if is_eat_needed( self ) and not is_drink_needed( self ) then
@@ -165,8 +184,8 @@ function task:eat_drink()
     choice = 'drink'
   else
     local curr_loc = map.get_current_location()[ 1 ].id
-    local best_food_source = item.get_best_source 'food'
-    local best_drink_source = item.get_best_source 'drink'
+    local best_food_source = item.get_best_source{ item = 'food', custom_source_evaluator = food_source_evaluator }
+    local best_drink_source = item.get_best_source{ item = 'drink', custom_source_evaluator = drink_source_evaluator }
     choice = ( best_food_source.location == curr_loc and 'food' )
                 or ( best_drink_source.location == curr_loc and 'drink' )
                 or ( best_food_source.score > best_drink_source.score and 'food' )

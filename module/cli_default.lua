@@ -206,8 +206,7 @@ cli.register{ cmd = 'pct', desc = '列出当前所有触发器。', func = parse_pct, no_p
 -- test
 
 local function parse_t( _, input )
-  local manual = taskmaster.current_manual_task
-  manual:newweaksub{ class = 'manage_inventory', action = 'wield', item = 'sword', fail_func = manual.fail_catcher }
+  tprint( item.get_sorted_source{ item = 'food' } )
 end
 
 cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }

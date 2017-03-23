@@ -89,6 +89,7 @@ end
   fail_msg = 'Some text', text to trigger on to indicate the command failed and the fail_func should be called (optional)
   fail_func = a_func, -- a function to run when the fail_msg has been triggered (optional)
   retry_msg = 'Some other text', -- text to trigger on to indicate the command failed and should be retried (optional)
+  retry_until_msg = 'Some other text', -- text to trigger on to indicate the command no longer needs to be retried, if this isn't triggered, the command will be retried (optional)
 } ]]
 function cmd.new( c )
   assert( type( c ) == 'table', 'cmd.new - parameter must be a table' )

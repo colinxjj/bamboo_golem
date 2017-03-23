@@ -266,34 +266,36 @@ local function calculate_item_quality_score( it )
 	if it.food_supply or it.water_supply then return ( it.consume_count or 1 ) * ( ( it.food_supply or 0 ) + ( it.water_supply or 0 ) ) * 0.2 end
 end
 
-local function calculate_source_score( source, is_quality_ignored )
+local function calculate_source_score( source, t )
 	-- rank sources whose condition the player doesn't meet very low scores
 	if source.cond and not cond_checker[ source.cond ]() then return -1000000 end
 	--print( source.item, source.location )
 	local score = 0
 	-- distance score
-	local loc = map.get_current_location()[ 1 ]
-	local path_cost = map.getcost( loc, source.location )
-	if not path_cost then return -1000000 end -- no path cost means that we can't get to this source
-	score = score - path_cost * 0.5
-	--print( 'distance score: -' .. path_cost * 0.5 )
+	if not t.is_distance_ignored then
+		local loc = map.get_current_location()[ 1 ]
+		local path_cost = map.getcost( loc, source.location )
+		if not path_cost then return -1000000 end -- no path cost means that we can't get to this source
+		score = score - path_cost * 0.5
+		--print( 'distance score: -' .. path_cost * 0.5 )
+	end
 	-- weight score
 	local weight = item.get( source.item ).weight
-	if weight then
+	if not t.is_weight_ignored and weight then
 		local encumbrance = weight / player.encumbrance_max * 100
 		score = score - math.ceil( encumbrance * 50 ) / 10
 		--print( 'weight score: -' .. math.ceil( encumbrance * 50 ) / 10 )
 	end
 	-- price score
 	local value = item.get( source.item ).value
-	if value and source.type == 'shop' then
+	if not t.is_price_ignored and value and source.type == 'shop' then
 		local silver = value / 100
 		score = score - silver
 		--print( 'price score: -' .. silver )
 	end
 	-- quality score
 	local quality = calculate_item_quality_score( item.get( source.item ) )
-	if quality and not is_quality_ignored then
+	if not t.is_quality_ignored and quality then
 		score = score + quality
 		--print( 'quality score: +' .. quality )
 	end
@@ -305,20 +307,23 @@ local function sort_by_score( a, b )
 	return a.score > b.score
 end
 
-function item.get_sorted_source( name, is_quality_ignored )
-	assert( type( name ) == 'string', 'item.get_sorted_source - param must be a string' )
-	local slist = item.get_all_source( name )
+function item.get_sorted_source( t )
+	assert( type( t ) == 'table', 'item.get_sorted_source - param must be a string' )
+	assert( type( t.item ) == 'string', 'item.get_sorted_source - the item param must be a string' )
 	for _, source in pairs( slist ) do
-		source.score = calculate_source_score( source, is_quality_ignored )
+		source.score = calculate_source_score( source, t )
+		-- if a custom source evaluator is specified, then use it to adjust the score
+		source.score = t.custom_source_evaluator and source.score + t.custom_source_evaluator( source ) or source.score
 	end
 	table.sort( slist, sort_by_score )
 	--tprint( slist )
 	return slist
 end
 
-function item.get_best_source( name, is_quality_ignored )
-	assert( type( name ) == 'string', 'item.get_best_source - param must be a string' )
-	local slist = item.get_sorted_source( name, is_quality_ignored )
+function item.get_best_source( t )
+	assert( type( t ) == 'table', 'item.get_best_source - param must be a string' )
+	assert( type( t.item ) == 'string', 'item.get_best_source - the item param must be a string' )
+	local slist = item.get_sorted_source( t )
 	for _, source in ipairs( slist ) do
 		if item.is_valid_source( source ) then return source end
 	end

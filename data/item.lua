@@ -623,8 +623,8 @@ local item = {
   weight = 700,
   value = 5000,
   consume_count = 1,
-  food_supply = 200,
-  water_supply = 200,
+  food_supply = 160,
+  water_supply = 160,
 },
 
 --------------------------------------------------------------------------------
