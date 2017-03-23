@@ -8,21 +8,7 @@ local cmd = {}
 -- a list to store all commands (queue and history)
 local list, list_startpos, list_endpos, list_curpos = {}, 0, 0, 1
 
--- a list of messages for parsing command results
-local cmd_busy_message = {
-  busy = '你正忙着',
-  move_busy = '你的动作还没有完成，不能移动。',
-  move_combat_busy = '你逃跑失败。',
-  ask_busy = '您先歇口气再说话吧。',
-  quit_busy = '你现在正忙着做其他事，不能退出游戏！',
-  transact_busy = '\\S*哟，抱歉啊，我这儿正忙着呢……您请稍候。',
-  yun_busy = '( 你上一个动作还没有完成，不能施用内功。)',
-
-  asked = '你向\\S+打听有关『.+』的消息。',
-
-  halt_busy = '你现在很忙，停不下来。',
-  halt_ok = '你现在不忙。',
-}
+--------------------------------------------------------------------------------
 
 -- extract the core command. e.g. the core command for 'ask di about 神照经' is 'ask'
 local core_patt = lpeg.C( ( lpeg.R 'az' + '#' )^1 ) * ( lpeg.P ' ' + -1 )
@@ -99,6 +85,10 @@ end
 --[[ usage: cmd.new{
   'kiss;#2 kick;kill', 'haha;#wa 2000;hehe'; -- a series of commands to send. can be distributed across multiple varargs in the array part, and seperated by colons (;) in each arg. zmud style #wa are also supported. (required)
   task = a_task_instance, -- the task instance the commands belongs to. commands from dead tasks will be discarded (optional)
+  complete_func = a_func, -- a function to run when a command has been successfully (optional)
+  fail_msg = 'Some text', text to trigger on to indicate the command failed and the fail_func should be called (optional)
+  fail_func = a_func, -- a function to run when the fail_msg has been triggered (optional)
+  retry_msg = 'Some other text', -- text to trigger on to indicate the command failed and should be retried (optional)
 } ]]
 function cmd.new( c )
   assert( type( c ) == 'table', 'cmd.new - parameter must be a table' )
@@ -119,6 +109,8 @@ end
 function cmd.get_last()
   return list[ list_curpos ] or list[ list_curpos - 1 ]
 end
+
+--------------------------------------------------------------------------------
 
 local is_possibly_still_busy, is_waiting_for_cmd_result, cmd_timeout_hbc
 
@@ -157,6 +149,9 @@ local function send( c )
       c.status = 'completed'
     else
       c.status = 'sent'
+      if c.retry_msg then trigger.update{ name = 'cmd_retry', match = c.retry_msg, enabled = true } end
+      if c.retry_until_msg then trigger.update{ name = 'cmd_retry_until', match = c.retry_until_msg, enabled = true } end
+      if c.fail_msg then trigger.update{ name = 'cmd_fail', match = c.fail_msg, enabled = true } end
       start_waiting_for_cmd_result()
     end
     if c.no_echo then
@@ -188,15 +183,20 @@ function cmd.dispatch()
     if c.status == 'encountered_busy' and not c.ignore_result then -- reset status and wait for next dispatch (which will not immediately resend the commands because of the set busy)
       c.status = 'pending'
     else
-      if c.status == 'sent' and ( is_waiting_for_cmd_result and get_heartbeat_count() < cmd_timeout_hbc ) then return end -- ignore other sources when waiting for prompt and time out is not expired
+      if c.status == 'sent' and ( is_waiting_for_cmd_result and get_heartbeat_count() < cmd_timeout_hbc ) then return end -- ignore other sources when waiting for prompt and time out has not expired
 
       stop_waiting_for_cmd_result()
 
-      -- move on to next command
       if c.status ~= 'pending' then
-        c.status = 'completed'
-        if c.complete_func then c.complete_func( c.task ) end
-        list_curpos = list_curpos + 1
+        if c.is_retry_needed or ( c.retry_until_msg and c.is_retry_needed ~= false ) then -- retry the command
+          c.status, c.is_retry_needed = 'pending'
+        else -- move on to next command
+          c.status = 'completed'
+          if c.retry_msg or c.retry_until_msg or c.fail_msg then trigger.disable( 'cmd_retry', 'cmd_retry_until', 'cmd_fail' ) end
+          local func = c.is_successful ~= false and c.complete_func or c.fail_func
+          if func then func( c.task ) end -- run the command's binded function
+          list_curpos = list_curpos + 1
+        end
       end
 
       if player.is_busy then is_possibly_still_busy = true; return end -- wait if player is busy
@@ -210,23 +210,55 @@ function cmd.dispatch()
   end
 end
 
--- parse cmd results
-function cmd.parse_busy( name )
+--------------------------------------------------------------------------------
+
+local function parse_busy()
   local c = list[ list_curpos ]
   if not c then return end
-
-  if name == 'cmd_asked' then addbusy( 2 ) end -- add 2 seconds of busy after successful 'ask' command
-  if name == 'cmd_halt_ok' then is_possibly_still_busy = false end -- halt ok, no longer need to try halting
-  if string.find( name, 'busy' ) then
-    c.status = 'encountered_busy'
-    addbusy( 2 )
-  end
+  c.status = 'encountered_busy'
+  addbusy( 2 )
 end
 
--- add command parsing triggers
-for name, msg in pairs( cmd_busy_message ) do
-  trigger.new{ name = 'cmd_' .. name, match = '^(> )*' .. msg, func = cmd.parse_busy, group = 'cmd', enabled = false, keep_eval = true, sequence = 90 }
+trigger.new{ name = 'cmd_busy', match = '^(> )*(你正忙着|你的动作还没有完成|你逃跑失败|您先歇口气再说话吧|你现在正忙着做其他事|\\S*哟，抱歉啊，我这儿正忙着呢……您请稍候。|\\( 你上一个动作还没有完成，不能施用内功。\\)|你现在很忙，停不下来)', func = parse_busy, group = 'cmd' }
+
+-- add 2 seconds of busy after successful 'ask' command
+local function ask_start_busy()
+  addbusy( 2 )
 end
+
+trigger.new{ name = 'cmd_ask_start_busy', match = '^(> )*你向\\S+打听有关『.+』的消息。$', func = ask_start_busy, group = 'cmd' }
+
+-- halt ok, no longer need to try halting
+local function halt_ok()
+  is_possibly_still_busy = false
+end
+
+trigger.new{ name = 'cmd_halt_ok', match = '^(> )*你现在不忙。$', func = halt_ok, group = 'cmd' }
+
+local function parse_cmd_fail()
+  local c = list[ list_curpos ]
+  if not c then return end
+  if c.fail_msg then c.has_failed = true end
+end
+
+trigger.new{ name = 'cmd_fail', match = '^XXXXX$', func = parse_cmd_fail, sequence = 90, keep_eval = true }
+
+local function parse_cmd_retry()
+  local c = list[ list_curpos ]
+  if not c then return end
+  if c.retry_msg then c.is_retry_needed = true end
+end
+
+trigger.new{ name = 'cmd_retry', match = '^YYYYY$', func = parse_cmd_retry, sequence = 90, keep_eval = true }
+
+local function parse_cmd_retry_until()
+  local c = list[ list_curpos ]
+  if not c then return end
+  if c.retry_until_msg then c.is_retry_needed = false end
+end
+
+trigger.new{ name = 'cmd_retry_until', match = '^ZZZZZ$', func = parse_cmd_retry_until, sequence = 90, keep_eval = true }
+
 
 --------------------------------------------------------------------------------
 -- End of module

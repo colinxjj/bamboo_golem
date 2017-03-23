@@ -56,7 +56,7 @@ end
 local function parse_balance( _, t )
   trigger.disable 'inventory_balance'
   player.bank_balance = cn_amount_to_cash( t[ 1 ] )
-  event.new 'inventory'
+  event.new 'inventory_update'
 end
 
 local drop_patt = lpeg.P 'drop ' * lpeg.C( lpeg.R '09'^1 ) * ' ' * lpeg.C( lpeg.P( 1 )^1 )
@@ -76,7 +76,7 @@ local function parse_drop( _, t )
   it.count = it.count and it.count - count or 0
   -- remove item if all is dropped
   if it.count < 1 then player.inventory[ name ] = nil end
-  event.new 'inventory'
+  event.new 'inventory_update'
 end
 
 local get_patt = lpeg.P 'get ' * lpeg.C( lpeg.R '09'^1 ) * ' ' * lpeg.C( lpeg.P( 1 )^1 )
@@ -93,17 +93,17 @@ local function parse_get( _, t )
     if not count or it.id ~= id then it.count_is = 'min'; return end -- mark item's current count as a lower limit
   end
   it.count = it.count + count
-  event.new 'inventory'
+  event.new 'inventory_update'
 end
 
 local function parse_lost( _, t )
   local name, count = extract_name_count( t[ 2 ] )
   local it = player.inventory[ name ]
-  if not it or not it.count then return end
-  it.count = it.count - count
+  if not it then return end
+  it.count = ( it.count or 1 ) - count
   -- remove item if all is lost
   if it.count < 1 then player.inventory[ name ] = nil end
-  event.new 'inventory'
+  event.new 'inventory_update'
 end
 
 local function parse_buy( _, t )
@@ -118,7 +118,7 @@ local function parse_buy( _, t )
       player.inventory[ k ].count = v
     end
   end
-  event.new 'inventory'
+  event.new 'inventory_update'
 end
 
 local function parse_sell( _, t )
@@ -136,7 +136,7 @@ local function parse_sell( _, t )
       player.inventory[ k ].count = player.inventory[ k ].count + v
     end
   end
-  event.new 'inventory'
+  event.new 'inventory_update'
 end
 
 local num = ( lpeg.P '一' + '二' + '三' + '四' + '五' + '六' + '七' + '八' + '九' + '十' + '百' + '千' + '万' + '亿' + '零')^1
@@ -151,26 +151,26 @@ local function parse_give( _, t )
   it.count = it.count - count
   -- remove item if all is dropped
   if it.count < 1 then player.inventory[ name ] = nil end
-  event.new 'inventory'
+  event.new 'inventory_update'
 end
 
 local function parse_accept( _, t )
   local name, count = extract_name_count( t[ 3 ] )
   player.inventory[ name ] = player.inventory[ name ] or { name = name, id = item.get_id( name ), count = 0, type = item.get_type( name ) }
   player.inventory[ name ].count = player.inventory[ name ].count + count
-  event.new 'inventory'
+  event.new 'inventory_update'
 end
 
 local function parse_wield( _, t )
 	for name, it in pairs( player.inventory ) do
 		if t[ 2 ] == name then player.wielded = it; break end
 	end
-  event.new 'inventory'
+  event.new 'inventory_update'
 end
 
 local function parse_unwield()
 	player.wielded = nil
-  event.new 'inventory'
+  event.new 'inventory_update'
 end
 
 local function parse_ferry_pay()
@@ -189,10 +189,10 @@ trigger.new{ name = 'inventory_balance', match = '^\\S+记完帐，告诉你：“扣除\\S
 trigger.new{ name = 'inventory_drop', match = '^(> )*你丢下(\\S+)。$', func = parse_drop, enabled = true }
 trigger.new{ name = 'inventory_get', match = '^(> )*你捡起(\\S+)。$', func = parse_get, enabled = true }
 
-trigger.new{ name = 'inventory_lost', match = '^(> )*你突然发现(?:身上的)?(\\S+)不见了！', func = parse_lost, enabled = true }
-trigger.new{ name = 'inventory_lost2', match = '^(> )*你一时想不起(\\S+)有什么用处，就随手把它丢掉了。', func = parse_lost, enabled = true }
--- 月饼整个腐烂掉了。
--- 你将剩下的烤鸭吃得干干净净。
+trigger.new{ name = 'inventory_lost', match = '^(> )*你突然发现(?:身上的)?(\\S+)不见了！$', func = parse_lost, enabled = true }
+trigger.new{ name = 'inventory_lost2', match = '^(> )*你一时想不起(\\S+)有什么用处，就随手把它丢掉了。$', func = parse_lost, enabled = true }
+trigger.new{ name = 'inventory_lost3', match = '^(> )*(\\S+)整个腐烂掉了。$', func = parse_lost, enabled = true }
+trigger.new{ name = 'inventory_lost4', match = '^(> )*你将剩下的(\\S+)吃得干干净净。$', func = parse_lost, enabled = true }
 
 trigger.new{ name = 'inventory_buy', match = '^(> )*你以(\\S+)的价格从(\\S+)那里买下了一\\S\\S(\\S+)。', func = parse_buy, enabled = true }
 trigger.new{ name = 'inventory_sell', match = '^(> )*你以(\\S+)的价格卖掉了一\\S\\S(\\S+)给(\\S+)。', func = parse_sell, enabled = true }
@@ -202,16 +202,12 @@ trigger.new{ name = 'inventory_give2', match = '^(> )*你拿出(\\S+)\\(\\w+\\)给(\
 trigger.new{ name = 'inventory_accept', match = '^(> )*([^、，]+)给你(\\S+)。', func = parse_accept, enabled = true }
 
 trigger.new{ name = 'inventory_dazao_wield', match = '^(> )*你将手一挥，一柄(\\S+)从身后飞出，电光一闪，已经握在了你手中。', func = parse_wield, enabled = true }
-trigger.new{ name = 'inventory_normal_wield', match = '^(> )*你「唰」的一声\\S\\S出一柄(\\S+)握在手中。', func = parse_wield, enabled = true }
-trigger.new{ name = 'inventory_zhujian_wield', match = '^(> )*你拿出一把(\\S+)，握在手中。', func = parse_wield, enabled = true }
-trigger.new{ name = 'inventory_zhen_wield', match = '^(> )*你用右手大拇指和食指捻起一枚(\\S+)。', func = parse_wield, enabled = true }
--- 操起$n握在手里。
--- 「唰」的一声将$n抽出握在手中。
+trigger.new{ name = 'inventory_normal_wield', match = '^(> )*你「唰」的一声\\S\\S出一\\S\\S(\\S+)握在手中。', func = parse_wield, enabled = true }
+trigger.new{ name = 'inventory_zhujian_wield', match = '^(> )*你拿出一\\S\\S(\\S+)，握在手中。', func = parse_wield, enabled = true }
 
 trigger.new{ name = 'inventory_dazao_unwield', match = '^(> )*你将手中的\\S+一弹，电光闪耀中，已不见了\\S+的踪迹。', func = parse_unwield, enabled = true }
-trigger.new{ name = 'inventory_normal_unwield', match = '^(> )*你将手中的\\S+插回\\S\\S鞘。', func = parse_unwield, enabled = true }
+trigger.new{ name = 'inventory_normal_unwield', match = '^(> )*你将手中的\\S+插回', func = parse_unwield, enabled = true }
 trigger.new{ name = 'inventory_zhujian_unwield', match = '^(> )*你放下手中的\\S+。', func = parse_unwield, enabled = true }
-trigger.new{ name = 'inventory_zhen_unwield', match = '^(> )*你将绣花针插回绣花绷架。', func = parse_unwield, enabled = true }
 
 trigger.new{ name = 'inventory_ferry_pay', match = '^(> )*你把钱交给船家', func = parse_ferry_pay, enabled = true }
 

@@ -12,7 +12,7 @@ dev_mode = true
 do
 	local _, _, path = string.find( package.path, ';([^;]+);' )
 	MCPATH = string.sub( path, 1, string.find( path, '\\lua' ) )
-	PPATH = MCPATH .. 'BambooGolem\\'
+	PPATH = MCPATH
 	package.path = package.path .. ';' .. PPATH .. '?.lua'
 end
 

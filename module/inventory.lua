@@ -51,6 +51,14 @@ function inventory.has_cash( value )
 	return player.cash >= value
 end
 
+function inventory.is_wielded()
+	return player.wielded and true or false
+end
+
+function inventory.get_wielded()
+	return player.wielded
+end
+
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------

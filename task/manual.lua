@@ -11,16 +11,8 @@ none
 task.class = 'manual'
 task.priority = 2 -- manual task has second highest priority
 
-function task:complete()
-  -- this task never completes
-end
-
-function task:fail()
-  -- this task never fails
-end
-
-function task:kill()
-  -- this task will never be killed
+-- a catcher for subtask failure to avoid this task being killed as a result the subtask's failure
+function task:fail_catcher()
 end
 
 --------------------------------------------------------------------------------

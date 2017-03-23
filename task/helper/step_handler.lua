@@ -115,16 +115,15 @@ end
 
 -- 峨嵋山后山小路
 function handler:emei_move_stone()
-	if self.step.is_successful or room.get().exit.nd then
+	if room.get().exit.nd then
 		self:send{ 'nd' }
 	else
-		self:send{ 'move stone'; complete_func = handler.emei_move_stone }
+		self:send{ 'move stone'; retry_msg = '你使尽了吃奶的力气', complete_func = handler.emei_move_stone_go }
 	end
 end
-function handler:step_cmd_succeed()
-	self.step.is_successful = true
+function handler:emei_move_stone_go()
+	self:send{ 'nd' }
 end
-trigger.new{ name = 'emei_move_stone_succeed', group = 'step_handler.emei_move_stone', match = '^(> )*你双膀较劲，搬开了大石头。', func = handler.step_cmd_succeed }
 
 -- 峨嵋山洗象池
 
@@ -156,19 +155,14 @@ local sl_fota_tbl = {
 	['嵩山少林苦慧坪'] = 'say 其心无所乐;taotuo',
 	['嵩山少林晦智圣座'] = 'canchan zuo',
 }
-function handler:sl_fota()
-	local t = self.step
-	if t.to.id ~= '嵩山少林无相牌' and t.to.id ~= '嵩山少林晦智圣座' then
-		self:send{ sl_fota_tbl[ t.to.id ] }
-	elseif t.is_successful then
-		local c = t.to.id == '嵩山少林无相牌' and 'chuzhang pai' or 'enter'
-		self:send{ c }
-	else
-		self:send{ sl_fota_tbl[ t.to.id ]; complete_func = handler.sl_fota }
-	end
+function handler:sl_fota( t )
+	local retry_until_msg = ( t.to.id == '嵩山少林无相牌' and '你突然有一种出掌的冲动，便想一掌击出。' ) or ( t.to.id == '嵩山少林晦智圣座' and '你在虚空中，感觉大师座下打开了一个小门。' )
+	self:send{ sl_fota_tbl[ t.to.id ]; retry_until_msg = retry_until_msg, complete_func = retry_until_msg and handler.sl_fota_go }
 end
-trigger.new{ name = 'sl_fota_fushi', group = 'step_handler.sl_fota', match = '^你突然有一种出掌的冲动，便想一掌击出。$', func = handler.step_cmd_succeed }
-trigger.new{ name = 'sl_fota_canchan', group = 'step_handler.sl_fota', match = '^你在虚空中，感觉大师座下打开了一个小门。$', func = handler.step_cmd_succeed }
+function handler:sl_fota_go()
+	local c = self.step.to.id == '嵩山少林无相牌' and 'chuzhang pai' or 'enter'
+	self:send{ c }
+end
 
 -- 归云庄小河
 function handler:gyz_river( t )
@@ -204,7 +198,7 @@ trigger.new{ name = 'thd_sail_progress', group = 'step_handler.thd_sail', match 
 -- 绝情谷小溪
 function handler:jqg_river( t )
 	t = self.step
-	if player.wielded then
+	if inventory.is_wielded() then
 		self:newsub{ class = 'manage_inventory', action = 'unwield', complete_func = handler.jqg_river }
 	elseif t.from.id == '绝情谷小溪边' then
 		local room = room.get()
@@ -230,7 +224,7 @@ end
 
 -- 天山百丈涧、峨嵋山后山小路
 function handler:wield_sharp_weapon()
-	if not player.wielded or not item.is_type( player.wielded.name, 'sharp_weapon' ) then
+	if not inventory.is_wielded() or not item.is_type( inventory.get_wielded().name, 'sharp_weapon' ) then
 		self:newsub{ class = 'manage_inventory', action = 'wield', item = 'sharp_weapon', complete_func = handler.wield_sharp_weapon }
 	else
 		handler.data[ self.step.to.id ] = nil -- a workaround to reset maze data for 峨嵋山灌木丛
@@ -245,7 +239,7 @@ function handler:sld_enter()
 		self:send{ 'zuo mufa' }
 	elseif room.has_object '大木头' then
 		self:send{ 'bang mu tou;#wa 400;zuo mufa' }
-	elseif not player.wielded or not item.is_type( player.wielded.name, 'sharp_weapon' ) then
+	elseif not inventory.is_wielded() or not item.is_type( inventory.get_wielded().name, 'sharp_weapon' ) then
 		self:newsub{ class = 'manage_inventory', action = 'wield', item = 'sharp_weapon', complete_func = handler.sld_enter }
 	else
 		self:send{ 'chop tree' }
@@ -270,20 +264,15 @@ end
 -- 神龙岛蛇窟
 -- from 山崖 to 蛇窟
 function handler:sld_sheku()
-	if self.step.is_successful then
-		self:send{ 'climb 山藤' }
-	else
-		self:send{ 'kan 崖底'; complete_func = handler.sld_sheku }
-	end
+	self:send{ 'kan 崖底'; retry_msg = '崖底笼罩在迷雾中，什么也看不清', complete_func = handler.sld_sheku_go }
 end
-trigger.new{ name = 'sld_sheku_look', group = 'step_handler.sld_sheku', match = '^(> )*崖底笼罩在迷雾中，有一条山藤似乎挺光滑，看来常有人\\(climb\\)下去。$', func = handler.step_cmd_succeed }
+function handler:sld_sheku_go()
+	self:send{ 'climb 山藤' }
+end
 -- from 蛇窟 to 树林
 function handler:sld_sheku_leave()
-	if not self.step.is_successful then
-		self:send{ 'go south'; complete_func = handler.sld_sheku_leave }
-	end
+	self:send{ 'go south'; retry_until_msg = '^(> )*树林 - ' }
 end
-trigger.new{ name = 'sld_sheku_leave', group = 'step_handler.sld_sheku_leave', match = '^(> )*树林 - ', sequence = 90, keep_eval = true, func = handler.step_cmd_succeed }
 
 -- from 萧府后院 to 萧府树林
 
@@ -344,17 +333,15 @@ end
 
 -- 襄阳郊外峭壁
 function handler:xyjw_cliff()
-	if self.step.is_successful then
-		self:send{ '#wb 3500;mo qingtai;cuan up;#wb 3500' }
-	else
-		self:send{ 'l shibi'; complete_func = handler.xyjw_cliff }
-	end
+	self:send{ 'l shibi'; retry_msg = '但见石壁草木不生', complete_func = handler.xyjw_cliff_go }
 end
-trigger.new{ name = 'xyjw_cliff_look', group = 'step_handler.xyjw_cliff', match = '^(> )*你凝神瞧了一阵，突见峭壁上每隔数尺便生著一丛青苔，数十丛笔直排列而上。$', func = handler.step_cmd_succeed }
+function handler:xyjw_cliff_go()
+	self:send{ '#wb 3500;mo qingtai;cuan up;#wb 3500' }
+end
 
 -- 嵩山少林迎客亭、襄阳郊外剑冢、姑苏慕容小舍
 function handler:unwield_weapon()
-	if player.wielded then
+	if inventory.is_wielded() then
 		self:newsub{ class = 'manage_inventory', action = 'unwield', complete_func = handler.unwield_weapon }
 	else
 		self:send{ self.step.cmd }
@@ -392,7 +379,7 @@ trigger.new{ name = 'ty_waterfall_to_boat_fail', group = 'step_handler.ty_waterf
 
 -- 桃源县铁舟上
 function handler:ty_boat()
-	if player.wielded then
+	if inventory.is_wielded() then
 		self:newsub{ class = 'manage_inventory', action = 'unwield', complete_func = handler.ty_boat }
 	else
 		inventory.remove_item '铁舟'

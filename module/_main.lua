@@ -37,7 +37,6 @@ local cmd_processed
 
 function OnPluginTick()
 	heartbeat_count = heartbeat_count + 1
-	-- PlaySound( 1, PPATH .. 'data/sound/ding.wav', false, 0, 0 )
 
 	busy_expire() -- check if player busy should expire now
 
@@ -78,6 +77,10 @@ end
 
 --------------------------------------------------------------------------------
 -- other stuff
+
+function play_sound( name )
+	world.PlaySound( 1, PPATH .. 'data/sound/' .. name .. '.wav', false, 0, 0 )
+end
 
 -- calculate current time in game based on info in the 'time' table
 function time.get_current_hour()

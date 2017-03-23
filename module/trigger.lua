@@ -5,7 +5,7 @@ local trigger = {}
 -- This module manipulates triggers
 --------------------------------------------------------------------------------
 
--- a list of valid trigger params
+-- a list of valid trigger params, followed by their MC counterparts, if any
 local valid_param = {
   name = true,
   match = 'match',
@@ -98,7 +98,12 @@ function trigger.enable( ... )
   local t = { ... }
   for _, name in pairs( t ) do
     assert( type( name ) == 'string', 'trigger.enable - parameter must be a string' )
-    world.EnableTrigger( name )
+    local result = world.EnableTrigger( name )
+    if result == 0 then
+      if list[ name ] then list[ name ].enabled = true end
+    else
+      error( 'trigger.enable - EnableTrigger returned the following error: ' .. translate_errorcode( result ) )
+    end
   end
 end
 
@@ -107,7 +112,12 @@ function trigger.disable( ... )
   local t = { ... }
   for _, name in pairs( t ) do
     assert( type( name ) == 'string', 'trigger.disable - parameter must be a string' )
-    world.EnableTrigger( name, 0 )
+    local result = world.EnableTrigger( name, 0 )
+    if result == 0 then
+      if list[ name ] then list[ name ].enabled = false end
+    else
+      error( 'trigger.disable - EnableTrigger returned the following error: ' .. translate_errorcode( result ) )
+    end
   end
 end
 
@@ -161,9 +171,10 @@ function trigger.update( t )
     original[ k ] = v
     -- also update the trigger in MC
     option = valid_param[ k ]
-    v = option == 'sequence' and v or ( v and 'y' or 'n' )
+    v = ( option == 'sequence' or option == 'match' ) and v or ( v and 'y' or 'n' )
     if type( option ) == 'string' then
-      SetTriggerOption( t.name, option, v )
+      local result = world.SetTriggerOption( t.name, option, v )
+      assert( result == 0, 'trigger.update -  - SetTriggerOption returned the following error: ' .. translate_errorcode( result ) )
     end
   end
 end
@@ -182,12 +193,25 @@ function trigger.update_group( t )
       original[ k ] = v
       -- also update the trigger in MC
       option = valid_param[ k ]
-      v = option == 'sequence' and v or ( v and 'y' or 'n' )
+      v = ( option == 'sequence' or option == 'match' ) and v or ( v and 'y' or 'n' )
       if type( option ) == 'string' then
-        SetTriggerOption( name, option, v )
+        local result = world.SetTriggerOption( name, option, v )
+        assert( result == 0, 'trigger.update_group -  - SetTriggerOption returned the following error: ' .. translate_errorcode( result ) )
       end
     end
   end
+end
+
+function trigger.get_count()
+  local count = 0
+  for _ in pairs( list ) do
+    count = count + 1
+  end
+  return count
+end
+
+function trigger.get_all()
+  return list
 end
 
 --------------------------------------------------------------------------------

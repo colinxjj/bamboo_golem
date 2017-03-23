@@ -180,12 +180,7 @@ trigger.new{ name = 'room_ferry_arrived', match = '^(> )*(艄公说“到啦，上岸吧”
 trigger.new{ name = 'room_ferry_departed', match = '^(> )*(艄公们把踏脚板收|艄公把踏脚板收|铜锣三响，崖顶的绞盘开始转动|绳索一紧，藤筐左右摇晃振动了几下|番僧用力一推，将藤筐推离平台)', func = parse_ferry_departed, enabled = true, keep_eval = true }
 
 -- add triggers for rooms that have no exits sometimes, resulting in no trailing dash after the room name
-local no_exit_room_list = map.list_all_potentially_no_exit()
-local i = 1
-for roomname in pairs( no_exit_room_list ) do
-  trigger.new{ name = 'room_ne' .. i, match = '^(> )*(' .. roomname .. ')$', group = 'room_ne',func = parse_brief, enabled = true }
-  i = i + 1
-end
+trigger.new{ name = 'room_no_exit_brief', match = ( '^()(%s)$' ):format( table.concat( map.list_all_potentially_no_exit(), '|' ) ), func = parse_brief, enabled = true }
 
 --------------------------------------------------------------------------------
 -- End of module

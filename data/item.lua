@@ -599,7 +599,6 @@ local item = {
     { type = 'local_handler', handler = 'drink', location = '长安城茶馆', },
     { type = 'local_handler', handler = 'drink', location = '沧州城厅堂', },
     { type = 'local_handler', handler = 'drink', location = '白驼山空地', },
-    { type = 'local_handler', handler = 'instant_full', location = '绝情谷水潭表面', },
   },
 },
 
@@ -896,19 +895,6 @@ local item = {
   value = 10000,
   improve = { jingli_max = 1 },
   cond = 'player.enable.force and player.enable.force.skill == ["神元功"]',
-},
-
-['天王护心丹'] = {
-  iname = '天王护心丹',
-	name = '天王护心丹',
-  id = 'huxin dan',
-  alternate_id = { 'dan' },
-  no_give = true,
-  type = 'drug',
-  weight = 25,
-  value = 10,
-  cure = { qi = 'max', qi_max = 'max' },
-  cond = 'player.party == "武当派" and player.exp >= 100000 and player.skill["氤氲紫气"] and player.skill["氤氲紫气"].level >= 80 and player.skill["本草术理"] and player.skill["本草术理"].level >= 60',
 },
 
 ['玉灵散'] = {

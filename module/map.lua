@@ -449,7 +449,7 @@ end
 
 -- list all rooms that could have no exit (like ¶É´¬)
 function map.list_all_potentially_no_exit()
-  local result = {}
+  local temp, result = {}, {}
   for id, room in pairs( index ) do
     local exit_count = 0
     for dir, exit in pairs( room.exit ) do
@@ -460,8 +460,11 @@ function map.list_all_potentially_no_exit()
       end
     end
     if exit_count == 0 then
-      result[ room.name ] = id
+      temp[ room.name ] = id
     end
+  end
+  for roomname in pairs( temp ) do
+    result[ #result + 1 ] = roomname
   end
   return result
 end

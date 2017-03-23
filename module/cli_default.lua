@@ -13,7 +13,8 @@ local function start_go_task( dest )
   if not dest then
     message.normal 'Î´ÕÒµ½¶ÔÓ¦µÄÄ¿µÄµØ£¬Çë¼ì²é'
   else
-    taskmaster.current_manual_task:newweaksub{ class = 'go', to = dest }
+    local manual = taskmaster.current_manual_task
+    manual:newweaksub{ class = 'go', to = dest, fail_func = manual.fail_catcher }
   end
 end
 
@@ -45,7 +46,8 @@ cli.register{ cmd = 'g', desc = 'Ç°ÍùÖ¸¶¨µØµã¡£ÀıÈç£ºg ÑïÖİ³ÇÖĞÑë¹ã³¡ »ò g ÖĞÑë¹
 -- loc
 
 local function parse_loc()
-  taskmaster.current_manual_task:newsub{ class = 'locate' }
+  local manual = taskmaster.current_manual_task
+  manual:newweaksub{ class = 'locate', fail_func = manual.fail_catcher }
 end
 
 cli.register{ cmd = 'loc', desc = '¶¨Î»µ±Ç°Î»ÖÃ¡£', func = parse_loc, no_prefix = true }
@@ -69,16 +71,17 @@ cli.register{ cmd = 'dev', desc = 'ÇĞ»»¿ª·¢Ä£Ê½¡£', func = parse_dev, no_prefix 
 -- ct
 
 local function parse_ct()
-  print( time.get_current_hour() or 'Ê±¼äÎ´Öª' )
+  message.verbose( 'µ±Ç°Ê±¿ÌÎª£º' .. ( time.get_current_hour() or 'Î´Öª' ) )
 end
 
-cli.register{ cmd = 'ct', desc = 'ÏÔÊ¾µ±Ç°Ê±³½¡£', func = parse_ct, no_prefix = true }
+cli.register{ cmd = 'ct', desc = 'ÏÔÊ¾µ±Ç°Ê±¼ä¡£', func = parse_ct, no_prefix = true }
 
 --------------------------------------------------------------------------------
 -- ll
 
 local function parse_ll()
-  taskmaster.current_manual_task:newsub{ class = 'get_info', room = 'surrounding' }
+  local manual = taskmaster.current_manual_task
+  manual:newsub{ class = 'get_info', room = 'surrounding', fail_func = manual.fail_catcher }
 end
 
 cli.register{ cmd = 'll', desc = '²é¿´ËùÓĞÖÜ±ß·¿¼ä¡£', func = parse_ll, no_prefix = true }
@@ -107,7 +110,8 @@ local sp = lpeg.P ' '
 local patt = lpeg.C( any_but( sp )^1 ) * sp^1 * ( ( any_but( sp )^1 ) / tonumber )
 local function parse_tv( _, input )
   local loc, range = patt:match( input )
-  taskmaster.current_manual_task:newweaksub{ class = 'go', to = loc or input, range = range or 2 }
+  local manual = taskmaster.current_manual_task
+  manual:newweaksub{ class = 'go', to = loc or input, range = range or 2, fail_func = manual.fail_catcher }
 end
 
 cli.register{ cmd = 'tv', desc = '²âÊÔ±éÀú¡£', func = parse_tv, no_prefix = true }
@@ -116,7 +120,8 @@ cli.register{ cmd = 'tv', desc = '²âÊÔ±éÀú¡£', func = parse_tv, no_prefix = true
 -- f
 
 local function parse_f_response( choice )
-  taskmaster.current_manual_task:newweaksub{ class = 'find', object = choice }
+  local manual = taskmaster.current_manual_task
+  manual:newweaksub{ class = 'find', object = choice, fail_func = manual.fail_catcher }
 end
 
 local function parse_f( _, input )
@@ -140,7 +145,8 @@ local function parse_f( _, input )
       return
     end
   end
-  taskmaster.current_manual_task:newweaksub{ class = 'find', object = input }
+  local manual = taskmaster.current_manual_task
+  manual:newweaksub{ class = 'find', object = input, fail_func = manual.fail_catcher }
 end
 
 cli.register{ cmd = 'f', desc = 'Ç°ÍùÄ³¸öNPCËùÔÚ´¦¡£Ö§³ÖÖĞÎÄÃûºÍ ID¡£ÀıÈç£ºf Àî°ëÏÉ »ò f banxian', func = parse_f, no_prefix = true }
@@ -151,13 +157,14 @@ cli.register{ cmd = 'f', desc = 'Ç°ÍùÄ³¸öNPCËùÔÚ´¦¡£Ö§³ÖÖĞÎÄÃûºÍ ID¡£ÀıÈç£ºf Àî°
 local type_list = { sharp_weapon = true }
 local patt = lpeg.C( lpeg.R '09'^1 ) * ' ' * lpeg.C( lpeg.P( 1 )^1 )
 local function parse_gi( _, input )
+  local manual = taskmaster.current_manual_task
   local count, name = patt:match( input )
   count, name = tonumber( count ), name or input
   local it = item.get( name ) or item.get_by_id( name )
   if it then
-    taskmaster.current_manual_task:newweaksub{ class = 'get_item', item = it.name, count = count }
+    manual:newweaksub{ class = 'get_item', item = it.name, count = count, fail_func = manual.fail_catcher }
   elseif item.is_valid_type( name ) then
-    taskmaster.current_manual_task:newweaksub{ class = 'get_item', item = name, count = count }
+    manual:newweaksub{ class = 'get_item', item = name, count = count, fail_func = manual.fail_catcher }
   else
     message.normal 'Î´ÕÒµ½¶ÔÓ¦µÄÎïÆ·£¬Çë¼ì²é'
   end
@@ -166,18 +173,41 @@ end
 cli.register{ cmd = 'gi', desc = '»ñÈ¡Ö¸¶¨µÄÎïÆ·¡£Ö§³ÖÖĞÎÄÃûºÍ ID¡£ÀıÈç£ºgi 500 coin »ò gi Ä¾ÃŞôÂôÄ', func = parse_gi, no_prefix = true }
 
 --------------------------------------------------------------------------------
--- r
+-- full
 
-local function parse_r( _, input )
-  taskmaster.current_manual_task:newweaksub{ class = 'recover', all = 'full', neili = 'double' }
+local function parse_full( _, input )
+  local manual = taskmaster.current_manual_task
+  manual:newweaksub{ class = 'recover', all = 'full', neili = 'double', fail_func = manual.fail_catcher }
 end
 
-cli.register{ cmd = 'r', desc = '»Ö¸´HP¡£', func = parse_r, no_prefix = true }
+cli.register{ cmd = 'full', desc = '»Ö¸´ HP¡£', func = parse_full, no_prefix = true }
 --------------------------------------------------------------------------------
--- t
+-- refill
+
+local function parse_refill( _, input )
+  local manual = taskmaster.current_manual_task
+  manual:newweaksub{ class = 'recover', food = 'full', water = 'full', fail_func = manual.fail_catcher }
+end
+
+cli.register{ cmd = 'refill', desc = '²¹³äÊ³ÎïÒûË®¡£', func = parse_refill, no_prefix = true }
+
+--------------------------------------------------------------------------------
+-- pct
+
+local function parse_pct( _, input )
+  print( '¹²', trigger.get_count(), '¸ö´¥·¢Æ÷£º' )
+  for name, trg in pairs( trigger.get_all() ) do
+    print( name .. ': ' .. trg.match )
+  end
+end
+
+cli.register{ cmd = 'pct', desc = 'ÁĞ³öµ±Ç°ËùÓĞ´¥·¢Æ÷¡£', func = parse_pct, no_prefix = true }
+--------------------------------------------------------------------------------
+-- test
 
 local function parse_t( _, input )
-  taskmaster.current_manual_task:newweaksub{ class = 'recover', food = 'full', water = 'full' }
+  local manual = taskmaster.current_manual_task
+  manual:newweaksub{ class = 'manage_inventory', action = 'wield', item = 'sword', fail_func = manual.fail_catcher }
 end
 
 cli.register{ cmd = 't', desc = '²âÊÔ', func = parse_t, no_prefix = true }
