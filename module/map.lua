@@ -234,11 +234,17 @@ function map.find_furthest( from, is_dest )
   return room
 end
 
-function map.get_step_cmd( from, to )
+function map.get_step_details( from, to )
   for dir, exit in pairs( from.exit ) do
     if exit.to == to.id and not exit.ignore then
       local cmd = exit.cmd or ( not string.find( dir, 'hidden' ) and dir )
-      return cmd, exit.door, exit.handler
+      -- calculate the jingli cost of the step
+      local jingli_cost = math.floor( inventory.get_total_weight() / 20000 ) - 1
+      jingli_cost = 1 + ( jingli_cost < 0 and 0 or jingli_cost )
+      jingli_cost = jingli_cost * ( time.get_current_hour() >= 18 and 2 or 1 )
+      jingli_cost = jingli_cost + ( exit.jingli_cost or 0 )
+      -- return all the details
+      return cmd, exit.door, exit.handler, jingli_cost, exit.neili_cost or 0, exit.jing_cost or 0, exit.qi_cost or 0
     end
   end
 end

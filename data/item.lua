@@ -533,6 +533,9 @@ local item = {
   value = 40,
   consume_count = 2,
   food_supply = 25,
+  source = {
+    { type = 'get', location = '»Ø½®¿²¶ù¾®' },
+  },
 },
 
 ['¹þÃÜ¹Ï#XX'] = {

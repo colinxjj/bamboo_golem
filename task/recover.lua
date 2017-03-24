@@ -36,12 +36,10 @@ local function validate_recover_param( self )
     local tgt, max = self[ attr ], player[ attr .. '_max' ] or 100
     -- convert 'all' param to individual params
     if self.all and not tgt then self[ attr ] = self.all end
-    if ( attr == 'qi' or attr == 'jing' ) and tgt == 'double' then self[ attr ] = 'full' end -- qi and jing doesn't support 'double' recover level
-    -- raise error and adjust targets if numeric targets exceed what is achievable
-    if type( tgt ) == 'number' and ( tgt >= max * 2 or ( ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and tgt > max ) ) then
-      local new_tgt = ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and max or max * 2
-      message.warning( 'RECOVER 任务：' .. attr .. ' 恢复目标 ' .. tgt .. ' 超出了能达到的上限，调整为 ' .. new_tgt )
-      self[ attr ] = new_tgt
+    -- task fails if targets exceed what is achievable
+    if ( ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and tgt == 'double' ) or ( type( tgt ) == 'number' and ( tgt > max * 2 or ( ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and tgt > max ) ) ) then
+      message.verbose( '恢复任务失败：' .. attr .. ' 恢复目标 ' .. tgt .. ' 超出了能达到的上限' )
+      self:fail()
     end
   end
 end
@@ -184,14 +182,14 @@ function task:eat_drink()
     choice = 'drink'
   else
     local curr_loc = map.get_current_location()[ 1 ].id
-    local best_food_source = item.get_best_source{ item = 'food', custom_source_evaluator = food_source_evaluator }
-    local best_drink_source = item.get_best_source{ item = 'drink', custom_source_evaluator = drink_source_evaluator }
+    local best_food_source = item.get_best_source{ item = 'food', source_evaluator = food_source_evaluator }
+    local best_drink_source = item.get_best_source{ item = 'drink', source_evaluator = drink_source_evaluator }
     choice = ( best_food_source.location == curr_loc and 'food' )
                 or ( best_drink_source.location == curr_loc and 'drink' )
                 or ( best_food_source.score > best_drink_source.score and 'food' )
                 or 'drink'
   end
-  self:newsub{ class = 'get_item', item = choice, complete_func = task.consume }
+  self:newsub{ class = 'get_item', item = choice, source_evaluator = ( choice == 'food' and food_source_evaluator or drink_source_evaluator ), complete_func = task.consume }
 end
 
 function task:consume( name )

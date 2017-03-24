@@ -1000,8 +1000,8 @@ local map = {
   name = '山路',
   desc =  [[这里的路面更加陡峭，地上的足迹越来越少。一阵阵腐朽的味从密林里面传出。偶尔比能看见一些猎户们捕捉野兽的陷阱。]],
   exit = {
-    ed = { to = '襄阳城山路#1', },
-    wu = { to = '襄阳城山路#3', },
+    ed = { to = '襄阳城山路#1', jingli_cost = 50, },
+    wu = { to = '襄阳城山路#3', jingli_cost = 40, },
   },
 },
 
@@ -1094,7 +1094,7 @@ local map = {
   exit = {
     n = { to = '襄阳城青石大道#1S', },
     s = { to = '襄阳城湘鄂交界', },
-    wu = { to = '襄阳城山路#1', cond = 'player.jingli >= 200 and player.qi >= 100', },
+    wu = { to = '襄阳城山路#1', },
   },
 },
 
@@ -1368,8 +1368,8 @@ local map = {
   name = '山路',
   desc =  [[这里是山麓上唯一的一条土路，山势虽然并不算太高，但是极为陡峭，四周丛林密部，不时传来野兽的鸣叫。只有很有经验的猎户才敢来这里捕猎，据说这里的毒蛇怪蟒异常凶狠。所以这里少有人迹。]],
   exit = {
-    ed = { to = '襄阳城湘鄂土路', },
-    wu = { to = '襄阳城山路#2', },
+    ed = { to = '襄阳城湘鄂土路', jingli_cost = 50, },
+    wu = { to = '襄阳城山路#2', jingli_cost = 50, },
   },
 },
 
@@ -1469,8 +1469,8 @@ local map = {
   name = '山路',
   desc =  [[这里已经看不见人的足迹了，只有一些纷杂的野兽脚印。路越发陡峭，一般人来到这里就不感再前行了。]],
   exit = {
-    ed = { to = '襄阳城山路#2', },
-    wu = { to = '襄阳城山间空地', },
+    ed = { to = '襄阳城山路#2', jingli_cost = 90, qi_cost = 50, },
+    wu = { to = '襄阳城山间空地', jingli_cost = 90, qi_cost = 50, },
   },
 },
 
@@ -2214,7 +2214,7 @@ local map = {
   exit = {
     s = { to = '蝴蝶谷空地', },
     nd = { to = '蝴蝶谷草径', cond = 'player.master == "张无忌"', },
-    hidden = { to = '蝴蝶谷花圃#M', cmd = 'nd', cond = 'player.master ~= "张无忌" and player.jing > 500', },
+    hidden = { to = '蝴蝶谷花圃#M', cmd = 'nd', cond = 'player.master ~= "张无忌" and player.jing_max >= 500 and player.neili_max >= 500', jing_cost = 400, neili_cost = 1000, },
   },
 },
 
@@ -2243,7 +2243,7 @@ local map = {
     w = { to = '蝴蝶谷茅棚', },
     n = { to = '蝴蝶谷茅屋', },
     s = { to = '蝴蝶谷牛棚', cond = 'player.master == "张无忌"', },
-    hidden = { to = '蝴蝶谷花圃#M', cmd = 's', cond = 'player.master ~= "张无忌" and player.jing > 500', },
+    hidden = { to = '蝴蝶谷花圃#M', cmd = 's', cond = 'player.master ~= "张无忌" and player.jing_max >= 500 and player.neili_max >= 500', jing_cost = 400, neili_cost = 1000, },
   },
 },
 
@@ -4586,7 +4586,7 @@ local map = {
     u = { to = '嵩山少林佛塔三层', },
     d = { to = '嵩山少林佛塔一层', },
     hidden1 = { to = '嵩山少林无色台', no_wander = true, handler = 'sl_fota', cond = 'player.skill["禅宗心法"] and player.skill["禅宗心法"].level >= 30', },
-    hidden2 = { to = '嵩山少林无相牌', no_wander = true, handler = 'sl_fota', cond = 'player.neili > 100', },
+    hidden2 = { to = '嵩山少林无相牌', no_wander = true, handler = 'sl_fota', cond = 'player.neili_max > 50', neili_cost = 101, },
     hidden3 = { to = '嵩山少林天鸣禅台', no_wander = true, handler = 'sl_fota', cond = 'player.skill["基本爪法"] and player.skill["基本爪法"].level >= 30', },
     hidden4 = { to = '嵩山少林苦慧坪', no_wander = true, handler = 'sl_fota', cond = 'player.skill["基本腿法"] and player.skill["基本腿法"].level >= 30', },
     hidden5 = { to = '嵩山少林晦智圣座', no_wander = true, handler = 'sl_fota', cond = 'player.skill["基本手法"] and player.skill["基本手法"].level >= 30', },
@@ -5844,8 +5844,8 @@ local map = {
   name = '荒草路',
   desc =  [[你走一条荒芜的小路上，两旁荒草齐膝，荆棘遍地，似乎罕有人至。山石壁立，遮天蔽日，鸟兽全无，四周笼罩在一片阴暗之中，使这里看起来格外深隧幽静。]],
   exit = {
-    nu = { to = '铁掌山荒草路#2', },
-    se = { to = '铁掌山山间平台', },
+    nu = { to = '铁掌山荒草路#2', qi_cost = 50, },
+    se = { to = '铁掌山山间平台', qi_cost = 50, },
   },
 },
 
@@ -5866,8 +5866,8 @@ local map = {
   name = '荒草路',
   desc =  [[你走一条荒芜的小路上，两旁荒草齐膝，荆棘遍地，似乎罕有人至。山石壁立，遮天蔽日，鸟兽全无，四周笼罩在一片阴暗之中，使这里看起来格外深隧幽静。]],
   exit = {
-    nu = { to = '铁掌山荒草路#4', },
-    se = { to = '铁掌山荒草路#2', },
+    nu = { to = '铁掌山荒草路#4', qi_cost = 100, },
+    se = { to = '铁掌山荒草路#2', qi_cost = 100, },
   },
 },
 
@@ -5973,8 +5973,8 @@ local map = {
   name = '荒草路',
   desc =  [[你走一条荒芜的小路上，两旁荒草齐膝，荆棘遍地，似乎罕有人至。山石壁立，遮天蔽日，鸟兽全无，四周笼罩在一片阴暗之中，使这里看起来格外深隧幽静。]],
   exit = {
-    nw = { to = '铁掌山荒草路#3', },
-    sd = { to = '铁掌山荒草路#1', },
+    nw = { to = '铁掌山荒草路#3', qi_cost = 100, },
+    sd = { to = '铁掌山荒草路#1', qi_cost = 100, },
   },
 },
 
@@ -6060,8 +6060,8 @@ local map = {
   name = '荒草路',
   desc =  [[你走一条荒芜的小路上，两旁荒草齐膝，荆棘遍地，似乎罕有人至。山石壁立，遮天蔽日，鸟兽全无，四周笼罩在一片阴暗之中，使这里看起来格外深隧幽静。]],
   exit = {
-    nu = { to = '铁掌山无名峰', },
-    se = { to = '铁掌山荒草路#5', },
+    nu = { to = '铁掌山无名峰', qi_cost = 100, },
+    se = { to = '铁掌山荒草路#5', qi_cost = 100, },
   },
 },
 
@@ -6162,8 +6162,8 @@ local map = {
   name = '荒草路',
   desc =  [[你走一条荒芜的小路上，两旁荒草齐膝，荆棘遍地，似乎罕有人至。山石壁立，遮天蔽日，鸟兽全无，四周笼罩在一片阴暗之中，使这里看起来格外深隧幽静。]],
   exit = {
-    nw = { to = '铁掌山荒草路#6', },
-    sd = { to = '铁掌山荒草路#4', },
+    nw = { to = '铁掌山荒草路#6', qi_cost = 100, },
+    sd = { to = '铁掌山荒草路#4', qi_cost = 100, },
   },
 },
 
@@ -6255,7 +6255,7 @@ local map = {
     wu = { to = '铁掌山石板路#1', },
     nu = { to = '铁掌山山路#3N', },
     eu = { to = '铁掌山碎石路#1', },
-    nw = { to = '铁掌山荒草路#1', cond = 'player.qi >= 1200', },
+    nw = { to = '铁掌山荒草路#1', cond = 'player.qi_max >= 200', },
   },
 },
 
@@ -6265,8 +6265,8 @@ local map = {
   name = '荒草路',
   desc =  [[你走一条荒芜的小路上，两旁荒草齐膝，荆棘遍地，似乎罕有人至。山石壁立，遮天蔽日，鸟兽全无，四周笼罩在一片阴暗之中，使这里看起来格外深隧幽静。]],
   exit = {
-    nu = { to = '铁掌山荒草路#5', },
-    sd = { to = '铁掌山荒草路#3', },
+    nu = { to = '铁掌山荒草路#5', qi_cost = 100, },
+    sd = { to = '铁掌山荒草路#3', qi_cost = 100, },
   },
 },
 
@@ -11432,7 +11432,7 @@ local map = {
   name = '澜沧江畔',
   desc =  [[你一眼望出去，之见前面怒涛汹涌，水流湍急，竟是一条大江。江岸山石壁立，嶙峋巍峨，看这情势，已是到了澜沧江畔。江面有十来丈高，但要走到江岸，却也着实不易。 ]],
   exit = {
-    w = { to = '无量山荆棘林#1', },
+    w = { to = '无量山荆棘林#1', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
     e = { to = '无量山江岸', },
   },
 },
@@ -11487,7 +11487,7 @@ local map = {
   exit = {
     sw = { to = '大理城山路#2N', },
     su = { to = '无量山无量山路', },
-    n = { to = '无量山荆棘林#1', },
+    n = { to = '无量山荆棘林#1', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
   },
 },
 
@@ -11554,7 +11554,7 @@ local map = {
     e = { to = '无量山澜沧江畔', },
     s = { to = '无量山山中小溪', },
     w = { to = '无量山荆棘林#1', },
-    n = { to = '无量山荆棘林#2', cond = 'player.qi > 600 and player.jing > 200 and player.jingli > 200', },
+    n = { to = '无量山荆棘林#2', cond = 'player.qi_max >= 500 and player.jing_max >= 200', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
   },
 },
 
@@ -11564,10 +11564,10 @@ local map = {
   name = '荆棘林',
   desc = [[你信步而行，举步踏到的尽是矮树长草，这里没有路,每走一步，荆棘都钩刺到小腿,划破你的身体。]],
   exit = {
-    e = { to = '无量山荆棘林#3', },
-    s = { to = '无量山荆棘林#1', },
-    w = { to = '无量山荆棘林#3', },
-    n = { to = '无量山荆棘林#3', },
+    e = { to = '无量山荆棘林#3', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
+    s = { to = '无量山荆棘林#1', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
+    w = { to = '无量山荆棘林#3', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
+    n = { to = '无量山荆棘林#3', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
   },
 },
 
@@ -11577,10 +11577,10 @@ local map = {
   name = '荆棘林',
   desc = [[你信步而行，举步踏到的尽是矮树长草，这里没有路,每走一步，荆棘都钩刺到小腿,划破你的身体。]],
   exit = {
-    e = { to = '无量山斜坡#2', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 20', },
-    s = { to = '无量山荆棘林#2', },
-    w = { to = '无量山斜坡#1', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 20', },
-    n = { to = '无量山荆棘林#4', },
+    e = { to = '无量山斜坡#2', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 20', qi_cost = 35, },
+    s = { to = '无量山荆棘林#2', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
+    w = { to = '无量山斜坡#1', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 20', qi_cost = 35, },
+    n = { to = '无量山荆棘林#4', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
   },
 },
 
@@ -11590,9 +11590,9 @@ local map = {
   name = '荆棘林',
   desc = [[你信步而行，举步踏到的尽是矮树长草，这里没有路,每走一步，荆棘都钩刺到小腿,划破你的身体。]],
   exit = {
-    e = { to = '无量山斜坡#1', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 20', },
-    s = { to = '无量山荆棘林#3', },
-    w = { to = '无量山斜坡#2', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 20', },
+    e = { to = '无量山斜坡#1', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 20', qi_cost = 35, },
+    s = { to = '无量山荆棘林#3', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
+    w = { to = '无量山斜坡#2', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 20', qi_cost = 35, },
     n = { to = '无量山山路#M', no_wander = true, },
   },
 },
@@ -11603,10 +11603,10 @@ local map = {
   name = '斜坡',
   desc = [[这里是个斜坡,你小心翼翼的走着,斜坡不算很深,可掉下去决不是闹着玩的,这里杂草丛生,十分荒凉,地上散着几块骨骸.]],
   exit = {
-    e = { to = '无量山荆棘林#4', },
-    s = { to = '无量山荆棘林#3', },
-    w = { to = '无量山荆棘林#2', },
-    n = { to = '无量山荆棘林#3', },
+    e = { to = '无量山荆棘林#4', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
+    s = { to = '无量山荆棘林#3', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
+    w = { to = '无量山荆棘林#2', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
+    n = { to = '无量山荆棘林#3', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
   },
 },
 
@@ -11616,10 +11616,10 @@ local map = {
   name = '斜坡',
   desc = [[这里是个斜坡,你小心翼翼的走着,斜坡不算很深,可掉下去决不是闹着玩的,这里杂草丛生,十分荒凉,地上散着几块骨骸.]],
   exit = {
-    e = { to = '无量山荆棘林#2', },
-    s = { to = '无量山荆棘林#3', },
-    w = { to = '无量山荆棘林#4', },
-    n = { to = '无量山荆棘林#3', },
+    e = { to = '无量山荆棘林#2', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
+    s = { to = '无量山荆棘林#3', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
+    w = { to = '无量山荆棘林#4', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
+    n = { to = '无量山荆棘林#3', jingli_cost = 10, qi_cost = 50, jing_cost = 20, },
   },
 },
 
@@ -15804,7 +15804,7 @@ local map = {
   desc =  [[这里是慕容博墓内的一个密室。地上放了几个金光闪闪的大箱子(box)。墙上挂满了大燕国历代皇帝的画像。正当中摆着一把龙椅(chair)。]],
   exit = {
     s = { to = '燕子坞墓地', },
-    hidden = { to = '燕子坞密室#2', handler = 'yzw_mishi', cond = 'player.party == "姑苏慕容" and player.neili >= 6000', },
+    hidden = { to = '燕子坞密室#2', handler = 'yzw_mishi', cond = 'player.party == "姑苏慕容" and player.neili_max >= 3000', neili_cost = 6000, },
   },
 },
 
@@ -16665,7 +16665,7 @@ local map = {
     e = { to = '终南山石室#M', },
     n = { to = '终南山石室#M', },
     w = { to = '终南山石室#M', },
-    hidden = { to = '终南山石室#2D', cost = 14, handler = 'fixed_step', cond = 'player.jingli > 400', },
+    hidden = { to = '终南山石室#2D', cost = 14, handler = 'fixed_step', cond = 'player.jingli_max > 300', jingli_cost = 400 },
   },
 },
 
@@ -16697,7 +16697,7 @@ local map = {
   desc =  [[原来这正是一条地下暗河，此处水声已是轰轰，声势极为骇人。你脚下一处踏空，便有水流直冲咽喉。此潜流不知来自何处，更不知通往何方。]],
   exit = {
     nu = { to = '终南山石室#3D', },
-    wd = { to = '终南山潜流#1', },
+    wd = { to = '终南山潜流#1', qi_cost = 60, jing_cost = 60, },
   },
 },
 
@@ -16743,7 +16743,7 @@ local map = {
   desc =  [[原来这正是一条地下暗河，此处水声已是轰轰，声势极为骇人。你脚下一处踏空，便有水流直冲咽喉。此潜流不知来自何处，更不知通往何方。慢慢你已感觉水势渐缓，地势渐高。]],
   exit = {
     nu = { to = '终南山洞口', },
-    ed = { to = '终南山潜流#2', },
+    ed = { to = '终南山潜流#2', qi_cost = 60, jing_cost = 60, },
   },
 },
 
@@ -16774,8 +16774,8 @@ local map = {
   name = '潜流',
   desc =  [[你没在水中，只觉水势甚急，冲得你无法立足。你气闷异常，只得屏气摸索潜行，当真是进退维谷。]],
   exit = {
-    e = { to = '终南山潜流#1', },
-    wu = { to = '终南山暗河#2', },
+    e = { to = '终南山潜流#1', qi_cost = 60, jing_cost = 60, },
+    wu = { to = '终南山暗河#2', qi_cost = 60, jing_cost = 60, },
   },
 },
 
@@ -16913,8 +16913,8 @@ local map = {
   name = '潜流',
   desc =  [[你没在水中，只觉水势甚急，冲得你无法立足。你气闷异常，只得屏气摸索潜行，当真是进退维谷。]],
   exit = {
-    w = { to = '终南山潜流#2', },
-    eu = { to = '终南山暗河#1', },
+    w = { to = '终南山潜流#2', qi_cost = 60, jing_cost = 60, },
+    eu = { to = '终南山暗河#1', qi_cost = 60, jing_cost = 60, },
   },
 },
 
@@ -17003,7 +17003,7 @@ local map = {
   desc =  [[室中也无特异之处，你抬头仰望，但见室顶密密麻麻的写满了字迹符号，你看了一会，但觉奥妙难解。室顶西南角绘著一幅图，似与武功无关，凝神细看，倒像是幅地图。石室右下方好象可以往下(down)走。]],
   exit = {
     u = { to = '终南山石棺内', },
-    hidden = { to = '终南山暗河#1', cmd = 'walk down', cond = 'player.qi > 200 and player.jing > 200', },
+    hidden = { to = '终南山暗河#1', cmd = 'walk down', qi_cost = 60, jing_cost = 60, },
   },
 },
 
@@ -21235,7 +21235,7 @@ local map = {
     sw = { to = '峨嵋山黑龙江栈道#1', },
     nw = { to = '峨嵋山白龙洞', },
     se = { to = '峨嵋山中峰寺', },
-    hidden = { to = '峨嵋山牛心石', cmd = 'tiao 牛心石;#wb 1500', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 30 or player.dex >= 28', prep = { jingli = 200 } },
+    hidden = { to = '峨嵋山牛心石', cmd = 'tiao 牛心石;#wb 1500', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 30 or player.dex >= 28', jingli_cost = 200, },
   },
 },
 
@@ -21245,7 +21245,7 @@ local map = {
   name = '牛心石',
   desc = [[你落脚处乃是块黑褐色的巨石，黑龙白龙二江在此和流。水拍牛心，浪花飞溅，声震山谷。你立于此，眼望两江之水从脚下奔腾而过，不由心魂飞荡，两腿发软，不可自持。]],
   exit = {
-    hidden = { to = '峨嵋山清音阁', cmd = 'tiao back;#wb 3500', },
+    hidden = { to = '峨嵋山清音阁', cmd = 'tiao back;#wb 3500', jingli_cost = 200, },
   },
 },
 
@@ -21381,7 +21381,7 @@ local map = {
     wu = { to = '峨嵋山灌木丛#1', },
     sw = { to = '峨嵋山灌木丛#1', },
     ed = { to = '峨嵋山灌木丛#1', },
-    hidden = { to = '峨嵋山灌木丛#2', cost = 20, cond = 'player.jingli > 1000', handler = 'fixed_step', },
+    hidden = { to = '峨嵋山灌木丛#2', cost = 20, cond = 'player.jingli_max >= 1000 and player.neili_max >= 500', handler = 'fixed_step', jingli_cost = 1000, neili_cost = 1000, },
   },
 },
 
@@ -21391,7 +21391,7 @@ local map = {
   name = '灌木丛',
   desc =  [[这里是一片一人多高的灌木丛，这里已经罕见足迹。一阵风吹过，灌木丛发出沙沙的声音。东南西北都是矮树灌木，这里没有路，每走一步，荆棘都会钩刺到衣裤，划破你的身体。前面是一面很高的峭壁，隐约地似乎看到有一个不大的洞口，峭壁下面是一个水潭。]],
   exit = {
-    hidden = { to = '峨嵋山洞口', cmd = 'yue 洞口', },
+    hidden = { to = '峨嵋山洞口', cmd = 'yue 洞口', jingli_cost = 500, },
     wu = { to = '峨嵋山灌木丛#1', handler = 'reset_data', },
   },
 },
@@ -25881,8 +25881,8 @@ local map = {
   exit = {
     w = { to = '桃源县茅屋', },
     n = { to = '桃源县山岭', },
-    hidden1 = { to = '桃源县铁舟上', no_wander = true, cost = 50, cond = 'player.exp >= 100000 and player.dex >= 30 and player.str >= 30 and player.enable.dodge and player.enable.dodge.level >= 200', handler = 'ty_waterfall_to_boat', req = { ['铁舟'] = 1 }, },
-    hidden2 = { to = '桃源县瀑布中', no_wander = true, cost = 5, handler = 'ty_enter_waterfall', },
+    hidden1 = { to = '桃源县铁舟上', no_wander = true, cost = 50, cond = 'player.exp >= 100000 and player.dex >= 30 and player.str >= 30 and player.enable.dodge and player.enable.dodge.level >= 200 and player.qi_max >= 1500 and player.neili_max >= 2500', handler = 'ty_waterfall_to_boat', req = { ['铁舟'] = 1 }, },
+    hidden2 = { to = '桃源县瀑布中', no_wander = true, cost = 5, handler = 'ty_enter_waterfall', neili_cost = 2500, },
   },
 },
 
@@ -25945,7 +25945,7 @@ local map = {
   name = '山坡',
   desc = [[只见山坡上一头黄牛昂首吽鸣，所处形势却极怪异。那牛仰天卧在一块岩石上，四足挣扎，站不起来，那石摇摇欲堕，下面一人摆起了丁字步，双手托住岩石，只要一松手，势必连牛带石一起跌入下面深谷。那人所站处又是一块突出的悬岩，无处退让，纵然舍得那牛不要，但那岩石压将下来，不是断手，也必折足。瞧这情势，必是那牛爬在坡上吃草，失足跌将下来，撞松岩石，那人便在近处，抢着托石救牛，却将自己陷入这狼狈境地。]],
   exit = {
-    e = { to = '桃源县石梁#1', handler = 'ty_nongfu', },
+    e = { to = '桃源县石梁#1', handler = 'ty_nongfu', neili_cost = 2500, },
     wd = { to = '桃源县山顶', },
   },
 },
@@ -25957,7 +25957,7 @@ local map = {
   desc = [[只见此处是条宽约尺许的石梁，横架在两座山峰之间，云雾笼罩，望不见尽处。若是在平地之上，尺许小径又算得了甚么，可是这石梁下临深谷，别说行走，只望一眼也不免胆战心惊，在云雾之中，石上溜滑异常，走得越慢，反是越易倾跌，石梁忽然中断，前面(front)约有七八尺长的一个缺口。]],
   exit = {
     w = { to = '桃源县山坡', },
-    hidden = { to = '桃源县石梁#2', cmd = 'yue front', },
+    hidden = { to = '桃源县石梁#2', cmd = 'yue front', neili_cost = 1000, },
   },
 },
 
@@ -25967,8 +25967,63 @@ local map = {
   name = '石梁',
   desc = [[只见此处是条宽约尺许的石梁，横架在两座山峰之间，云雾笼罩，望不见尽处。若是在平地之上，尺许小径又算得了甚么，可是这石梁下临深谷，别说行走，只望一眼也不免胆战心惊，石梁忽然中断，前(front)后(back) 都各约有七八尺长的一个缺口。]],
   exit = {
-    hidden1 = { to = '桃源县石梁#1', cmd = 'yue back', },
-    hidden2 = { to = '桃源县石梁尽头', cmd = 'yue front', handler = 'go_straight', },
+    hidden1 = { to = '桃源县石梁#1', cmd = 'yue back', neili_cost = 1000, },
+    hidden2 = { to = '桃源县石梁#3', cmd = 'yue front', neili_cost = 1000, },
+  },
+},
+
+['桃源县石梁#3'] = {
+  id = '桃源县石梁#3',
+  area = '桃源县',
+  name = '石梁',
+  desc = [[只见此处是条宽约尺许的石梁，横架在两座山峰之间，云雾笼罩，望不见尽处。若是在平地之上，尺许小径又算得了甚么，可是这石梁下临深谷，别说行走，只望一眼也不免胆战心惊，石梁忽然中断，前(front)后(back) 都各约有七八尺长的一个缺口。]],
+  exit = {
+    hidden1 = { to = '桃源县石梁#2', cmd = 'yue back', neili_cost = 1000, },
+    hidden2 = { to = '桃源县石梁#4', cmd = 'yue front', neili_cost = 1000, },
+  },
+},
+
+['桃源县石梁#4'] = {
+  id = '桃源县石梁#4',
+  area = '桃源县',
+  name = '石梁',
+  desc = [[只见此处是条宽约尺许的石梁，横架在两座山峰之间，云雾笼罩，望不见尽处。若是在平地之上，尺许小径又算得了甚么，可是这石梁下临深谷，别说行走，只望一眼也不免胆战心惊，石梁忽然中断，前(front)后(back) 都各约有七八尺长的一个缺口。]],
+  exit = {
+    hidden1 = { to = '桃源县石梁#3', cmd = 'yue back', neili_cost = 1000, },
+    hidden2 = { to = '桃源县石梁#5', cmd = 'yue front', neili_cost = 1000, },
+  },
+},
+
+['桃源县石梁#5'] = {
+  id = '桃源县石梁#5',
+  area = '桃源县',
+  name = '石梁',
+  desc = [[只见此处是条宽约尺许的石梁，横架在两座山峰之间，云雾笼罩，望不见尽处。若是在平地之上，尺许小径又算得了甚么，可是这石梁下临深谷，别说行走，只望一眼也不免胆战心惊，石梁忽然中断，前(front)后(back) 都各约有七八尺长的一个缺口。]],
+  exit = {
+    hidden1 = { to = '桃源县石梁#4', cmd = 'yue back', neili_cost = 1000, },
+    hidden2 = { to = '桃源县石梁#6', cmd = 'yue front', neili_cost = 1000, },
+  },
+},
+
+['桃源县石梁#6'] = {
+  id = '桃源县石梁#6',
+  area = '桃源县',
+  name = '石梁',
+  desc = [[只见此处是条宽约尺许的石梁，横架在两座山峰之间，云雾笼罩，望不见尽处。若是在平地之上，尺许小径又算得了甚么，可是这石梁下临深谷，别说行走，只望一眼也不免胆战心惊，石梁忽然中断，前(front)后(back) 都各约有七八尺长的一个缺口。]],
+  exit = {
+    hidden1 = { to = '桃源县石梁#5', cmd = 'yue back', neili_cost = 1000, },
+    hidden2 = { to = '桃源县石梁#7', cmd = 'yue front', neili_cost = 1000, },
+  },
+},
+
+['桃源县石梁#7'] = {
+  id = '桃源县石梁#7',
+  area = '桃源县',
+  name = '石梁',
+  desc = [[只见此处是条宽约尺许的石梁，横架在两座山峰之间，云雾笼罩，望不见尽处。若是在平地之上，尺许小径又算得了甚么，可是这石梁下临深谷，别说行走，只望一眼也不免胆战心惊，石梁忽然中断，前(front)后(back) 都各约有七八尺长的一个缺口。]],
+  exit = {
+    hidden1 = { to = '桃源县石梁#6', cmd = 'yue back', neili_cost = 1000, },
+    hidden2 = { to = '桃源县石梁尽头', cmd = 'yue front', neili_cost = 1000, },
   },
 },
 
@@ -26315,7 +26370,7 @@ local map = {
   desc = [[这里便是犯错误华山派弟子受罚思过的地方。位于玉女峰顶，正好有一小块平地，一面是深不可测的山谷、一面是陡峭的悬壁(bi)，零零落落的有几块山石。其中一块特别光滑，想是弟子在面壁是久坐而成。]],
   exit = {
     out = { to = '华山思过崖', },
-    enter = { to = '华山山洞', no_wander = true, unstable = true, handler = 'hs_siguoya', cond = 'player.neili >= 600', req = { ['火折'] = 2, sword = 1 }, },
+    enter = { to = '华山山洞', no_wander = true, unstable = true, handler = 'hs_siguoya', cond = 'player.neili_max >= 300', neili_cost = 600, req = { ['火折'] = 2, sword = 1 }, },
   },
 },
 
@@ -26325,7 +26380,7 @@ local map = {
   name = '山洞',
   desc = [[这里是山洞的入口。山洞里面漆黑一团，你根本分不清东南西北，只好胡乱瞎闯了。]],
   exit = {
-    out = { to = '华山思过崖洞口', unstable = true, handler = 'hs_siguoya', cond = 'player.neili >= 600', },
+    out = { to = '华山思过崖洞口', unstable = true, handler = 'hs_siguoya', cond = 'player.neili_max >= 300', neili_cost = 600, },
     left = { to = '华山密洞', unstable = true, door = 'use fire', },
     right = { to = '华山密道', unstable = true, door = 'use fire', cond = 'player.flag["独孤九剑"]', },
   },
@@ -33923,7 +33978,7 @@ local map = {
   desc =  [[转过一个山峡，水声震耳欲聋，只见山峰间一条大白龙似的瀑布(pubu)奔泻而下，冲入一条溪流，奔胜雷鸣，湍急异常，水中挟著树枝石块，转眼便流得不知去向。四顾水气蒙蒙，蔚为奇观。]],
   exit = {
     w = { to = '襄阳郊外山路#4', },
-    hidden = { to = '襄阳郊外山洪中', no_wander = true, cmd = 'tiao pubu', cond = 'player.flag.xtj and player.dex >= 27 and player.skill["基本轻功"] and player.skill["基本轻功"].level >= 100 and player.skill["基本内功"] and player.skill["基本内功"].level >= 110 and player.neili > 2000', },
+    hidden = { to = '襄阳郊外山洪中', no_wander = true, cmd = 'tiao pubu', cond = 'player.flag.xtj and player.dex >= 27 and player.skill["基本轻功"] and player.skill["基本轻功"].level >= 100 and player.skill["基本内功"] and player.skill["基本内功"].level >= 110 and player.neili_max >= 1500', neili_cost = 2000 },
   },
 },
 
@@ -33988,7 +34043,7 @@ local map = {
   desc = [[那峭壁便如一座极大的屏风，冲天而起，峭壁中部离地约二十馀丈处，生著一块三四丈见方的大石，便似一个平台，石上隐隐刻得有字。极目上望，瞧清楚是「剑冢」两个大字。]],
   exit = {
     sd = { to = '襄阳郊外深谷#2', },
-    hidden = { to = '襄阳郊外平台', handler = 'xyjw_cliff', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 120 or player.neili >= 1500', },
+    hidden = { to = '襄阳郊外平台', handler = 'xyjw_cliff', cond = 'player.skill["基本轻功"] and player.skill["基本轻功"].level >= 120 or player.neili_max >= 750', neili_cost = 1500, },
   },
 },
 
@@ -34283,7 +34338,7 @@ local map = {
   desc =  [[你站在一片山谷中的一处水潭(tan）岸边。游目四顾，只见繁花青草，便如一个极大的花园。然而花影不动，幽谷无人，四下里十分安静。草地上一条蜿蜒的小路铺满了鹅卵石(shi)，前方不远处一所茅屋。]],
   exit = {
     hidden2 = { to = '绝情谷峭壁', cmd = 'xiao', cond = 'player.master == "杨过" or player.master ==  "小龙女"', },
-    hidden1 = { to = '绝情谷水潭表面', cmd = '#8 jian shi;tiao tan', cond = 'player.qi > 550 and player.jingli > 550', },
+    hidden1 = { to = '绝情谷水潭表面', cmd = '#8 jian shi;tiao tan', },
     n = { to = '绝情谷谷中小路', },
   },
 },
@@ -34528,7 +34583,7 @@ local map = {
   desc =  [[你来到谷底，却发现这里原来是一处碧水清潭(tan）。周围岸边有几棵大树。树上排列着数十个蜂巢(fengchao)。而在巢畔飞来飞去的都是一些体形硕大，颜色灰白的异种玉蜂，地上铺满了鹅卵石(shi)。]],
   exit = {
     hidden1 = { to = '绝情谷崖壁', cmd = 'pa yabi', },
-    hidden2 = { to = '绝情谷谷底水潭#1', no_wander = true, cmd = '#8 jian shi;tiao tan', cond = 'player.qi > 550 and player.jingli > 550', },
+    hidden2 = { to = '绝情谷谷底水潭#1', no_wander = true, cmd = '#8 jian shi;tiao tan', },
   },
 },
 
@@ -34538,7 +34593,7 @@ local map = {
   name = '谷底水潭',
   desc =  [[你双手划水，漂浮在水潭的水面上面。水潭位处谷底，地势低寒，一股股的寒气从水潭下面直逼上来。四周水中不要说鱼虾，就连水草也没有一根。你只觉得寒气刺骨，不禁机伶伶打了几个冷颤。]],
   exit = {
-    hidden1 = { to = '绝情谷谷底水潭#2', cmd = 'qian down;#wb 1500', },
+    hidden1 = { to = '绝情谷谷底水潭#2', cmd = 'qian down;#wb 1500', jingli_cost = 50, qi_cost = 50, },
     hidden2 = { to = '绝情谷谷底', cmd = 'pa up', },
   },
 },
@@ -34549,8 +34604,8 @@ local map = {
   name = '谷底水潭',
   desc =  [[你屏气凝神，潜伏在水潭的中间。水潭位处谷底，地势低寒，一股股的寒气从水潭下面直逼上来。四周水中不要说鱼虾，就连水草也没有一根。你只觉得寒气刺骨，不禁机伶伶打了几个冷颤。]],
   exit = {
-    hidden1 = { to = '绝情谷谷底水潭#3', cmd = 'qian down;#wb 1500', },
-    hidden2 = { to = '绝情谷谷底水潭#1', cmd = 'qian up;#wb 1500', },
+    hidden1 = { to = '绝情谷谷底水潭#3', cmd = 'qian down;#wb 1500', jingli_cost = 100, qi_cost = 100, },
+    hidden2 = { to = '绝情谷谷底水潭#1', cmd = 'qian up;#wb 1500', jingli_cost = 100, qi_cost = 100, },
   },
 },
 
@@ -34560,8 +34615,8 @@ local map = {
   name = '谷底水潭',
   desc =  [[你屏气凝神，潜伏在水潭的中间。水潭位处谷底，地势低寒，你向四周望去，四面蓝森森，青郁郁，寒气逼人，似乎结满玄冰。你只觉得寒气刺骨，冷不可耐。]],
   exit = {
-    hidden1 = { to = '绝情谷谷底水潭#4', cmd = 'qian down;#wb 1500', },
-    hidden2 = { to = '绝情谷谷底水潭#2', cmd = 'qian up;#wb 2500', },
+    hidden1 = { to = '绝情谷谷底水潭#4', cmd = 'qian down;#wb 1500', jingli_cost = 150, qi_cost = 150, },
+    hidden2 = { to = '绝情谷谷底水潭#2', cmd = 'qian up;#wb 2500', jingli_cost = 150, qi_cost = 150, },
   },
 },
 
@@ -34571,8 +34626,8 @@ local map = {
   name = '谷底水潭',
   desc =  [[你历尽坚辛，终于到达了水潭底部，水潭四周层层叠叠的都是万年玄冰。你头顶左上方(zuoshang)隐约透着光亮。水中寒气逼人，阵阵刺骨冰气使你感觉就象刀刮一样的疼痛，此处看来不可多呆，还是赶快离开吧。]],
   exit = {
-    hidden1 = { to = '绝情谷谷底水潭#3', cmd = '#8 drop stone;qian up;#wb 1500', },
-    hidden2 = { to = '绝情谷水底通道', cmd = '#8 drop stone;qian zuoshang;#wb 1500', },
+    hidden1 = { to = '绝情谷谷底水潭#3', cmd = '#8 drop stone;qian up;#wb 1500', jingli_cost = 200, qi_cost = 200, },
+    hidden2 = { to = '绝情谷水底通道', cmd = '#8 drop stone;qian zuoshang;#wb 1500', jingli_cost = 200, qi_cost = 200, },
   },
 },
 
@@ -34582,7 +34637,7 @@ local map = {
   name = '水底通道',
   desc =  [[你屏气凝神，潜伏在水底中的一条斜向上的通道之中。阳光从头顶水面上直照下来，水中温度和旭温暖，四下里水草丛生，周围数条不知名的白鱼缓缓游动。身体下面的水中却有阵阵寒气传上来。]],
   exit = {
-    hidden1 = { to = '绝情谷谷底水潭#4', cmd = 'qian down;#wb 1500', },
+    hidden1 = { to = '绝情谷谷底水潭#4', cmd = 'qian down;#wb 1500', jingli_cost = 50, qi_cost = 50, },
     hidden2 = { to = '绝情谷水潭表面', cmd = 'qian up', },
   },
 },
@@ -34593,7 +34648,7 @@ local map = {
   name = '水潭表面',
   desc =  [[你双手划水，漂浮在一片水面上面。你只觉阳光耀眼，水面上花香扑鼻，竟是别有天地。]],
   exit = {
-    hidden1 = { to = '绝情谷水底通道', cmd = 'qian down;#wb 1500', },
+    hidden1 = { to = '绝情谷水底通道', cmd = 'qian down;#wb 1500', jingli_cost = 50, qi_cost = 50, },
     hidden2 = { to = '绝情谷水潭岸边', cmd = 'pa up', },
   },
 },
@@ -35232,7 +35287,7 @@ local map = {
     w = { to = '武当山榔梅祠', },
     se = { to = '武当后山小路#1', },
     hidden1 = { to = '武当山灌木丛', cmd = 'zuan guanmu', },
-    hidden2 = { to = '武当后山古道#1', handler = 'wdhs_gudao', cond = 'player.party == "武当派" and player.skill["基本内功"] and player.skill["基本内功"].level >= 20 and player.jingli >= 200 and player.neili >= 200', no_wander= true, req = { ['药锄'] = 1, ['毛毯#WD'] = 1 }, },
+    hidden2 = { to = '武当后山古道#1', handler = 'wdhs_gudao', cond = 'player.party == "武当派" and player.skill["基本内功"] and player.skill["基本内功"].level >= 20 and player.neili_max > 30', no_wander= true, req = { ['药锄'] = 1, ['毛毯#WD'] = 1 }, },
   },
 },
 
@@ -35558,7 +35613,7 @@ local map = {
   desc = [[你走走停停，发现已到了路的尽头。这里凌空突出，长满青草，几只野兔在你身边跳来跳去毫不怕生，下面十多丈深有一水潭，潭水清澈。你正满身臭汗饥渴难当，恨不得马上跳下去凉快一番。]],
   exit = {
     su = { to = '武当后山古道#2', },
-    hidden = { to = '武当后山水潭', cmd = 'tiao down', no_wander = true, },
+    hidden = { to = '武当后山水潭', cmd = 'tiao down', no_wander = true, jingli_cost = 20, },
   },
 },
 
@@ -35569,7 +35624,7 @@ local map = {
   desc = [[这是一碧绿水潭，潭水清澈，水寒刺骨，好象还有什么东西在咬你的脚趾，还是赶快爬上岸吧。]],
   exit = {
     hidden1 = { to = '武当后山古道#3', cmd = 'drop lianxin shi;pa up', },
-    hidden2 = { to = '武当后山水潭底#1', cmd = 'dive down', req = { ['练心石'] = 1 }, },
+    hidden2 = { to = '武当后山水潭底#1', cmd = 'dive down', req = { ['练心石'] = 1 }, jingli_cost = 60, },
   },
 },
 
@@ -35579,8 +35634,8 @@ local map = {
   name = '水潭底',
   desc = [[你身处碧绿潭水中，潭水清澈，水寒刺骨，周围鱼虾罕见，如进了死城一般。]],
   exit = {
-    hidden1 = { to = '武当后山水潭', cmd = 'dive up', },
-    hidden2 = { to = '武当后山水潭底#2', cmd = 'dive down', req = { ['练心石'] = 1 }, },
+    hidden1 = { to = '武当后山水潭', cmd = 'dive up', jingli_cost = 50, },
+    hidden2 = { to = '武当后山水潭底#2', cmd = 'dive down', req = { ['练心石'] = 1 }, jingli_cost = 60, },
   },
 },
 
@@ -35590,7 +35645,7 @@ local map = {
   name = '水潭底',
   desc = [[你身处水潭潭底，潭底细沙如雪，潭水墨蓝，水寒刺骨，寂静一片，阴深恐怖。]],
   exit = {
-    hidden = { to = '武当后山水潭底#1', cmd = 'dive up', },
+    hidden = { to = '武当后山水潭底#1', cmd = 'dive up', jingli_cost = 50, },
   },
 },
 
@@ -35611,8 +35666,8 @@ local map = {
   name = '山崖',
   desc = [[这是一面陡峭的山崖，石壁平滑如镜，光可照人，山风刮得脸如刀割，崖下深不见底，令人胆寒。]],
   exit = {
-    hidden1 = { to = '武当后山山崖#2', handler = 'wdhs_shanya', },
-    hidden2 = { to = '武当后山猢狲愁', cmd = 'pa up', handler = 'go_straight', },
+    hidden1 = { to = '武当后山山崖#2', cmd = 'pa down', jingli_cost = 20, neili_cost = 60, },
+    hidden2 = { to = '武当后山猢狲愁', cmd = 'pa up', jingli_cost = 60, neili_cost = 20, },
   },
 },
 
@@ -35620,10 +35675,21 @@ local map = {
   id = '武当后山山崖#2',
   area = '武当后山',
   name = '山崖',
+  desc = [[这是一面陡峭的山崖，石壁平滑如镜，光可照人，山风刮得脸如刀割，崖下深不见底，令人胆寒。]],
+  exit = {
+    hidden1 = { to = '武当后山山崖#3', cmd = 'pa down', jingli_cost = 20, neili_cost = 60, },
+    hidden2 = { to = '武当后山山崖#1', cmd = 'pa up', handler = 'go_straight', jingli_cost = 60, neili_cost = 20, },
+  },
+},
+
+['武当后山山崖#3'] = {
+  id = '武当后山山崖#3',
+  area = '武当后山',
+  name = '山崖',
   desc = [[这是一面陡峭的山崖，石壁平滑如镜，光可照人，山风刮得脸如刀割，崖下深不见底，令人胆寒。你的绳子已放尽了，四周仍无可以落脚的地方，离脚下几十丈处有棵万年松，枝叶茂密，型如圆桌。冒险下跳，借物滑翔，也许能落在树上。]],
   exit = {
     hidden1 = { to = '武当后山万年松', handler = 'wdhs_jump' },
-    hidden2 = { to = '武当后山山崖#1', cmd = 'climb up', },
+    hidden2 = { to = '武当后山山崖#2', cmd = 'climb up', jingli_cost = 60, neili_cost = 20, },
   },
 },
 
@@ -36658,7 +36724,7 @@ local map = {
   exit = {
     w = { to = '黑木崖长廊#S', },
     n = { to = '黑木崖长廊#E', },
-    e = { to = '黑木崖暗道#1', door = 'push wall;#wb 3500', cond = 'player.neili >= 1000', },
+    e = { to = '黑木崖暗道#1', door = 'push wall;#wb 3500', cond = 'player.neili_max >= 500', neili_cost = 1000, },
   },
 },
 
@@ -37265,7 +37331,7 @@ local map = {
   desc =  [[这是一假山。假山上洞穴很多，一阵微风吹过，洞穴发出“飕飕”的响声，令人有些毛骨悚然。旁边有一块岩石(shi)。]],
   exit = {
     hidden = { to = '曼佗罗山庄水池', cmd = 'jump shuichi', },
-    d = { to = '曼佗罗山庄小山洞', unstable = true, door = 'break shi', cond = 'player.neili >= 200', },
+    d = { to = '曼佗罗山庄小山洞', unstable = true, door = 'break shi', cond = 'player.neili_max >= 100', neili_cost = 200, },
   },
 },
 
@@ -37275,7 +37341,7 @@ local map = {
   name = '小山洞',
   desc =  [[这里是假山里的地下密室。密室虽小，却也五脏俱全，石桌石椅，石几石床，连室内放的几件器皿，也都是石制的。看来似乎很久以前有人在这里住过。墙壁(wall)上好象刻着些什么。]],
   exit = {
-    u = { to = '曼佗罗山庄假山', unstable = true, door = 'break wall', cond = 'player.neili >= 200', },
+    u = { to = '曼佗罗山庄假山', unstable = true, door = 'break wall', cond = 'player.neili_max >= 100', neili_cost = 200, },
   },
 },
 

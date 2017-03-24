@@ -59,6 +59,10 @@ function inventory.get_wielded()
 	return player.wielded
 end
 
+function inventory.get_total_weight()
+	return math.ceil( player.encumbrance_max * player.encumbrance / 100 )
+end
+
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------

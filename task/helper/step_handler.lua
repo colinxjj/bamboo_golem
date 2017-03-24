@@ -78,24 +78,44 @@ function handler:fly_across( t )
 end
 
 -- 飞越江河。长江、黄河、黑木崖、澜沧江等。
+local function get_fly_jingli_req( cmd )
+	return cmd == 'dujiang' and 1200 or 1000
+end
+local function get_fly_neili_req( cmd )
+	return cmd == 'dujiang' and 1300
+			or cmd == 'duhe' and 900
+			or cmd == 'zong' and 1500
+end
 function handler:fly()
+	-- recover jingli and/or neili as needed
+	if player.jingli < get_fly_jingli_req( self.step.cmd ) or player.neili < get_fly_neili_req( self.step.cmd ) then handler.fly_recover( self ) return end
 	-- since this handler is always called by other handlers, it needs to take care of trigger enabling itself
 	self:enable_trigger_group 'step_handler.fly'
+	-- remove existing listeners, to avoid double triggering
+	event.remove_listener_by_id 'step_handler.fly'
 	if room.get().exit.enter then
-		self:newsub{ class = 'kill_time', complete_func = handler.fly }
+		handler.fly_wait( self )
 	else
 		self:send{ self.step.yell_cmd or 'yell boat', self.step.cmd }
 	end
 end
+function handler:fly_recover()
+	self:newsub{ class = 'recover', jingli = get_fly_jingli_req( self.step.cmd ), neili = get_fly_neili_req( self.step.cmd ), stay_here = true }
+end
 function handler:fly_wait()
-	self:newsub{ class = 'kill_time', complete_func = handler.fly }
+	self:listen{ event = 'ferry_left', id = 'step_handler.fly', func = self.resume }
+	self:listen{ event = 'fly_ready', id = 'step_handler.fly', func = self.resume }
+	self:newweaksub{ class = 'kill_time', complete_func = handler.fly }
 end
 function handler:fly_done()
+	player.neili = player.neili - 1200
+	player.jingli = player.jingli - 600
 	self:disable_trigger_group 'step_handler.fly'
-	addbusy( 6 )
+	addbusy( 5 )
 end
 trigger.new{ name = 'fly_wait', group = 'step_handler.fly', match = '^(> )*(峭壁实在太陡了|江面太宽了|河面太宽了|有竹篓就坐上去吧|有船不坐)', func = handler.fly_wait }
 trigger.new{ name = 'fly_done', group = 'step_handler.fly', match = '^(> )*你在(江中渡船|黄河中渡船|河中渡船|崖间竹篓)上轻轻一点', func = handler.fly_done }
+trigger.new{ name = 'fly_recover', group = 'step_handler.fly', match = '^(> )*你的(精力|真气)不够了', func = handler.fly_recover }
 
 -- 乘坐渡船。黄河、长江、汉水、黑木崖猩猩滩、大雪山绞盘等
 function handler:embark()
@@ -314,11 +334,7 @@ function handler:wdhs_husun()
 	self:send{ 'bang song;climb down' }
 end
 
--- 武当后山山崖
-function handler:wdhs_shanya()
-	self.is_step_need_desc = true
-	self:send{ 'pa down' }
-end
+-- 武当后山万年松
 function handler:wdhs_jump( t )
 	if not inventory.has_item '毛毯#WD' then self:fail() return end
 	inventory.remove_item( t.to.id == '武当后山万年松' and '绳子' or '毛毯#WD' )
@@ -393,23 +409,16 @@ trigger.new{ name = 'ty_boat_disembark', group = 'step_handler.ty_boat', match =
 
 -- 桃源县岸边
 function handler:ty_qiaozi()
-	if handler.data.ty_qiaozi_prompt then
+	if room.get().has_qiaozi_prompt then
 		self:send{ 'answer 青山相待，白云相爱。梦不到紫罗袍共黄金带。一茅斋，野花开，管甚谁家兴废谁成败？陋巷单瓢亦乐哉。贫，气不改！达，志不改！;pa teng' }
-		handler.data.ty_qiaozi_prompt = nil
 	else
-		self:newsub{ class = 'kill_time', complete_func = handler.ty_qiaozi }
+		self:listen{ event = 'qiaozi_prompt', id = 'step_handler.ty_qiaozi', func = handler.ty_qiaozi }
 	end
 end
-function handler:ty_qiaozi_prompt()
-	handler.data.ty_qiaozi_prompt = true
-	-- interrupt kill_time subtask when got direction prompt
-	if self.status == 'running' or self.status == 'lurking' then self:resume() end
-end
-trigger.new{ name = 'ty_qiaozi_prompt', group = 'step_handler.ty_qiaozi', match = '^(> )*樵子说道：「峰峦如聚，波涛如怒，山河表里潼关路。望西都，意踟蹰。', func = handler.ty_qiaozi_prompt, penetrate = 'suspended' } -- this trigger works even when the task is suspended, to get the prompt whenever possible
 
 -- 桃源县山坡
--- TODO make sure neili > 2500
 function handler:ty_nongfu()
+	handler.data.ty_shusheng = nil -- reset data for shusheng
 	self:send{ 'tuo shi' }
 end
 function handler:ty_nongfu_ok()
@@ -417,18 +426,32 @@ function handler:ty_nongfu_ok()
 end
 trigger.new{ name = 'ty_nongfu_ok', group = 'step_handler.ty_nongfu', match = '^农夫双手托住大石，臂上运劲，挺起大石，对你说道：「多谢相助，你过去吧。」', func = handler.ty_nongfu_ok }
 
--- 桃源县石梁
--- TODO make sure neili > 1000 for each jump
-
 -- 桃源县石梁尽头
--- TODO increase reliability when the process is interrupted
+local ty_shusheng_tbl = {
+	'ask shu sheng about 一灯大师',
+	'ask shu sheng about 题目',
+	'answer 辛未状元',
+	'answer 霜凋荷叶，独脚鬼戴逍遥巾',
+	'answer 魑魅魍魉，四小鬼各自肚肠',
+	'n'
+}
 function handler:ty_shusheng()
 	if room.has_object '书生' then
-		self:send{ 'ask shu sheng about 一灯大师;ask shu sheng about 题目;answer 辛未状元;#wa 1000;answer 霜凋荷叶，独脚鬼戴逍遥巾;#wa 1000;answer 魑魅魍魉，四小鬼各自肚肠;#wa 1000;n' }
+		local i = handler.data.ty_shusheng
+		self:send{ ty_shusheng_tbl[ i or 1 ] }
 	else
 		self:fail()
 	end
 end
+function handler:ty_shusheng_update( _, t )
+	handler.data.ty_shusheng = t[ 1 ] == '我出三道题目' and 2
+													or t[ 1 ] == '这里有一首诗' and 3
+													or t[ 1 ] == '好好，果然不错' and 4
+													or t[ 1 ] == '我还有一联' and 5
+													or t[ 1 ] == '在下拜服' and 6
+	handler.ty_shusheng( self )
+end
+trigger.new{ name = 'ty_shusheng_update', group = 'step_handler.ty_shusheng', match = '^书生.*说道：「(我出三道题目|这里有一首诗|好好，果然不错|我还有一联|在下拜服)', func = handler.ty_shusheng_update }
 
 -- 铁掌山大石室
 function handler:tz_treasure_room ()
@@ -802,25 +825,21 @@ end
 -- 武当山后院小径
 function handler:wd_xiaojing( t )
 	t = self.step
+	local prompt = room.get().xiaojing_prompt
 	if t.to.id == '武当山小径#2' then
 		self:send{ 'n' }
-	elseif handler.data.wd_xiaojing_dir then
-		self:send{ handler.data.wd_xiaojing_dir }
-		t.waited, handler.data.wd_xiaojing_dir = nil
+	elseif prompt then
+		self:send{ prompt }
+		t.waited = nil
 	elseif not t.waited then
 		t.waited = true
+		self:listen{ event = 'xiaojing_prompt', id = 'step_handler.wd_xiaojing', func = handler.wd_xiaojing }
 		self:newweaksub{ class = 'kill_time', complete_func = handler.wd_xiaojing }
 	else
 		t.waited = nil
 		self:send{ DIR4[ math.random( 4 ) ] }
 	end
 end
-function handler:wd_xiaojing_prompt( _, t )
-	handler.data.wd_xiaojing_dir = CN_DIR[ t[ 2 ] ]
-	-- interrupt kill_time subtask when got direction prompt
-	if self.status == 'running' or self.status == 'lurking' then self:resume() end
-end
-trigger.new{ name = 'wd_xiaojing_prompt', group = 'step_handler.wd_xiaojing', match = '^(> )*你站在小径上，四周打量，仿佛看见(\\S+)面有些亮光。$', func = handler.wd_xiaojing_prompt, penetrate = 'suspended' } -- this trigger works even when the task is suspended, to get the prompt whenever possible
 
 -- 归云庄九宫桃花阵
 local num = lpeg.C( ( lpeg.P '一' + '二' + '三' + '四' + '五' + '六' + '七' + '八' + '九' + '十' )^1 )
@@ -1356,7 +1375,7 @@ function handler:hdg_huapu( t )
 	if room.name == '牛棚' then self:send{ 'nd' } return end
 	self:listen{ event = 'located', func = handler.hdg_huapu, id = 'step_handler.hdg_huapu', sequence = 99, keep_eval = false }
 	t.i = t.i + 1
-	if t.i > 10 then self:send{ 'yun jing' }; t.i = 0 end
+	if t.i > 5 then self:send{ 'yun jing' }; t.i = 0 end
 	self:send{ DIR4[ math.random( 4 ) ] }
 end
 

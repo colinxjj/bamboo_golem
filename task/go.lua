@@ -121,15 +121,22 @@ function task:reset()
 end
 
 function task:next_step()
+  --disable trigger group used by last step
+  self:disable_trigger_group( self.step_trigger_group )
+  -- clear vars from previous step
+  self.step_handler, self.step_trigger_group, self.step, self.is_step_need_desc, self.is_still_in_step = nil
+  -- set up necessary vars
   local cmd_list, i = {}, self.step_num
-  local from, to, cmd, door, handler, is_special_cmd
-  -- generate command list for the next step(s)
+  local from, to, cmd, door, handler, is_special_cmd, jingli_cost, neili_cost, jing_cost, qi_cost
+  local total_jingli_cost, total_neili_cost, total_jing_cost, total_qi_cost = 0, 0, 0, 0
+  -- parse next steps
   repeat
     from, to = self.path[ i ], self.path[ i + 1 ]
     -- move on to next dest if no further steps
     if not to then self:next_dest( from ) return end
 
-    cmd, door, handler = map.get_step_cmd( from, to )
+    cmd, door, handler, jingli_cost, neili_cost, jing_cost, qi_cost = map.get_step_details( from, to )
+    total_jingli_cost, total_neili_cost, total_jing_cost, total_qi_cost = total_jingli_cost + jingli_cost, total_neili_cost + neili_cost, total_jing_cost + jing_cost, total_qi_cost + qi_cost
 
     if handler and i ~= self.step_num then handler = nil; break end -- if processed more than one step then ignore the new handler
 
@@ -145,22 +152,35 @@ function task:next_step()
     if handler or is_special_cmd then break end
     -- already have 15 commands?
     if i - self.step_num >= 15 then break end -- up to 15 commands per batch
+    -- total attr cost exceeds player's attr value upper limits?
+    if total_jingli_cost >= player.jingli_max * 2 or total_neili_cost >= player.neili_max * 2 or total_jing_cost >= player.jing_max or total_qi_cost >= player.qi_max then -- remove last step from list and move on
+      table.remove( cmd_list )
+      if door then table.remove( cmd_list ) end
+      i = i - 1
+      break
+    end
   until not self.path[ i + 1 ] or self.be_cautious or self.is_traversing
-  local count = i - self.step_num
-  if count > 4 then cmd_list[ #cmd_list + 1 ] = '#wa ' .. 40 * count end -- wait a bit after each batch
-  self.step_num = self.step_num + 1
-  self.batch_step_num = count > 1 and i or nil
-  --disable trigger group used by last step
-  self:disable_trigger_group( self.step_trigger_group )
-  -- clear vars from previous step
-  self.step_handler, self.step_trigger_group, self.step, self.is_step_need_desc, self.is_still_in_step = nil
-  -- got new handler?
-  if not handler then -- send commands
-    self:send( cmd_list )
-  else -- hand over control to handler
-    self.step_handler, self.step_trigger_group, self.step = step_handler[ handler ], 'step_handler.' .. handler, { from = from, to = to, cmd = cmd }
-    self:enable_trigger_group( self.step_trigger_group )
-    self:step_handler( self.step )
+  -- player has enough attr to finish the steps?
+  if total_jingli_cost > player.jingli or total_neili_cost > player.neili or total_jing_cost > player.jing or total_qi_cost > player.qi then -- recover
+    self:newsub{ class= 'recover', jingli = total_jingli_cost, neili = total_neili_cost, jing = total_jing_cost, qi = total_qi_cost, stay_here = true }
+  else -- otherwise, go ahead
+    local count = i - self.step_num
+    if count > 4 then cmd_list[ #cmd_list + 1 ] = '#wa ' .. 40 * count end -- wait a bit after each batch
+    self.step_num = self.step_num + 1
+    self.batch_step_num = count > 1 and i or nil
+    -- adjust player hp
+    player.jingli = player.jingli - total_jingli_cost
+    player.neili = player.neili - total_neili_cost
+    player.jing = player.jing - total_jing_cost
+    player.qi = player.qi - total_qi_cost
+    -- got new handler?
+    if not handler then -- send commands
+      self:send( cmd_list )
+    else -- hand over control to handler
+      self.step_handler, self.step_trigger_group, self.step = step_handler[ handler ], 'step_handler.' .. handler, { from = from, to = to, cmd = cmd }
+      self:enable_trigger_group( self.step_trigger_group )
+      self:step_handler( self.step )
+    end
   end
 end
 

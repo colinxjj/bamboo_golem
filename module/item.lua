@@ -234,11 +234,11 @@ local function cleanup_temp_source( slist )
 	end
 end
 
-function item.get_all_source( name )
+function item.get_all_source( name, item_filter )
 	assert( type( name ) == 'string', 'item.get_all_source - param must be a string' )
 	if not item.is_valid_type( name ) then -- get sources for a specific item
 		for iname, it in pairs( index ) do
-			if it.name == name or iname == name then
+			if ( it.name == name or iname == name ) and ( not item_filter or item_filter( iname ) ) then
 				cleanup_temp_source( it.source )
 				return it.source
 			end
@@ -248,7 +248,7 @@ function item.get_all_source( name )
 		if not item_list then return end
 		local slist = {}
 		for iname, it in pairs( item_list ) do
-			if it.source then
+			if it.source and ( not item_filter or item_filter( iname ) ) then
 				cleanup_temp_source( it.source )
 				for _, source in pairs( it.source ) do
 					slist[ #slist + 1 ] = source
@@ -310,10 +310,11 @@ end
 function item.get_sorted_source( t )
 	assert( type( t ) == 'table', 'item.get_sorted_source - param must be a string' )
 	assert( type( t.item ) == 'string', 'item.get_sorted_source - the item param must be a string' )
+	local slist = item.get_all_source( t.item, t.item_filter )
 	for _, source in pairs( slist ) do
 		source.score = calculate_source_score( source, t )
 		-- if a custom source evaluator is specified, then use it to adjust the score
-		source.score = t.custom_source_evaluator and source.score + t.custom_source_evaluator( source ) or source.score
+		source.score = t.source_evaluator and ( source.score + ( t.source_evaluator( source ) or 0 ) ) or source.score
 	end
 	table.sort( slist, sort_by_score )
 	--tprint( slist )

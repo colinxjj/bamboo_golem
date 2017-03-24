@@ -206,7 +206,7 @@ cli.register{ cmd = 'pct', desc = '列出当前所有触发器。', func = parse_pct, no_p
 -- test
 
 local function parse_t( _, input )
-  tprint( item.get_sorted_source{ item = 'food' } )
+  print( inventory.get_total_weight() )
 end
 
 cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }

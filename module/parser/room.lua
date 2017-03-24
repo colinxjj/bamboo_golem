@@ -126,6 +126,23 @@ local function parse_brief( _, t )
   prepare_to_parse_object()
 end
 
+trigger.new{ name = 'room_header', match = '^(> )*(\\S+) - $', func = parse_header, enabled = true }
+trigger.new{ name = 'room_desc', match = '^.+$', func = parse_desc, group = 'room' }
+trigger.new{ name = 'room_nature', match = '^　　这是一个\\S{4}(\\S{4})?的', func = parse_nature, group = 'room', sequence = 99 } -- higher sequence to block desc trigger
+trigger.new{ name = 'room_exit', match = '^    这里((没有|看不见)任何明显的出路|(明显的|唯一的|看得见的唯一|看得清的)出口是 (.+))。', func = parse_exit, group = 'room', sequence = 99 }
+trigger.new{ name = 'room_object', match = '^  ([^(]+)\\(([\\w\\s\\\'-]+)\\)(\\<\\S+\\>)?', func = parse_object }
+trigger.new{ name = 'room_end', match = '^\\S', func = parse_end, sequence = 99, keep_eval = true }
+
+trigger.new{ name = 'room_brief', match = '^(> )*(\\S+) - (\\S+)$', func = parse_brief, enabled = true }
+
+trigger.new{ name = 'room_look_header', match = '^(> )*【你现在正处于(\\S+)】$', func = parse_look_header, enabled = true }
+trigger.new{ name = 'room_look_content', match = '^.+$', func = parse_look_content, sequence  = 101 }
+
+-- add triggers for rooms that have no exits sometimes, resulting in no trailing dash after the room name
+trigger.new{ name = 'room_no_exit_brief', match = ( '^()(%s)$' ):format( table.concat( map.list_all_potentially_no_exit(), '|' ) ), func = parse_brief, enabled = true }
+
+--------------------------------------------------------------------------------
+
 local function parse_ferry_came()
   local room = room.get()
   if room then room.exit.enter = true end
@@ -162,25 +179,32 @@ local function parse_ferry_departed()
   end
 end
 
-trigger.new{ name = 'room_header', match = '^(> )*(\\S+) - $', func = parse_header, enabled = true }
-trigger.new{ name = 'room_desc', match = '^.+$', func = parse_desc, group = 'room' }
-trigger.new{ name = 'room_nature', match = '^　　这是一个\\S{4}(\\S{4})?的', func = parse_nature, group = 'room', sequence = 99 } -- higher sequence to block desc trigger
-trigger.new{ name = 'room_exit', match = '^    这里((没有|看不见)任何明显的出路|(明显的|唯一的|看得见的唯一|看得清的)出口是 (.+))。', func = parse_exit, group = 'room', sequence = 99 }
-trigger.new{ name = 'room_object', match = '^  ([^(]+)\\(([\\w\\s\\\'-]+)\\)(\\<\\S+\\>)?', func = parse_object }
-trigger.new{ name = 'room_end', match = '^\\S', func = parse_end, sequence = 99, keep_eval = true }
-
-trigger.new{ name = 'room_brief', match = '^(> )*(\\S+) - (\\S+)$', func = parse_brief, enabled = true }
-
-trigger.new{ name = 'room_look_header', match = '^(> )*【你现在正处于(\\S+)】$', func = parse_look_header, enabled = true }
-trigger.new{ name = 'room_look_content', match = '^.+$', func = parse_look_content, sequence  = 101 }
+local function parse_fly_ready()
+  event.new 'fly_ready'
+end
 
 trigger.new{ name = 'room_ferry_came', match = '^(> )*(一叶扁舟缓缓地驶了过来|一艘渡船缓缓地驶了过来|番僧把麻绳理顺|一条粗大的绳索坠着个大藤筐|一个大竹篓缓缓地降了下来)', func = parse_ferry_came, enabled = true }
-trigger.new{ name = 'room_ferry_left', match = '^(> )*(艄公们把踏脚板收|艄公把踏脚板收|日月教众喊了一声“坐稳喽”|绳索一紧，藤筐左右摇晃振动了几下|番僧用力一推，将藤筐推离平台)', func = parse_ferry_left, enabled = true, keep_eval = true }
+trigger.new{ name = 'room_ferry_left', match = '^(> )*(艄公们把踏脚板收|艄公把踏脚板收|日月教众喊了一声“坐稳喽”|绳索一紧，藤筐左右摇晃振动了几下|番僧用力一推，将藤筐推离平台)', func = parse_ferry_left, enabled = true }
 trigger.new{ name = 'room_ferry_arrived', match = '^(> )*(艄公说“到啦，上岸吧”|艄公将一块踏脚板搭上堤岸|渡船猛地一震|竹篓晃了几下|又划出三四里|藤筐离地面越来越近|一个番僧用沙哑的声音道|终于到了小岛边|终于到了岸边|船夫把小舟靠在岸边)', func = parse_ferry_arrived, enabled = true }
-trigger.new{ name = 'room_ferry_departed', match = '^(> )*(艄公们把踏脚板收|艄公把踏脚板收|铜锣三响，崖顶的绞盘开始转动|绳索一紧，藤筐左右摇晃振动了几下|番僧用力一推，将藤筐推离平台)', func = parse_ferry_departed, enabled = true, keep_eval = true }
+trigger.new{ name = 'room_ferry_departed', match = '^(> )*(艄公们把踏脚板收|艄公把踏脚板收|铜锣三响，崖顶的绞盘开始转动|绳索一紧，藤筐左右摇晃振动了几下|番僧用力一推，将藤筐推离平台)', func = parse_ferry_departed, enabled = true }
+trigger.new{ name = 'room_fly_ready', match = '^(> )*(\\S+紧了紧随身物品，|只见\\S+长袖飘飘从)', func = parse_fly_ready, enabled = true }
 
--- add triggers for rooms that have no exits sometimes, resulting in no trailing dash after the room name
-trigger.new{ name = 'room_no_exit_brief', match = ( '^()(%s)$' ):format( table.concat( map.list_all_potentially_no_exit(), '|' ) ), func = parse_brief, enabled = true }
+--------------------------------------------------------------------------------
+
+local function parse_qiaozi_prompt()
+  room.get().has_qiaozi_prompt = true
+  event.new 'qiaozi_prompt'
+end
+
+trigger.new{ name = 'room_qiaozi_prompt', match = '^(> )*樵子说道：「峰峦如聚，波涛如怒，山河表里潼关路。望西都，意踟蹰。', func = parse_qiaozi_prompt, enabled = true }
+
+local function parse_xiaojing_prompt( _, t )
+  room.get().xiaojing_prompt = CN_DIR[ t[ 2 ] ]
+  event.new 'xiaojing_prompt'
+end
+
+trigger.new{ name = 'room_xiaojing_prompt', match = '^(> )*你站在小径上，四周打量，仿佛看见(\\S+)面有些亮光。$', func = parse_xiaojing_prompt, enabled = true }
+
 
 --------------------------------------------------------------------------------
 -- End of module
