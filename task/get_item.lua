@@ -25,6 +25,12 @@ function task:get_id()
 end
 
 function task:_resume()
+  -- update inventory info as needed
+  if not self.has_updated_info then
+    self.has_updated_info = true
+    self:newsub{ class = 'get_info', inventory = true }
+    return
+  end
   self.count = self.count or 1
   -- already have the required item(s)?
   local has_item = inventory.has_item( self.item, self.count_min or self.count )
@@ -67,6 +73,7 @@ function task:handle_source( source )
     -- go to source location
     self:newsub{ class = 'go' , to = source.location }
   elseif source.npc and not room.has_object( source.npc ) then
+    message.debug( '未能从来源“' .. current_source.location .. '”取得物品“' .. current_source.item .. '”' )
     item.mark_invalid_source( source )
     self:resume()
   elseif source.type == 'get' then
@@ -75,10 +82,11 @@ function task:handle_source( source )
     self:send{ source.cmd; complete_func = self.check_inventory }
   elseif source.type == 'local_handler' then
     self:enable_trigger_group( 'item_finder.' .. source.handler )
-    item_finder[ source.handler ]( self )
+    item_finder[ source.handler ]( self, source )
   elseif source.type == 'shop' then
     self:purchase( source )
   elseif source.type == 'loot' then
+    -- TODO
   end
 end
 
@@ -90,6 +98,7 @@ function task:get( source )
     local c = count ~= 1 and ( count .. ' ' ) or ''
     self:send{ 'get ' .. c .. item.get_id( source.item ); complete_func = self.check_source_result }
   else
+    message.debug( '未能从来源“' .. current_source.location .. '”取得物品“' .. current_source.item .. '”' )
     item.mark_invalid_source( source )
     self:resume()
   end
@@ -108,8 +117,12 @@ end
 function task:check_source_result()
   if inventory.has_item( self.item, self.count_min or self.count ) then
     self.result = current_source.item
+    -- if a source is available  only once per session, mark it as invalid until session reset
+    if current_source.is_once_per_session then current_source.is_invalid = true end
+    -- complete the task
     self:complete()
   else
+    message.debug( '未能从来源“' .. current_source.location .. '”取得物品“' .. current_source.item .. '”' )
     item.mark_invalid_source( current_source )
     self:resume()
   end

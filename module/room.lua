@@ -18,9 +18,21 @@ end
 
 -- check if a person / an object is present in the current room
 function room.has_object( object )
-	object = type( object ) == 'table' and object or get_npc( object ) or { name = object }
-	local room_object = current_room.object[ object.name ]
-	return room_object and ( not object.id or object.id == room_object.id ) and true or false
+	object = type( object ) == 'table' and object or get_npc( object ) or item.get( object ) or { name = object }
+  if type( object.name ) == 'table' then -- for object with multiple names
+    local room_object
+    for _, name in pairs( object.name ) do
+      room_object = current_room.object[ name ]
+    	if room_object and ( not object.id or object.id == room_object.id ) then return true end
+    end
+  elseif object.name then -- for object with a single name
+  	local room_object = current_room.object[ object.name ]
+  	return room_object and ( not object.id or object.id == room_object.id ) and true or false
+  elseif object.id then -- for object with id but without names (e.g. ‘”“€¿Æ¬Ô#XS, it's impossbile to handle them by name since their name combinations are numerous)
+    for _, room_object in pairs( current_room.object ) do
+      if room_object.id == object.id then return true end
+    end
+  end
 end
 
 -- add a new object to the current room
@@ -36,11 +48,24 @@ end
 
 function room.get_object( name )
   assert( type( name ) == 'string', 'room.get_object - param must be a string' )
-  return current_room.object[ name ]
+  local it = get_npc( name ) or item.get( name )
+  if not it then -- for object without index data
+    return current_room.object[ name ]
+  elseif type( it.name ) == 'string' then -- for object with a single name
+    return current_room.object[ it.name ]
+  elseif it.name then -- for object with multiple names
+    for _, possible_name in pairs( it.name ) do
+      if current_room.object[ possible_name ] then return current_room.object[ possible_name ] end
+    end
+  elseif it.id then -- for object with id but without names
+    for _, room_object in pairs( current_room.object ) do
+      if room_object.id == it.id then return room_object end
+    end
+  end
 end
 
 function room.get_object_count( name )
-  local it = current_room.object[ name ]
+  local it = room.get_object( name )
   return it and it.count or 0
 end
 

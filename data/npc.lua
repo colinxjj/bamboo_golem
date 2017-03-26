@@ -3,14 +3,6 @@ local npc = {
 --------------------------------------------------------------------------------
 -- 武馆
 
-['王厨子'] = {
-  name = '王厨子',
-  id = 'wang chuzi',
-  alternate_id = { 'wang', 'chuzi', },
-  location = '武馆厨房',
-  label = { food = true, water = true, },
-},
-
 ['卜垣'] = {
   name = '卜垣',
   id = 'bo yuan',
@@ -70,6 +62,13 @@ local npc = {
   id = 'xi zhanglao',
   alternate_id = { 'xi', 'zhanglao' },
   location = '扬州城墓室',
+},
+
+['赵敏'] = {
+  name = '赵敏',
+  id = 'zhao min',
+  alternate_id = { 'zhao', 'min' },
+  location = '扬州城偏厅',
 },
 
 --------------------------------------------------------------------------------
@@ -703,7 +702,7 @@ local npc = {
   alternate_id = { 'shi' },
   location = '中原神州兵器铺',
   label = { shop = true, },
-  catalogue = { '长剑#YZ', '钢刀', '流星锤', '铁棍', '钢杖', '长鞭', '单钩', '竹棒#YZ', '钢斧' }
+  catalogue = { '长剑#SWORD', '钢刀', '流星锤', '铁棍', '钢杖', '长鞭', '单钩', '竹棒#STICK', '钢斧' }
 },
 
 ['铸剑师'] = {
@@ -712,7 +711,7 @@ local npc = {
   alternate_id = { 'daoba', 'zhang' },
   location = '中原神州兵器铺',
   label = { shop = true, },
-  catalogue = { '长剑#YZ', '钢刀', '流星锤', '铁棍', '钢杖', '长鞭', '单钩', '竹棒#YZ', '钢斧', '暗杀匕首' }
+  catalogue = { '长剑#SWORD', '钢刀', '流星锤', '铁棍', '钢杖', '长鞭', '单钩', '竹棒#STICK', '钢斧', '暗杀匕首' }
 },
 
 ['木匠#XY'] = {
@@ -739,7 +738,7 @@ local npc = {
   alternate_id = { 'xiao', 'fan' },
   location = '峨嵋山草棚',
   label = { shop = true, },
-  catalogue = { '清水葫芦#EM', '竹剑', '火折', '长剑', '铁锹' }
+  catalogue = { '清水葫芦#2', '竹剑', '火折', '长剑', '铁锹' }
 },
 
 ['小贩子#MJ'] = {
@@ -829,7 +828,7 @@ local npc = {
   alternate_id = { 'xiao', 'fan' },
   location = '南阳城城中心',
   label = { shop = true, },
-  catalogue = { '水壶' }
+  catalogue = { '水壶#HS' }
 },
 
 ['老裁缝#CA'] = {
@@ -857,6 +856,238 @@ local npc = {
   location = '回疆哈萨克小店',
   label = { shop = true, },
   catalogue = { '哈密瓜', '大酒囊', '水囊', '乳酪', '马刀', '马鞭', '阿拉伯弯刀' }
+},
+
+--------------------------------------------------------------------------------
+-- Food providers
+
+['小僮#MJ'] = {
+  name = '小僮',
+  id = 'xiao tong',
+  alternate_id = { 'xiao', 'tong' },
+  location = '明教厨房',
+  provide = {
+    { item = '粽子', cmd = 'ask xiao tong about 食物', handler = 'cmd_and_get', },
+    { item = '酸梅汤', cmd = 'ask xiao tong about 茶', handler = 'cmd_and_get', },
+  },
+},
+
+['小僮#CL'] = {
+  name = '小僮',
+  id = 'xiao tong',
+  alternate_id = { 'xiao', 'tong' },
+  location = '长乐帮厨房',
+  provide = {
+    { item = '米饭', cmd = 'ask xiao tong about 食物', handler = 'cmd_and_get', },
+    { item = '香茶', cmd = 'ask xiao tong about 茶', handler = 'cmd_and_get', },
+  },
+},
+
+['侍茶小僮#MJ'] = {
+  name = '侍茶小僮',
+  id = 'xiao tong',
+  alternate_id = { 'xiao', 'tong' },
+  location = '明教茶室',
+  provide = {
+    { item = '酸梅汤', cmd = 'ask xiao tong about 茶', handler = 'cmd_and_get', },
+  },
+},
+
+['绿衣小僮#JQG'] = {
+  name = '绿衣小僮',
+  id = 'luyi xiaotong',
+  alternate_id = { 'xiaotong', 'luyi' },
+  location = '绝情谷后堂',
+  provide = {
+    { item = '龙井茶#JQG', cmd = 'ask luyi xiaotong about 茶', },
+  },
+},
+
+['仆人#KL'] = {
+  name = '仆人',
+  id = 'pu ren',
+  alternate_id = { 'puren', 'pu' },
+  location = '昆仑山厨房',
+  provide = {
+    { item = '米饭', cmd = 'sit chair;knock table', handler = 'cmd_and_get', },
+    { item = '大碗茶', cmd = 'sit chair;knock table', handler = 'cmd_and_get', },
+  },
+},
+
+['仆人#HS'] = {
+  name = '仆人',
+  id = 'pu ren',
+  alternate_id = { 'puren' },
+  location = '华山饭厅',
+  provide = {
+    { item = '米饭', handler = 'auto_get', cond = 'player.party == "华山派"', },
+    { item = '包子', handler = 'auto_get', cond = 'player.party == "华山派"', },
+    { item = '梁溪脆鳝', handler = 'auto_get', cond = 'player.party == "华山派"', },
+    { item = '鸡豆花', handler = 'auto_get', cond = 'player.party == "华山派"', },
+    { item = '麻婆豆腐', handler = 'auto_get', cond = 'player.party == "华山派"', },
+    { item = '锅巴肉片', handler = 'auto_get', cond = 'player.party == "华山派"', },
+    { item = '烤鸡腿', handler = 'auto_get', cond = 'player.party == "华山派"', },
+    { item = '抓炒里脊', handler = 'auto_get', cond = 'player.party == "华山派"', },
+    { item = '糖醋鲤鱼', handler = 'auto_get', cond = 'player.party == "华山派"', },
+    { item = '原笼粉蒸牛肉', handler = 'auto_get', cond = 'player.party == "华山派"', },
+    { item = '五香花生', handler = 'auto_get', cond = 'player.party == "华山派"', },
+    { item = '扣三丝', handler = 'auto_get', cond = 'player.party == "华山派"', },
+    { item = '番茄腰柳', handler = 'auto_get', cond = 'player.party == "华山派"', },
+  },
+},
+
+['小厨子#XX'] = {
+  name = '小厨子',
+  id = 'xiao chuzi',
+  alternate_id = { 'chuzi' },
+  location = '星宿海厨房',
+  provide = {
+    { item = '各类菜肴', cmd = 'ask xiao chuzi about 食物', },
+    { item = '青葫芦', cmd = 'ask xiao chuzi about 水', },
+  },
+},
+
+['杂役喇嘛#XS'] = {
+  id = 'zayi lama',
+  alternate_id = { 'zayi', 'lama' },
+  location = '大雪山斋堂',
+  provide = {
+    { item = '酥油茶', cmd = 'ask zayi lama about 食物', },
+  },
+},
+
+['小沙弥#TY'] = {
+  name = '小沙弥',
+  id = 'xiao shami',
+  alternate_id = { 'xiao', 'shami' },
+  location = '桃源县斋堂',
+  provide = {
+    { item = '米饭', cmd = 'ask xiao shami about 食物', handler = 'cmd_and_get', },
+    { item = '香茶', cmd = 'ask xiao shami about 茶', handler = 'cmd_and_get', },
+  },
+},
+
+['小沙弥#PT'] = {
+  name = '小沙弥',
+  id = 'xiao shami',
+  alternate_id = { 'xiao', 'shami' },
+  location = '莆田少林凉亭',
+  provide = {
+    { item = '茉莉花茶', handler = 'sit_and_wait', },
+  },
+},
+
+['小沙弥#PT2'] = {
+  name = '小沙弥',
+  id = 'xiao shami',
+  alternate_id = { 'xiao', 'shami' },
+  location = '莆田少林饭厅',
+  provide = {
+    { item = '麻辣豆腐#SL', handler = 'sit_and_knock', },
+    { item = '清水葫芦#2', handler = 'sit_and_knock', },
+    { item = '元宵#SL', handler = 'sit_and_knock', },
+  },
+},
+
+['小沙弥#SL1'] = {
+  name = '小沙弥',
+  id = 'xiao shami',
+  alternate_id = { 'xiao', 'shami' },
+  location = '嵩山少林饭厅#C',
+  provide = {
+    { item = '麻辣豆腐#SL', handler = 'sit_and_knock', cond = 'player.party == "少林派"', },
+    { item = '清水葫芦#2', handler = 'sit_and_knock', cond = 'player.party == "少林派"', },
+    { item = '元宵#SL', handler = 'sit_and_knock', cond = 'player.party == "少林派"', },
+  },
+},
+
+['小沙弥#SL2'] = {
+  name = '小沙弥',
+  id = 'xiao shami',
+  alternate_id = { 'xiao', 'shami' },
+  location = '嵩山少林饭厅#N',
+  provide = {
+    { item = '密汁甜藕#SL', handler = 'sit_and_knock', cond = 'player.party == "少林派"', },
+  },
+},
+
+['小沙弥#SL3'] = {
+  name = '小沙弥',
+  id = 'xiao shami',
+  alternate_id = { 'xiao', 'shami' },
+  location = '嵩山少林饭厅#S',
+  provide = {
+    { item = '芙蓉花菇#SL', handler = 'sit_and_knock', cond = 'player.party == "少林派"', },
+  },
+},
+
+['小童#HDG'] = {
+  name = '小童',
+  id = 'xiao tong',
+  alternate_id = { 'xiao', 'tong' },
+  location = '蝴蝶谷厨房',
+  provide = {
+    { item = '米饭', handler = 'auto_get', cond = 'player.party == "明教"', },
+    { item = '面汤', handler = 'auto_get', cond = 'player.party == "明教"', },
+    { item = '青菜', handler = 'auto_get', cond = 'player.party == "明教"', },
+  },
+},
+
+['厨子#TZ'] = {
+  name = '厨子',
+  id = 'chu zi',
+  alternate_id = { 'chuzi' },
+  location = '铁掌山厨房',
+  provide = {
+    { item = '大米饭#TZ', cmd = 'ask chu zi about 食物', handler = 'cmd_and_get', },
+    { item = '片皮乳猪#TZ', cmd = 'ask chu zi about 食物', handler = 'cmd_and_get', },
+    { item = '红烧牛肉#TZ', cmd = 'ask chu zi about 食物', handler = 'cmd_and_get', },
+  },
+},
+
+['厨子#SS'] = {
+  name = '厨子',
+  id = 'chu zi',
+  alternate_id = { 'chuzi' },
+  location = '嵩山膳房',
+  provide = {
+    { item = '酸梅汤', cmd = 'ask chu zi about 水', handler = 'cmd_and_get', },
+    { item = '馒头', cmd = 'ask chu zi about 食物', handler = 'cmd_and_get', },
+    { item = '抓炒里脊', cmd = 'ask chu zi about 食物', handler = 'cmd_and_get', },
+  },
+},
+
+['厨子#SLD'] = {
+  name = '厨子',
+  id = 'chu zi',
+  alternate_id = { 'chuzi' },
+  location = '神龙岛厨房',
+  provide = {
+    { item = '包子', cmd = 'ask chu zi about food', },
+    { item = '牛皮酒袋', cmd = 'ask chu zi about water', },
+  },
+},
+
+['厨师#HMY'] = {
+  name = '厨师',
+  id = 'chu zi',
+  alternate_id = { 'chu' },
+  location = '黑木崖膳食房',
+  provide = {
+    { item = '粽子', cmd = 'ask chu zi about 食物', handler = 'cmd_and_get', },
+    { item = '酸梅汤', cmd = 'ask chu zi about 水', handler = 'cmd_and_get', },
+  },
+},
+
+['王厨子#WG'] = {
+  name = '王厨子',
+  id = 'wang chuzi',
+  alternate_id = { 'wang', 'chuzi', },
+  location = '武馆厨房',
+  provide = {
+    { item = '米饭', cmd = 'ask chu zi about 食物', },
+    { item = '大碗茶', cmd = 'ask chu zi about 水', },
+  },
 },
 
 --------------------------------------------------------------------------------
@@ -1021,7 +1252,7 @@ local npc = {
   alternate_id = { 'nv', 'waiter' },
   location = '苏州城茶馆',
   label = { shop = true, },
-  catalogue = { '水蜜桃#SZ', '瓷茶碗' }
+  catalogue = { '水蜜桃', '瓷茶碗' }
 },
 
 ['王老汉'] = {
@@ -1039,7 +1270,7 @@ local npc = {
   alternate_id = { 'laoban' },
   location = '佛山镇英雄楼',
   label = { shop = true, },
-  catalogue = { '素煎饺', '牛皮酒袋' }
+  catalogue = { '各类菜肴', '素煎饺', '牛皮酒袋' }
 },
 
 ['萨老板'] = {
@@ -1084,7 +1315,7 @@ local npc = {
   alternate_id = { 'pangsao', 'sao' },
   location = '长安城水果店',
   label = { shop = true, },
-  catalogue = { '苹果', '白梨', '芒果', '水蜜桃', '荔枝', '哈蜜瓜', '桔子' }
+  catalogue = { '苹果', '白梨', '芒果', '水蜜桃#F', '荔枝', '哈蜜瓜', '桔子' }
 },
 
 ['阿拉木罕'] = {
@@ -1266,7 +1497,7 @@ local npc = {
   id = 'xiao fan',
   location = '华山村杂货铺',
   label = { shop = true, grocery = true, },
-  catalogue = { '水壶' }
+  catalogue = { '水壶#HS' }
 },
 
 ['伙计#TG'] = {
@@ -1284,6 +1515,15 @@ local npc = {
   location = '佛山镇杂货店',
   label = { shop = true, grocery = true, },
   catalogue = { '火折', '剃刀' }
+},
+
+['杂货铺老板#MIAOJ'] = {
+  name = '杂货铺老板',
+  id = 'lao ban',
+  alternate_id = { 'laoban' },
+  location = '苗疆杂货店',
+  label = { shop = true, grocery = true, },
+  catalogue = { '清水葫芦', '竹剑', '火折', '竹棒' }
 },
 
 --------------------------------------------------------------------------------

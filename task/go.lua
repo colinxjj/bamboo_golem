@@ -38,7 +38,7 @@ function task:_resume()
       end
     end
 
-    self.path = map.getpath( loc[ 1 ], self.is_dest )
+    self.path = map.get_path( loc[ 1 ], self.is_dest )
     if not self.path then self:fail(); return end
 
     -- get a list of items / flags required to complete the path (in addition to those needed for traversing )
@@ -113,7 +113,7 @@ function task:reset()
   local loc = map.get_current_location()
   if #loc > 1 then self.be_cautious = true end -- be cautious if current loc is not exact
 
-  self.path = map.getpath( loc[ 1 ], self.is_dest ) -- get path to next dest
+  self.path = map.get_path( loc[ 1 ], self.is_dest ) -- get path to next dest
   if not self.path then self:fail() return end -- if dests are unreachable, task fails
 
   message.debug '路径行走需要调整路线'
@@ -190,7 +190,7 @@ function task:next_dest( loc )
     self:complete()
   else
     self.step_num, self.batch_step_num = 1
-    self.path = map.getpath( loc, self.is_dest ) -- get path to next dest
+    self.path = map.get_path( loc, self.is_dest ) -- get path to next dest
     if not self.path then self:complete() return end -- if other dests are unreachable, complete task
     self.is_traversing = true -- for subsequent dests, switch to traverse mode
     self:check_step()

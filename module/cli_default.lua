@@ -162,7 +162,7 @@ local function parse_gi( _, input )
   count, name = tonumber( count ), name or input
   local it = item.get( name ) or item.get_by_id( name )
   if it then
-    manual:newweaksub{ class = 'get_item', item = it.name, count = count, fail_func = manual.fail_catcher }
+    manual:newweaksub{ class = 'get_item', item = it.iname, count = count, fail_func = manual.fail_catcher }
   elseif item.is_valid_type( name ) then
     manual:newweaksub{ class = 'get_item', item = name, count = count, fail_func = manual.fail_catcher }
   else
@@ -181,6 +181,7 @@ local function parse_full( _, input )
 end
 
 cli.register{ cmd = 'full', desc = '恢复 HP。', func = parse_full, no_prefix = true }
+
 --------------------------------------------------------------------------------
 -- refill
 
@@ -202,11 +203,58 @@ local function parse_pct( _, input )
 end
 
 cli.register{ cmd = 'pct', desc = '列出当前所有触发器。', func = parse_pct, no_prefix = true }
+
 --------------------------------------------------------------------------------
 -- test
 
+local function food_source_evaluator( source )
+  local it = item.get( source.item )
+  local food_supply = ( it.consume_count or 1 ) * it.food_supply * 0.5
+  local gap = 100 - player.food
+    -- demote food with excessive supply
+    if food_supply > gap then
+      if source.type == 'shop' then
+        return ( gap - food_supply ) * 0.5
+      else
+        return ( gap - food_supply ) * 0.3
+      end
+    end
+  -- demote food with too low supply
+  if gap / food_supply > 2 then return 0 - ( gap - food_supply ) * 0.5 end
+end
+
+local function drink_source_evaluator( source )
+  if source.item == '乳酪' then
+    -- if food and water levels are both low, 乳酪 is a more attractive choice
+    if player.food < 50 and player.water < 50 then return 20 end
+    -- if food or water level is above 100, then completely ignore 乳酪
+    if player.food >= 100 or player.water >= 100 then return -1000000 end
+  end
+end
+
 local function parse_t( _, input )
-  print( inventory.get_total_weight() )
+  local time = os.clock() * 1000
+  local t = item.get_sorted_source{ item = 'food', source_evaluator = food_source_evaluator }
+  print( '食物计算过程耗时 ' .. os.clock() * 1000 - time .. ' 毫秒' )
+  for i = 1, 5 do
+    print( i )
+    print( '  item:', t[ i ].item )
+    print( '  location:', t[ i ].location )
+    if t[ i ].npc then print( '  npc:', t[ i ].npc ) end
+    print( '  type:', t[ i ].type )
+    print( '  score:', t[ i ].score )
+  end
+  time = os.clock() * 1000
+  t = item.get_sorted_source{ item = 'drink', source_evaluator = drink_source_evaluator }
+  print( '饮水计算过程耗时 ' .. os.clock() * 1000 - time .. ' 毫秒' )
+  for i = 1, 5 do
+    print( i )
+    print( '  item:', t[ i ].item )
+    print( '  location:', t[ i ].location )
+    if t[ i ].npc then print( '  npc:', t[ i ].npc ) end
+    print( '  type:', t[ i ].type )
+    print( '  score:', t[ i ].score )
+  end
 end
 
 cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }

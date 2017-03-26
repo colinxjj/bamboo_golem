@@ -125,7 +125,7 @@ function cli.new_interaction( t )
   end
   world.ColourNote( 'white', 'black', '©¸©¤©¤©¤©¤©¤©¤¡¤' )
 
-  world.AddTimer( 'cli_immediate_interaction_timeout', 0, 0, 20, '', 1025, 'cli.immediate_interaction_timeout' ) -- time out after 20 secs
+  world.AddTimer( 'cli_immediate_interaction_timeout', 0, 0, 10, '', 1025, 'cli.immediate_interaction_timeout' ) -- time out after 10 secs
   immediate_interaction = t
 end
 

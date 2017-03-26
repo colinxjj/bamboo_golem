@@ -43,7 +43,7 @@ function cntonumber( text )
 end
 
 -- convert chinese money amount like 三千七百六十一锭黄金十二两白银九十四文铜钱 to amount in coins
-local num = lpeg.C( ( lpeg.P '一' + '二' + '三' + '四' + '五' + '六' + '七' + '八' + '九' + '十' + '百' + '千' + '万' + '亿' + '零')^1 )
+local num = lpeg.C( ( lpeg.P '一' + '二' + '三' + '四' + '五' + '六' + '七' + '八' + '九' ) * ( lpeg.P '一' + '二' + '三' + '四' + '五' + '六' + '七' + '八' + '九' + '十' + '百' + '千' + '万' + '亿' + '零')^0 )
 local unit = lpeg.C( lpeg.P '锭黄金'  + '两白银' + '文铜钱' ) * lpeg.P '又'^-1
 local patt = lpeg.Ct( num * unit )^1
 

@@ -113,19 +113,14 @@ end
 
 -- get the path between two rooms
 -- params can be ids or tables of the rooms, the 'to' param can also be a function for is_dest check
-function map.getpath( from, to )
+function map.get_path( from, to )
   from = type( from ) == 'string' and index[ from ] or from
   to = type( to ) == 'string' and index[ to ] or to
-  assert( from and from.id, 'map.getpath - invalid "from" param' )
-  assert( type( to ) == 'table' and to.id or type( to ) == 'function', 'map.getpath - invalid "to" param' )
+  assert( from and from.id, 'map.get_path - invalid "from" param' )
+  assert( type( to ) == 'table' and to.id or type( to ) == 'function', 'map.get_path - invalid "to" param' )
 
   to = type( to ) == 'table' and is_dest_by_room( to ) or to
   return genpath( from, to )
-end
-
-function map.getcost( from, to )
-  local _, cost = map.getpath( from, to )
-  return cost
 end
 
 -- check if a room can be found within X range from the starting room
@@ -248,6 +243,66 @@ function map.get_step_details( from, to )
     end
   end
 end
+
+--------------------------------------------------------------------------------
+-- path cost evaluation
+
+-- calculate the path cost to all other map rooms from a location
+local function calculate_cost( from )
+  local list, list_pos, cost, to, new_cost = { from }, 1, { [ from ] = 0 }
+  while list[ list_pos ] do
+    from = list[ list_pos ]
+    for _, exit in pairs( from.exit ) do
+      to = index[ exit.to ]
+      new_cost = cost[ from ] + ( exit.cost or 1 )
+      if to and from ~= to and not exit.ignore and
+      ( not exit.blocked_by_task or not map.is_block_valid( exit ) ) and -- this can cause problems when block status is updated but memoized results are used
+      ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) and
+      ( not cost[ to ] or new_cost < cost[ to ] ) then -- add new node
+        cost[ to ] =  new_cost
+        list[ #list + 1 ] = to
+      end
+    end
+    list_pos = list_pos + 1 -- move to next node
+  end
+  return cost
+end
+
+-- a table to store the results of recent cost calculations
+local cost_history,cost_history_startpos, cost_history_endpos  = {}, 0, 0
+
+-- a weak table to store key-value pairs of cost from A to B, when an entry is removed from 'cost_history', it disappears in 'cost'
+local cost = {}
+local cost_meta = { __mode = 'v' }
+setmetatable( cost, cost_meta )
+
+local function add_to_cost_history( entry )
+  cost_history_endpos = cost_history_endpos + 1
+  cost_history[ cost_history_endpos ] = entry
+
+  if cost_history_endpos - cost_history_startpos > 10 then -- store 10 history entries
+    cost_history[ cost_history_startpos ] = nil
+    cost_history_startpos = cost_history_startpos + 1
+  end
+end
+
+-- get the path cost from A to B, it supports memoization so that each subsequent requests with same A doesn't incurr another cost calculation (which could happen a lot when evaluating item sources)
+function map.get_cost( from, to )
+  from = type( from ) == 'string' and index[ from ] or from
+  to = type( to ) == 'string' and index[ to ] or to
+  assert( from and from.id, 'map.get_cost - invalid "from" param' )
+  assert( to and to.id, 'map.get_cost - invalid "to" param' )
+
+  if not cost[ from ] then
+    cost[ from ] = calculate_cost( from )
+    -- insert the new result into history
+    add_to_cost_history( cost[ from ] )
+  end
+  return cost[ from ][ to ]
+end
+
+--------------------------------------------------------------------------------
+-- path requirements and blocking exits
 
 -- block the exit from a room to another with a task, the exit will be ignored until the task is dead
 -- the two room params are the id/table of a room

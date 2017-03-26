@@ -22,7 +22,7 @@ function task:_resume()
   -- update inventory info as needed
   if not self.has_updated_info then
     self.has_updated_info = true
-    self:newsub{ class = 'get_info', inventory = 'forced' }
+    self:newsub{ class = 'get_info', inventory = true }
     return
   end
   task[ self.action ]( self ) -- call handler for the specified action

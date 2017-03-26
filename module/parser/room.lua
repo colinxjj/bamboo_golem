@@ -91,7 +91,7 @@ local function parse_end()
   for name, object in pairs( cache.object ) do
     event.new{ event = 'room_object', name = name, object = object }
   end
-  -- tprint( cache )
+  --tprint( cache )
   cache = nil
 end
 

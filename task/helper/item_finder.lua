@@ -26,6 +26,14 @@ end
 trigger.new{ name = 'drink_succeed', group = 'item_finder.drink', match = '^(> )*你(喝了一口|趴在|捧起一|舀了一口|端起杯香茶|从蒙恬井中|用水瓢舀了一口)', func = finder.drink }
 trigger.new{ name = 'drink_full', group = 'item_finder.drink', match = '^(> )*(你喝太多了|你已经喝得太多了|你再也喝不下了|喝那么多的凉水|虽然你还想喝)', func = finder.drink_full }
 
+-- ask for an item from npc and get it from ground
+function finder:cmd_and_get( source )
+  -- if item is not on ground already, send source cmd first
+  if not room.has_object( source.item ) then self:send{ source.cmd } end
+  -- always get item from ground, since it's sent to ground after cmd
+  self:send{ 'get ' .. item.get_id( source.item ); complete_func = self.check_inventory }
+end
+
 -- 神龙岛通行令牌
 function finder:sld_lingpai()
 	self:send{ 'steal 通行令牌'; complete_func = finder.sld_lingpai_check }
@@ -37,7 +45,7 @@ end
 trigger.new{ name = 'sld_lingpai_succeed', group = 'item_finder.sld_lingpai', match = '^(> )*你成功地偷到了块通行令牌!$', func = finder.sld_lingpai_succeed }
 function finder:sld_lingpai_check()
   if inventory.has_item '通行令牌' then
-    self:complete()
+    self:check_source_result()
   else
     self:resume()
   end
@@ -57,7 +65,7 @@ function finder:ty_fish_retry()
 end
 function finder:ty_fish_done()
   inventory.add_item '金娃娃'
-  self:complete()
+  self:check_source_result()
 end
 trigger.new{ name = 'ty_fish_missed', group = 'item_finder.ty_fish', match = '^(> )*你慢慢弯腰去捉那对金娃娃，一手一条，握住了金娃娃的尾巴轻轻向外拉扯，', func = finder.ty_fish_retry }
 trigger.new{ name = 'ty_fish_caught', group = 'item_finder.ty_fish', match = '^(> )*你伸手到怪鱼遁入的那大石底下用力一抬，只感那石微微摇动，双掌向上猛举，', func = finder.ty_fish_done }
@@ -76,7 +84,7 @@ end
 function finder:ty_boat_succeed()
   self:disable_trigger_group 'item_finder.ty_boat'
   inventory.add_item '铁舟'
-  self:complete()
+  self:check_source_result()
 end
 trigger.new{ name = 'ty_boat_succeed', group = 'item_finder.ty_boat', match = '^(> )*渔人给了你一艘铁舟。', func = finder.ty_boat_succeed }
 
@@ -86,7 +94,7 @@ function finder:hs_shuteng()
 end
 function finder:hs_shuteng_succeed()
   inventory.add_item '树藤'
-  self:complete()
+  self:check_source_result()
 end
 function finder:hs_shuteng_fail()
   self:fail()
@@ -101,7 +109,7 @@ function finder:hs_kuang()
   else
     self:send{ 'weave kuang' }
     inventory.add_item '藤筐'
-    self:complete()
+    self:check_source_result()
   end
 end
 
@@ -120,11 +128,62 @@ function finder:hmy_key_succeed()
 end
 function finder:hmy_key_done()
   inventory.add_item '黑钥匙'
-  self:complete()
+  self:check_source_result()
 end
 trigger.new{ name = 'hmy_key_fail', group = 'item_finder.hmy_key', match = '^你翻看了几页，并没有什么特别之处，于是又放了回去。', func = finder.hmy_key_fail }
 trigger.new{ name = 'hmy_key_succeed', group = 'item_finder.hmy_key', match = '^你突然发现这本古籍似乎重量和别的有些不同，好像有什么东西藏在这本书中。', func = finder.hmy_key_succeed }
 trigger.new{ name = 'hmy_key_done', group = 'item_finder.hmy_key', match = '^你缓缓打开手中古籍的夹层，取出了钥匙。', func = finder.hmy_key_done }
+
+-- get 金龙夺 or 火云笔 from 兵器架
+function mark_source_as_invalid()  -- mark 兵器架 as invalid source for both weapons
+  for _, iname in pairs{ '金龙夺', '火云笔' } do
+    for _, source in pairs( item.get( iname ).source ) do
+      if source.location == '桃源县练功房' then source.is_invalid = true end
+    end
+  end
+end
+function finder:ty_jia( source )
+  local c = ( 'na %s from jia' ):format( source.item == '金龙夺' and 'duo' or 'bi' )
+  self:send{ c; complete_func = self.check_inventory }
+end
+trigger.new{ name = 'ty_jia_mark_source', group = 'item_finder.ty_jia', match = '^(> )*你(从兵器架上拿出一件|已经拿过了)', func = mark_source_as_invalid }
+
+-- get food from 蝴蝶谷小童 and 华山饭厅仆人
+function finder:auto_get()
+  self:newweaksub{ class = 'kill_time', duration = 3, complete_func = self.check_inventory }
+end
+
+-- get tea at 桃花岛茶房, 归云庄茶房 and 莆田少林凉亭, and get food at 桃花岛饭厅 and 归云庄饭厅
+function finder:sit_and_wait( source )
+  self:send{ 'sit chair' }
+end
+function finder:sit_and_wait_succeed( _, t )
+  -- TODO mark all 3 sources as invalid for 120 seconds
+  if t[ 4 ] == '一杯茶' then self:send{ 'get moli huacha' } end
+  self:send{ 'stand'; complete_func = self.check_inventory }
+end
+function finder:sit_and_wait_fail()
+  self:check_source_result()
+end
+trigger.new{ name = 'sit_and_wait_succeed', group = 'item_finder.sit_and_wait', match = '^(> )*(丫鬟|哑仆|仆役|小沙弥)走过来，给你(端来|倒)了(一杯茉莉花茶|一杯茶|一碗米饭)。', func = finder.sit_and_wait_succeed }
+trigger.new{ name = 'sit_and_wait_fail', group = 'item_finder.sit_and_wait', match = '^(> )*(丫鬟走过来对你说|仆役走过来对你说|小沙弥走过来对你说|哑仆走过来对你打手势)', func = finder.sit_and_wait_fail }
+
+-- get food at 莆田少林饭厅 and 嵩山少林饭厅
+function finder:sit_and_knock( source )
+  self:send{ 'sit chair;knock luo' }
+end
+function finder:sit_and_knock_succeed( _, t )
+  local id = ( t[ 2 ] == '蜜汁甜藕' and 'mizhi tianou' )
+          or ( t[ 2 ] == '芙蓉花菇' and 'furong huagu' )
+          or 'mala doufu;get yuanxiao;get qingshui hulu'
+  self:send{ 'get ' .. id; complete_func = self.check_source_result }
+end
+function finder:sit_and_knock_fail()
+  self:check_source_result()
+end
+trigger.new{ name = 'sit_and_knock_succeed', group = 'item_finder.sit_and_knock', match = '^(> )*小沙弥端来一盘(麻辣豆腐|蜜汁甜藕|芙蓉花菇)', func = finder.sit_and_knock_succeed }
+trigger.new{ name = 'sit_and_knock_fail', group = 'item_finder.sit_and_knock', match = '^(> )*小沙弥对你说道：我少林寺虽物产甚丰', func = finder.sit_and_knock_fail }
+
 
 --------------------------------------------------------------------------------
 -- End of module

@@ -35,7 +35,7 @@ local function validate_recover_param( self )
   for _, attr in pairs( all_attr ) do
     local tgt, max = self[ attr ], player[ attr .. '_max' ] or 100
     -- convert 'all' param to individual params
-    if self.all and not tgt then self[ attr ] = self.all end
+    if self.all and not tgt and attr ~= 'food' and attr ~= 'water' then self[ attr ] = self.all end
     -- task fails if targets exceed what is achievable
     if ( ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and tgt == 'double' ) or ( type( tgt ) == 'number' and ( tgt > max * 2 or ( ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and tgt > max ) ) ) then
       message.verbose( '恢复任务失败：' .. attr .. ' 恢复目标 ' .. tgt .. ' 超出了能达到的上限' )
@@ -131,7 +131,7 @@ function task:_resume()
     self.has_updated_hp = true
     -- check if param values are valid and convert the "all" param
     validate_recover_param( self )
-    self:newsub{ class = 'get_info', hp = 'forced' }
+    self:newsub{ class = 'get_info', hp = true }
     return
   end
   -- if all targets have been reached then complete
@@ -158,9 +158,16 @@ end
 local function food_source_evaluator( source )
   local it = item.get( source.item )
   local food_supply = ( it.consume_count or 1 ) * it.food_supply * 0.5
-  -- demote food with excessive supply
   local gap = 100 - player.food
-  if food_supply > gap then return ( gap - food_supply ) * 0.5 end
+    -- demote food with excessive supply
+    if food_supply > gap then
+      -- demote more for shop food and less for others
+      if source.type == 'shop' then
+        return ( gap - food_supply ) * 0.5
+      else
+        return ( gap - food_supply ) * 0.3
+      end
+    end
   -- demote food with too low supply
   if gap / food_supply > 2 then return 0 - ( gap - food_supply ) * 0.5 end
 end
@@ -200,7 +207,9 @@ function task:consume( name )
     local it = item.get( name )
     local count, id = it.consume_count or 1, it.id
     local action = it.type == 'food' and 'eat' or 'drink'
-    self:send{ ( '#%d %s %s' ):format( count, action, id ); complete_func = self.resume }
+    self:send{ ( '#%d %s %s' ):format( count, action, id, id ); complete_func = self.resume }
+    -- drop food and drink after consumption, but keeps drink containers
+    if it.type ~= 'drink_container' then self:send{ 'drop ' .. id } end
   end
 end
 

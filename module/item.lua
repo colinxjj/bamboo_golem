@@ -33,13 +33,13 @@ for person_id, person in pairs( npc ) do
 			slist[ #slist + 1 ] = source
 		end
 	end
-	-- add npc_cmd sources
+	-- add npc cmd or local_handler sources
 	if person.provide then
 		for _, it in pairs( person.provide ) do
 			if not index[ it.item ] then error( 'no data found for item ' .. it.item ) end
 			index[ it.item ].source  = index[ it.item ].source or {}
 			slist = index[ it.item ].source
-			source = { type = 'cmd', location = person.location, npc = person_id, cmd = it.cmd, cond = it.cond }
+			source = { type = it.handler and 'local_handler' or 'cmd', location = person.location, npc = person_id, handler = it.handler, cmd = it.cmd, cond = it.cond }
 			slist[ #slist + 1 ] = source
 		end
 	end
@@ -120,10 +120,20 @@ end
 
 --------------------------------------------------------------------------------
 
-function item.get( name )
+local function is_name_match( name, index_name )
+	if name == index_name then return true end
+	if type( index_name ) == 'table' then
+		for _, possible_name in pairs( index_name ) do
+			if name == possible_name then return true end
+		end
+	end
+end
+
+function item.get( name, id )
 	assert( type( name ) == 'string', 'item.get - param must be a string' )
+	assert( not id or type( id ) == 'string', 'item.get - the optional id param must be a string' )
   for iname, it in pairs( index ) do
-    if it.name == name or iname == name then return it end -- only returns the first item matching the name
+    if ( is_name_match( name, it.name ) or name == iname ) and ( not id or id == it.id ) then return it end
   end
 end
 
@@ -219,6 +229,17 @@ function item.get_approx_money_by_cash( cash )
 end
 
 --------------------------------------------------------------------------------
+-- item sources related stuff
+
+function item.reset_all_invalid_source()
+	for _, it in pairs( index ) do
+		if it.source then
+			for _, source in pairs( it.source ) do
+				source.is_invalid = nil
+			end
+		end
+	end
+end
 
 local function cleanup_temp_source( slist )
 	local i, source = 1
@@ -238,7 +259,7 @@ function item.get_all_source( name, item_filter )
 	assert( type( name ) == 'string', 'item.get_all_source - param must be a string' )
 	if not item.is_valid_type( name ) then -- get sources for a specific item
 		for iname, it in pairs( index ) do
-			if ( it.name == name or iname == name ) and ( not item_filter or item_filter( iname ) ) then
+			if ( is_name_match( name, it.name ) or name == iname ) and ( not item_filter or item_filter( iname ) ) then
 				cleanup_temp_source( it.source )
 				return it.source
 			end
@@ -248,7 +269,7 @@ function item.get_all_source( name, item_filter )
 		if not item_list then return end
 		local slist = {}
 		for iname, it in pairs( item_list ) do
-			if it.source and ( not item_filter or item_filter( iname ) ) then
+			if it.source and not it.source.is_invalid and ( not item_filter or item_filter( iname ) ) then
 				cleanup_temp_source( it.source )
 				for _, source in pairs( it.source ) do
 					slist[ #slist + 1 ] = source
@@ -267,6 +288,8 @@ local function calculate_item_quality_score( it )
 end
 
 local function calculate_source_score( source, t )
+	-- if source has been marked as invalid, then return a very low score
+	if source.is_invalid then return -1000000 end
 	-- rank sources whose condition the player doesn't meet very low scores
 	if source.cond and not cond_checker[ source.cond ]() then return -1000000 end
 	--print( source.item, source.location )
@@ -274,10 +297,10 @@ local function calculate_source_score( source, t )
 	-- distance score
 	if not t.is_distance_ignored then
 		local loc = map.get_current_location()[ 1 ]
-		local path_cost = map.getcost( loc, source.location )
+		local path_cost = map.get_cost( loc, source.location )
 		if not path_cost then return -1000000 end -- no path cost means that we can't get to this source
-		score = score - path_cost * 0.5
-		--print( 'distance score: -' .. path_cost * 0.5 )
+		score = score - path_cost * 0.8
+		--print( 'distance score: -' .. path_cost * 0.8 )
 	end
 	-- weight score
 	local weight = item.get( source.item ).weight
@@ -299,6 +322,8 @@ local function calculate_source_score( source, t )
 		score = score + quality
 		--print( 'quality score: +' .. quality )
 	end
+	-- give 'get' sources a little bit higher score, so that among multiple sources at a same location, get sources are tried first
+	if source.type == 'get' then score = score + 0.1 end
 	--print( 'total score: ' .. score )
 	return score
 end
@@ -310,7 +335,7 @@ end
 function item.get_sorted_source( t )
 	assert( type( t ) == 'table', 'item.get_sorted_source - param must be a string' )
 	assert( type( t.item ) == 'string', 'item.get_sorted_source - the item param must be a string' )
-	local slist = item.get_all_source( t.item, t.item_filter )
+	local slist = item.get_all_source( t.item, t.item_filter ) or {}
 	for _, source in pairs( slist ) do
 		source.score = calculate_source_score( source, t )
 		-- if a custom source evaluator is specified, then use it to adjust the score
@@ -331,7 +356,8 @@ function item.get_best_source( t )
 end
 
 function item.is_valid_source( source )
-	local is_valid = ( not source.last_fail_time or os.time() - source.last_fail_time > 200 ) -- if last try at a source failed, then only retry that source at least 200 seconds later
+	local is_valid = not source.is_invalid
+							 and ( not source.last_fail_time or os.time() - source.last_fail_time > 200 ) -- if last try at a source failed, then only retry that source at least 200 seconds later
 							 and ( not source.cond or cond_checker[ source.cond ]() ) -- always check source cond in case player status changed, e.g. bank balance update could result in all bank sources not being valid any more
 							 and source.score > -1000 -- ignore soure with very low scores
 	return is_valid
@@ -351,7 +377,7 @@ function item.add_temp_item_source ( loc, name, id )
 	assert( not count or type( count ) == 'number', 'item.add_temp_item_source - the count param must be a string' )
 	assert( not id or type( id ) == 'string', 'item.add_temp_item_source - the id param must be a string' )
 
-	local it = item.get( name )
+	local it = item.get( name, id )
 	-- igbore items not in database or with unmatched id's
 	if name == '铜钱' or not it or ( id and id ~= it.id ) then return end
 
@@ -362,7 +388,7 @@ function item.add_temp_item_source ( loc, name, id )
 	end
 	-- add the new temp source
 	it.source[ #it.source + 1 ] = { item = it.iname, type = 'get', location = loc, is_temp = true, add_time = os.time() }
-	message.debug( '添加临时物品来源：' .. name .. ' - ' .. loc )
+	message.debug( '添加临时物品来源：' .. it.iname .. ' - ' .. loc )
 end
 
 function item.remove_temp_item_source( loc, name )

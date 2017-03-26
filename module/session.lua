@@ -7,6 +7,7 @@ local session = {}
 
 function session.initiate()
   player.temp_flag = {}
+  item.reset_all_invalid_source()
   task.get_info:new{ title = 'forced', complete_func = session.initiate_follow_up, priority = 1 }
 end
 
@@ -40,7 +41,10 @@ end
 event.listen{ event = 'reconnected', func = session.resume, id = 'session.resume', persistent = true }
 
 function session.resume_follow_up()
-  if player.id ~= old_id then message.debug 'ID 已变，重置会话'; session.initiate() end
+  if player.id ~= old_id then
+    message.debug 'ID 已变，重置会话'
+    session.initiate()
+  end
 end
 
 function session.terminate()
