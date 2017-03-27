@@ -39,6 +39,11 @@ function inventory.remove_item( name )
 	player.inventory[ name ] = nil
 end
 
+function inventory.get_item( name )
+	assert( type( name ) == 'string', 'inventory.get_item - param must be a string' )
+	return player.inventory[ name ]
+end
+
 function inventory.get_item_count( name )
 	assert( type( name ) == 'string', 'inventory.get_item_count - param must be a string' )
 	local it = item.get( name )
@@ -46,7 +51,7 @@ function inventory.get_item_count( name )
 	return player.inventory[ name ] and player.inventory[ name ].count or 0
 end
 
-function inventory.get_item_id ( name )
+function inventory.get_item_id( name )
 	assert( type( name ) == 'string', 'inventory.get_item_id - param must be a string' )
 	for iname, it in pairs( player.inventory ) do
 		if iname == name then return it.id end

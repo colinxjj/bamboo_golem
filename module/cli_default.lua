@@ -258,3 +258,14 @@ local function parse_t( _, input )
 end
 
 cli.register{ cmd = 't', desc = '≤‚ ‘', func = parse_t, no_prefix = true }
+
+--------------------------------------------------------------------------------
+-- test2
+
+local function parse_tt()
+  gag.once 'hp'
+  gag.once 'hp'
+  cmd.new{ 'hp;hp'; no_echo = true }
+end
+
+cli.register{ cmd = 'tt', desc = '≤‚ ‘', func = parse_tt, no_prefix = true }

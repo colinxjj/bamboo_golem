@@ -12,7 +12,7 @@ local timetable = {}
   duration = 10, -- duration of the timer in seconds (required)
   func = a_func, -- the function to call when the timer fires (required)
   id = 'identifier_string', -- a unique identifier of the timer (required)
-  persistent = true, -- non-persistent timers will only fire once (optional, default: false)
+  persistent = true, -- non-persistent timers will only fire once (optional, default: false) -- TODO
 } ]]
 function timer.new( t )
   assert( type( t ) == 'table', 'timer.new - parameter must be a table' )

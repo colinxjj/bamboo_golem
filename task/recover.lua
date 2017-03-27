@@ -204,12 +204,7 @@ function task:consume( name )
   if name == 'ÇåË®' then
     self:resume()
   else
-    local it = item.get( name )
-    local count, id = it.consume_count or 1, it.id
-    local action = it.type == 'food' and 'eat' or 'drink'
-    self:send{ ( '#%d %s %s' ):format( count, action, id, id ); complete_func = self.resume }
-    -- drop food and drink after consumption, but keeps drink containers
-    if it.type ~= 'drink_container' then self:send{ 'drop ' .. id } end
+    self:newsub{ class = 'manage_inventory', action = 'consume', item = name }
   end
 end
 

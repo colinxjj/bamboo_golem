@@ -983,9 +983,9 @@ local npc = {
   alternate_id = { 'xiao', 'shami' },
   location = '莆田少林饭厅',
   provide = {
-    { item = '麻辣豆腐#SL', handler = 'sit_and_knock', },
-    { item = '清水葫芦#2', handler = 'sit_and_knock', },
-    { item = '元宵#SL', handler = 'sit_and_knock', },
+    { item = '麻辣豆腐#SL', cmd = 'sit chair;knock luo;get mala doufu;get qingshui hulu;get yuanxiao', },
+    { item = '清水葫芦#2', cmd = 'sit chair;knock luo;get mala doufu;get qingshui hulu;get yuanxiao', },
+    { item = '元宵#SL', cmd = 'sit chair;knock luo;get mala doufu;get qingshui hulu;get yuanxiao', },
   },
 },
 
@@ -995,9 +995,9 @@ local npc = {
   alternate_id = { 'xiao', 'shami' },
   location = '嵩山少林饭厅#C',
   provide = {
-    { item = '麻辣豆腐#SL', handler = 'sit_and_knock', cond = 'player.party == "少林派"', },
-    { item = '清水葫芦#2', handler = 'sit_and_knock', cond = 'player.party == "少林派"', },
-    { item = '元宵#SL', handler = 'sit_and_knock', cond = 'player.party == "少林派"', },
+    { item = '麻辣豆腐#SL', cmd = 'sit chair;knock luo;get mala doufu;get qingshui hulu;get yuanxiao', cond = 'player.party == "少林派"', },
+    { item = '清水葫芦#2', cmd = 'sit chair;knock luo;get mala doufu;get qingshui hulu;get yuanxiao', cond = 'player.party == "少林派"', },
+    { item = '元宵#SL', cmd = 'sit chair;knock luo;get mala doufu;get qingshui hulu;get yuanxiao', cond = 'player.party == "少林派"', },
   },
 },
 
@@ -1007,7 +1007,7 @@ local npc = {
   alternate_id = { 'xiao', 'shami' },
   location = '嵩山少林饭厅#N',
   provide = {
-    { item = '密汁甜藕#SL', handler = 'sit_and_knock', cond = 'player.party == "少林派"', },
+    { item = '密汁甜藕#SL', cmd = 'sit chair;knock luo;get mizhi tianou', cond = 'player.party == "少林派"', },
   },
 },
 
@@ -1017,7 +1017,7 @@ local npc = {
   alternate_id = { 'xiao', 'shami' },
   location = '嵩山少林饭厅#S',
   provide = {
-    { item = '芙蓉花菇#SL', handler = 'sit_and_knock', cond = 'player.party == "少林派"', },
+    { item = '芙蓉花菇#SL', cmd = 'sit chair;knock luo;get furong huagu', cond = 'player.party == "少林派"', },
   },
 },
 
@@ -1082,11 +1082,22 @@ local npc = {
 ['王厨子#WG'] = {
   name = '王厨子',
   id = 'wang chuzi',
-  alternate_id = { 'wang', 'chuzi', },
+  alternate_id = { 'wang', 'chuzi' },
   location = '武馆厨房',
   provide = {
     { item = '米饭', cmd = 'ask chu zi about 食物', },
     { item = '大碗茶', cmd = 'ask chu zi about 水', },
+  },
+},
+
+['桃花姑娘'] = {
+  name = '桃花姑娘',
+  id = 'tao hua',
+  alternate_id = { 'guniang', 'taohua', 'girl' },
+  location = '武当山茶亭',
+  provide = {
+    { item = '水蜜桃', cmd = 'sit chair;knock table;get mi tao;get dawan cha', },
+    { item = '大碗茶', cmd = 'sit chair;knock table;get mi tao;get dawan cha', },
   },
 },
 

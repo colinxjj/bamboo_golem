@@ -6,16 +6,28 @@ local task = {}
 --[[----------------------------------------------------------------------------
 Params:
 action = 'wield': action to perform, see below for a list valid actions (required)
-item = 'sharp_weapon': Chinese name of the item (required or optional, depends on action)
+item = 'sharp_weapon': Chinese name of the item or a table containing item names (required or optional, depends on action)
 ----------------------------------------------------------------------------]]--
 
 task.class = 'manage_inventory'
 
-function task:get_id()
-  local s = 'manage_inventory: ' .. self.action
-  s = self.count and ( s .. ' ' .. self.count ) or s
-  s = self.item and ( s .. ' ' .. self.item ) or s
+local valid_action = { wield = true, unwield = true, consume = true, drop = true }
+
+local function get_id_string( self )
+  local s = self.action
+  if self.count then s = s .. ' ' .. self.count end
+  if type( self.item ) == 'string' then
+    s = s .. ' ' .. self.item
+  elseif type( self.item ) == 'table' then
+    for _, item in pairs( self.item ) do
+      s = s .. ' ' .. item
+    end
+  end
   return s
+end
+
+function task:get_id()
+  return 'manage_inventory: ' .. get_id_string( self )
 end
 
 function task:_resume()
@@ -25,21 +37,16 @@ function task:_resume()
     self:newsub{ class = 'get_info', inventory = true }
     return
   end
+  assert( valid_action[ self.action ], 'task.manage_inventory - invalid action param' )
   task[ self.action ]( self ) -- call handler for the specified action
 end
 
 function task:_complete()
-  local s = '成功完成物品任务：' .. self.action
-  s = self.count and ( s .. ' ' .. self.count ) or s
-  s = self.item and ( s .. ' ' .. self.item ) or s
-  message.verbose( s )
+  message.debug( '成功完成物品任务：' .. get_id_string( self ) )
 end
 
 function task:_fail()
-  local s = '物品任务失败：' .. self.action
-  s = self.count and ( s .. ' ' .. self.count ) or s
-  s = self.item and ( s .. ' ' .. self.item ) or s
-  message.verbose( s )
+  message.debug( '物品任务失败：' .. get_id_string( self ) )
 end
 
 --------------------------------------------------------------------------------
@@ -78,6 +85,35 @@ function task:wield()
       self.has_updated_info = false
       self:send{ 'wield ' .. id; complete_func = self.resume }
     end
+  end
+end
+
+function task:consume()
+  -- only try consumption once
+  if not self.has_tried_consume and inventory.has_item( self.item ) then
+    self.has_tried_consume, self.has_updated_info = true, false
+    local it = item.get( self.item )
+    local count, id = it.consume_count or 1, it.id
+    local action = it.type == 'food' and 'eat' or 'drink'
+    self:send{ ( '#%d %s %s' ):format( count, action, id ); complete_func = self.resume } -- check inventory again after
+  else
+    self:complete()
+  end
+end
+
+function task:drop()
+  if type( self.item ) == 'string' then self.item = { self.item } end
+  local c = ''
+  for _, iname in pairs( self.item ) do
+    if inventory.has_item( iname ) then
+      local id = item.get_id( iname ) or inventory.get_item_id( iname )
+      if id then c = c .. ';drop ' .. id end
+    end
+  end
+  if #c > 0 then
+    self:send{ c; complete_func = self.complete }
+  else
+    self:complete()
   end
 end
 

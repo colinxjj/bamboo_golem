@@ -168,23 +168,6 @@ end
 trigger.new{ name = 'sit_and_wait_succeed', group = 'item_finder.sit_and_wait', match = '^(> )*(丫鬟|哑仆|仆役|小沙弥)走过来，给你(端来|倒)了(一杯茉莉花茶|一杯茶|一碗米饭)。', func = finder.sit_and_wait_succeed }
 trigger.new{ name = 'sit_and_wait_fail', group = 'item_finder.sit_and_wait', match = '^(> )*(丫鬟走过来对你说|仆役走过来对你说|小沙弥走过来对你说|哑仆走过来对你打手势)', func = finder.sit_and_wait_fail }
 
--- get food at 莆田少林饭厅 and 嵩山少林饭厅
-function finder:sit_and_knock( source )
-  self:send{ 'sit chair;knock luo' }
-end
-function finder:sit_and_knock_succeed( _, t )
-  local id = ( t[ 2 ] == '蜜汁甜藕' and 'mizhi tianou' )
-          or ( t[ 2 ] == '芙蓉花菇' and 'furong huagu' )
-          or 'mala doufu;get yuanxiao;get qingshui hulu'
-  self:send{ 'get ' .. id; complete_func = self.check_source_result }
-end
-function finder:sit_and_knock_fail()
-  self:check_source_result()
-end
-trigger.new{ name = 'sit_and_knock_succeed', group = 'item_finder.sit_and_knock', match = '^(> )*小沙弥端来一盘(麻辣豆腐|蜜汁甜藕|芙蓉花菇)', func = finder.sit_and_knock_succeed }
-trigger.new{ name = 'sit_and_knock_fail', group = 'item_finder.sit_and_knock', match = '^(> )*小沙弥对你说道：我少林寺虽物产甚丰', func = finder.sit_and_knock_fail }
-
-
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------

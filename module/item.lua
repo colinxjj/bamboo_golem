@@ -132,6 +132,7 @@ end
 function item.get( name, id )
 	assert( type( name ) == 'string', 'item.get - param must be a string' )
 	assert( not id or type( id ) == 'string', 'item.get - the optional id param must be a string' )
+	if index[ name ] and ( not id or index[ name ].id == id ) then return index[ name ] end
   for iname, it in pairs( index ) do
     if ( is_name_match( name, it.name ) or name == iname ) and ( not id or id == it.id ) then return it end
   end
@@ -258,12 +259,9 @@ end
 function item.get_all_source( name, item_filter )
 	assert( type( name ) == 'string', 'item.get_all_source - param must be a string' )
 	if not item.is_valid_type( name ) then -- get sources for a specific item
-		for iname, it in pairs( index ) do
-			if ( is_name_match( name, it.name ) or name == iname ) and ( not item_filter or item_filter( iname ) ) then
-				cleanup_temp_source( it.source )
-				return it.source
-			end
-		end
+		local it = item.get( name )
+		cleanup_temp_source( it.source )
+		return it.source
 	else -- get sources for a type of items
 		local item_list = item.get_by_type( name )
 		if not item_list then return end

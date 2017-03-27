@@ -318,6 +318,9 @@ local item = {
   value = 1,
   consume_count = 4,
   food_supply = 30,
+  source = {
+    { type = 'get', location = '武当山茶亭', },
+  },
 },
 
 ['水蜜桃#1'] = {
@@ -1186,6 +1189,7 @@ local item = {
     { type = 'get', location = '姑苏慕容小厅', },
     { type = 'get', location = '燕子坞大厅', },
     { type = 'get', location = '曼佗罗山庄客厅', },
+    { type = 'get', location = '武当山茶亭', },
   },
 },
 

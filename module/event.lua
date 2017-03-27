@@ -180,8 +180,8 @@ end
 function event.dispatch()
   is_dispatching = true
   if next( event_to_process ) then process_next_event() end
-  if next( listener_to_add ) then add_listener() end
   if next( id_to_remove ) then remove_listener_by_id() end
+  if next( listener_to_add ) then add_listener() end
   remove_listener_by_dead_task()
   is_dispatching = false
   if next( event_to_process ) then event.dispatch() end -- process next event in queue if any
