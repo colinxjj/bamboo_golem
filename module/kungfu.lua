@@ -50,7 +50,7 @@ function kungfu.get_best_skill_set( list )
   table.sort( skill_set, function( a, b ) return a.power > b.power end )
   for i = 1, 3 do
     if skill_set[ i ] then
-      message.debug( ( '第 %d 最佳武功组合为：内功“%s”，轻功“%s”，外功“%s”，招架“%s”，评估得分：%.1f' ):format( i, skill_set[ i ].force, skill_set[ i ].dodge, skill_set[ i ].attack, skill_set[ i ].parry, skill_set[ i ].power ) )
+      --message.debug( ( '第 %d 最佳武功组合为：内功“%s”，轻功“%s”，外功“%s”，招架“%s”，评估得分：%.1f' ):format( i, skill_set[ i ].force, skill_set[ i ].dodge, skill_set[ i ].attack, skill_set[ i ].parry, skill_set[ i ].power ) )
       skill_set[ i ].power = nil
     end
   end

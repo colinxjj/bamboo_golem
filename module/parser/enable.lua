@@ -2,7 +2,12 @@
 -- This module parses enable info
 --------------------------------------------------------------------------------
 
-local function parse_prompt()
+local sp = lpeg.P ' '
+local nonsp = any_but( sp )
+local patt = sp * sp * nonsp^4 * ' (' * lpeg.R 'az'^1 * ')' * sp^1 * '£º'
+local end_patt = any_but( patt )
+
+local function parse_end()
   player.enable_update_time = os.time()
   trigger.disable 'enable2'
   event.new 'enable'
@@ -11,7 +16,7 @@ end
 local function parse_header( _, t )
   player.enable = player.enable or {}
   trigger.enable 'enable2'
-  event.listen{ event = 'prompt', func = parse_prompt, id = 'parser.enable' }
+  trigger.new{ name = 'parser.enable_end', match = end_patt, func = parse_end, one_shot = true }
 end
 
 local function parse_content( _, t )

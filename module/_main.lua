@@ -14,6 +14,7 @@ function world.OnPluginPartialLine( text )
 		trigger.enable_group 'connection'
 		world.Send ''
 	else
+		trigger.lpeg_match( text )
 		gag.check( text ) -- check if the line should be gagged
 		if is_line_processed then return end -- to avoid raising multiple prompt / headline events for the same line if it has been updated multiple times
 		is_line_processed = true

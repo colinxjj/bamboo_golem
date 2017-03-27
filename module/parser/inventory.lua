@@ -5,7 +5,9 @@
 -- only moves data to player.inventory when info is fully parsed.
 local cache
 
-local function parse_prompt()
+local end_patt = any_but( lpeg.P '¡õ' + '  ' )
+
+local function parse_end()
   -- copy existing alternate id info
   for name, it in pairs( player.inventory ) do
     if cache[ name ] then
@@ -26,7 +28,7 @@ local function parse_header( _, t )
   player.inv_count = cntonumber( t[ 3 ] )
   player.encumbrance = tonumber( t[ 4 ] )
   trigger.enable 'inventory2'
-  event.listen{ event = 'prompt', func = parse_prompt, id = 'parser.inventory' }
+  trigger.new{ name = 'parser.inventory_end', match = end_patt, func = parse_end, one_shot = true }
 end
 
 local function parse_content( _, t )

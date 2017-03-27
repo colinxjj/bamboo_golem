@@ -4,7 +4,9 @@
 
 local cache
 
-local function parse_prompt()
+local end_patt = any_but( lpeg.R '09'^1 * ': ' )
+
+local function parse_end()
   local inv_count = 0
   for name, cache_item in pairs( cache ) do
     inv_count = inv_count + 1
@@ -24,7 +26,7 @@ end
 local function parse_header()
   cache = {}
   trigger.enable 'id2'
-  event.listen{ event = 'prompt', func = parse_prompt, id ='parser.id' }
+  trigger.new{ name = 'parser.id_end', match = end_patt, func = parse_end, one_shot = true }
 end
 
 local idchar = lpeg.R 'az' + lpeg.S ' _-\''

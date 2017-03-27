@@ -18,8 +18,8 @@ info_type = { 'hp', 'inventory', 'skills', 'score', 'enable', 'room', 'time', 'u
 
 local function get_info_type_string( self )
   string = ''
-  for _, type in pairs( info_type ) do
-    if self[ type ] ~= nil then string = string .. type .. ', ' end
+  for _, info in pairs( info_type ) do
+    if self[ info ] ~= nil then string = string .. info .. ', ' end
   end
   string = string.gsub( string, ', $', '' )
   return string
@@ -29,62 +29,69 @@ function task:get_id()
   return 'get info: ' .. get_info_type_string( self )
 end
 
-function task:get_room_info( evt )
-  self.looked, self.result = self.looked or {}, self.result or {} -- this assumes that the task only need to return room info to its parent
-  if evt then self.result[ self.last_look ] = evt.data end -- put data from last look in to results
+local function look_dir( self, dir, cmd_list )
+  cmd_list[ #cmd_list + 1 ] = dir == 'here' and 'l' or ( 'l ' .. ( DIR_FULL[ dir ] or dir ) )
+  self.dir_list[ #self.dir_list + 1 ] = dir
+end
+
+local function setup_listener( self )
+  self:listen{ event = 'room', func = self.parse_look_result, id = 'task.get_info', sequence = 99, keep_eval = self.dir_list[ 1 ] == 'here' and true or false }
+end
+
+function task:get_room_info( cmd_list )
+  self.dir_list = {}
   local target = self.room
   -- look current room
-  if ( target == 'all' or target == true or not room.get() ) and not self.looked.here then self:look_dir 'here'; return end
+  if target == 'all' or target == true then
+    look_dir( self, 'here', cmd_list )
+  end
   -- look surrounding rooms
   if target == 'all' or target == 'surrounding' then
-    local exit = self.result.here and self.result.here.exit or room.get().exit
-    for dir in pairs( exit ) do
-      if not self.looked[ dir ] then self:look_dir( dir ); return end
+    for dir in pairs( room.get().exit ) do
+      look_dir( self, dir, cmd_list )
     end
-  elseif not self.looked[ target ] and target ~= true then self:look_dir( target ); return end
-  self.room = false -- mark room part as done
-  self:resume()
-end
-
-function task:look_dir( dir )
-  if dir == 'here' then
-    self:listen{ event = 'room', func = self.get_room_info, id = 'task.get_info' }
-    self:send{ 'l' }
-  else
-    self:listen{ event = 'room', func = self.get_room_info, id = 'task.get_info', sequence = 99, keep_eval = false }
-    self:send{ 'l ' .. ( DIR_FULL[ dir ] or dir ) }
+  elseif target ~= true then
+    look_dir( self, target, cmd_list )
   end
-  self.last_look, self.looked[ dir ] = dir, true
+  self.room = 'sent'
+  setup_listener( self )
 end
 
-local pending_type, received_event
+function task:parse_look_result( evt )
+  self.room = 'received'
+  local dir = table.remove( self.dir_list, 1 )
+  self.result = self.result or {}
+  self.result[ dir ] = evt.data
+  if next( self.dir_list ) then setup_listener( self ) end
+end
 
 function task:_resume( evt )
-  -- if command was sent but the related event didn't fire, try again
-  if pending_type and not received_event then
-    self[ pending_type ] = pending_type_value
-    pending_type, pending_type_value, received_event = nil
+  if not self.start_time then
+    self.start_time = os.clock() * 1000
   end
-  for _, type in pairs( info_type ) do
-    if self[ type ] then
-      if type == 'room' then
-        self:get_room_info()
-        return
+  local cmd_list = { no_echo = true, complete_func = self.resume }
+  for _, info in pairs( info_type ) do
+    local target = self[ info ]
+    if target and target ~= 'received' then
+      if info == 'room' then
+        self:get_room_info( cmd_list )
       else
-        pending_type, pending_type_value, received_event = type, self[ type ], false
-        self[ type ] = false -- to avoid repetition
-        gag.once( type )
-        self:listen{ event = type, func = self.parse_event, id = 'task.get_info' }
-        self:send{ type; no_echo = true, complete_func = self.resume }
-        return
+        self[ info ] = 'sent'
+        self:listen{ event = info, func = self.parse_event, id = 'task.get_info' }
+        gag.once( info )
+        cmd_list[ #cmd_list + 1 ] = info
       end
     end
   end
-  self:complete()
+  if #cmd_list > 0 then
+    self:send( cmd_list )
+  else
+    self:complete()
+  end
 end
 
-function task:parse_event()
-  received_event = true
+function task:parse_event( evt )
+  self[ evt.event ] = 'received'
 end
 
 --------------------------------------------------------------------------------

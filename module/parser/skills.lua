@@ -5,19 +5,20 @@
 -- only moves data to player.skill when info is fully parsed.
 local cache
 
-local function parse_footer()
+local end_patt = any_but( lpeg.S '┌│├' )
+
+local function parse_end()
   player.skill, cache = cache, nil -- move cache data to player.skill and clear cache
   player.skills_update_time = os.time()
-  trigger.disable_group 'skills'
-  event.remove_listener_by_id 'parser.skills'
+  trigger.disable 'skills2'
   event.new 'skills'
 end
 
 local function parse_header( _, t )
   cache = {}
   player.skill_count = cntonumber( t[ 2 ] )
-  trigger.enable_group 'skills'
-  event.listen{ event = 'prompt', func = parse_footer, id = 'parser.skills' } -- for incomplete skills table, .e.g player without special skills
+  trigger.enable 'skills2'
+  trigger.new{ name = 'parser.skills_end', match = end_patt, func = parse_end, one_shot = true }
 end
 
 local sp = lpeg.P ' '^0
@@ -74,8 +75,7 @@ local function parse_levelup( _, t )
 end
 
 trigger.new{ name = 'skills1', match = '^(> )*【你的技能表】：总共(\\S+)项技能', func = parse_header, enabled = true }
-trigger.new{ name = 'skills2', match = '^│(.+)$', func = parse_content, group = 'skills' }
-trigger.new{ name = 'skills3', match = '^└', func = parse_footer, group = 'skills' }
+trigger.new{ name = 'skills2', match = '^│(.+)$', func = parse_content }
 
 trigger.new{ name = 'skills0', match = '^(> )*你目前并没有学会任何技能。', func = parse_empty, enabled = true }
 

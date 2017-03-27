@@ -4,6 +4,8 @@
 
 local cache
 
+local end_patt = any_but( lpeg.P ' ' )
+
 -- a blacklist with rooms for which we should not process look info. The reason is that they contain 'left' and 'right' directions and the symbol for the latter '〉' can cause troubles with room names like 小岛边 and result in locating failure.
 local look_blacklist = {
   ['华山山洞'] = true,
@@ -83,8 +85,6 @@ end
 
 local function parse_end()
   trigger.disable 'room_object' -- stop parsing objects
-  trigger.disable 'room_end'
-  event.remove_listener_by_id 'parser.room'
   timer.remove_by_id 'parser.room'
   cache.time = os.time() -- add a time stamp to room data
   event.new{ event = 'room', data = cache }
@@ -97,8 +97,7 @@ end
 
 local function prepare_to_parse_object()
   trigger.enable 'room_object'
-  trigger.enable 'room_end' -- get ready for room end
-  event.listen{ event = 'prompt', func = parse_end, id = 'parser.room' }
+  trigger.new{ name = 'parser.room_end', match = end_patt, func = parse_end, one_shot = true }
   timer.new{ duration = 1, func = parse_end, id = 'parser.room' } -- see room as complete if no object info is received in 2 seconds
 end
 
@@ -131,7 +130,6 @@ trigger.new{ name = 'room_desc', match = '^.+$', func = parse_desc, group = 'roo
 trigger.new{ name = 'room_nature', match = '^　　这是一个\\S{4}(\\S{4})?的', func = parse_nature, group = 'room', sequence = 99 } -- higher sequence to block desc trigger
 trigger.new{ name = 'room_exit', match = '^    这里((没有|看不见)任何明显的出路|(明显的|唯一的|看得见的唯一|看得清的)出口是 (.+))。', func = parse_exit, group = 'room', sequence = 99 }
 trigger.new{ name = 'room_object', match = '^  ([^(]+)\\(([\\w\\s\\\'-]+)\\)(\\<\\S+\\>)?', func = parse_object }
-trigger.new{ name = 'room_end', match = '^\\S', func = parse_end, sequence = 99, keep_eval = true }
 
 trigger.new{ name = 'room_brief', match = '^(> )*(\\S+) - (\\S+)$', func = parse_brief, enabled = true }
 

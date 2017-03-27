@@ -4,7 +4,12 @@
 
 local cache
 
-local function parse_prompt()
+local sp = lpeg.P ' '
+local nonsp = any_but( sp )
+local patt = nonsp^1 * sp^1 * ( lpeg.R '09' + lpeg.P '"' )
+local end_patt = any_but( patt )
+
+local function parse_end()
   player.set, cache = cache, nil -- move cache data to player.set and clear cache
   trigger.disable 'set2'
   event.new 'set'
@@ -13,7 +18,7 @@ end
 local function parse_header ( _, t )
   cache = {}
   trigger.enable 'set2'
-  event.listen{ event = 'prompt', func = parse_prompt, id ='parser.set' }
+  trigger.new{ name = 'parser.set_end', match = end_patt, func = parse_end, one_shot = true }
 end
 
 local function parse_content( _, t )
