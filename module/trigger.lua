@@ -86,14 +86,10 @@ end
 function trigger.parse( name, line, ... )
   assert( list[ name ], 'trigger.parse - missing trigger details in list')
   local t = list[ name ]
-  if t.one_shot or ( t.task and t.task.status == 'dead' ) then -- remove trigger that is one shot or from a dead task
-    list[ name ], lpeg_list[ name ] = nil
-    trigger.disable( t.name ) -- disable the trigger in MC
-    if t.group then -- remove from trigger group
-      group[ t.group ][ t.name ] = nil
-      if not next( group[ t.group ] ) then group[ t.group ] = nil end -- remove trigger group if empty
-    end
-  end
+  -- remove one-shot trigger
+  if t.one_shot then trigger.remove( name ) end
+  -- disable trigger from a dead task
+  if t.task and t.task.status == 'dead' then trigger.disable( name ) end
   if t.task then
     if t.task.status == 'running' or t.task.status == 'lurking'
     or ( t.task.status == 'waiting' and t.penetrate )
@@ -112,7 +108,7 @@ function trigger.enable( ... )
     assert( type( name ) == 'string', 'trigger.enable - parameter must be a string' )
     local trg = list[ name ]
     if trg then
-      if type( trg.match == 'string' ) then
+      if type( trg.match ) == 'string' then
         local result = world.EnableTrigger( name )
         assert( result == 0, 'trigger.enable - EnableTrigger returned the following error: ' .. translate_errorcode( result ) )
       end
@@ -128,9 +124,9 @@ function trigger.disable( ... )
     assert( type( name ) == 'string', 'trigger.disable - parameter must be a string' )
     local trg = list[ name ]
     if trg then
-      if type( trg.match == 'string' ) then
+      if type( trg.match ) == 'string' then
         local result = world.EnableTrigger( name, 0 )
-        assert( result == 0, 'trigger.disable - EnableTrigger returned the following error: ' .. translate_errorcode( result ) )
+        assert( result == 0, 'trigger.disable - EnableTrigger returned the following error for "' .. name .. '": ' .. translate_errorcode( result ) )
       end
       trg.enabled = false
     end
@@ -159,11 +155,16 @@ function trigger.remove( name ) -- the boolean here is actually 0 or 1
   assert( type( name ) == 'string', 'trigger.remove - parameter must be a string' )
   local trg = list[ name ]
   if not trg then return end
-  if type( trg.match == 'string' ) then
+  if type( trg.match ) == 'string' then
     local result = world.DeleteTrigger( name )
     assert( result == 0, 'trigger.remove - DeleteTrigger returned the following error: ' .. translate_errorcode( result ) )
   end
   list[ name ], lpeg_list[ name ] = nil
+  if trg.group then -- remove from trigger group
+    group[ trg.group ][ name ] = nil
+    -- remove trigger group if empty
+    if not next( group[ trg.group ] ) then group[ trg.group ] = nil end
+  end
 end
 
 function trigger.remove_group( g )

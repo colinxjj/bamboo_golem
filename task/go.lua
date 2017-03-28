@@ -51,6 +51,10 @@ function task:_resume()
   self:check_step()
 end
 
+function task:_complete()
+  message.verbose '到达目的地'
+end
+
 function task:_fail()
   message.verbose '行走失败'
 end
@@ -64,6 +68,8 @@ function task:check_step()
   if self.be_cautious and #map.get_current_location() == 1 then self.be_cautious = nil end
 
   local expected_room, prev_room = self.path[ self.step_num ], self.path[ self.step_num - 1 ]
+
+  --print( 'go to ' .. ( type( self.to ) == 'string' and self.to or self.to.id ) .. ' (' .. self.status .. '), check_step: ' .. ( prev_room and prev_room.id or '***' ) .. ' > ' .. expected_room.id )
   -- step ok?
   if map.is_current_location( expected_room ) and ( not self.is_still_in_step or ( room.name == expected_room.name and room.name ~= prev_room.name ) ) then -- move on to next step
     if self.req and next( self.req ) then

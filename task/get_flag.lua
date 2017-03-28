@@ -5,7 +5,7 @@ local task = {}
 -- Get various temp player flags
 --[[----------------------------------------------------------------------------
 Params:
-flag = 'ask 闹鬼': the flag to get (required)
+flag = 'tz_ghost': the flag to get (required)
 ----------------------------------------------------------------------------]]--
 
 task.class = 'get_flag'
@@ -23,10 +23,13 @@ function task:_resume()
 end
 
 function task:_complete()
+  player.temp_flag[ self.flag ] = player.temp_flag[ self.flag ] or true
+  self:disable_trigger_group( 'flag_getter.' .. self.flag )
   message.debug( '成功取得标记：' .. self.flag )
 end
 
 function task:_fail()
+  self:disable_trigger_group( 'flag_getter.' .. self.flag )
   message.debug( '未能取得标记：' .. self.flag )
 end
 

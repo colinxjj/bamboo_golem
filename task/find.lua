@@ -61,10 +61,11 @@ function task:check( obj )
 end
 
 function task:check_for_action( obj )
+  if self.is_found then return end
+  self.is_found = true
   if self.action then
-    self:listen{ event = 'prompt', func = self.complete, id = 'task.find' }
     local action = string.gsub( self.action, '%%id', obj.id )
-    self:send{ action }
+    self:send{ action; complete_func = self.complete }
   else
     self:complete()
   end

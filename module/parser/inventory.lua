@@ -135,6 +135,7 @@ local function parse_sell( _, t )
     player.cash = player.cash + cn_amount_to_cash( price )
     local added_money = cn_amount_to_money( price )
     for k, v in pairs( added_money ) do -- update inventory money amount
+      player.inventory[ k ] = player.inventory[ k ] or { name = k, id = item.get_id( k ), type = 'money' }
       player.inventory[ k ].count = player.inventory[ k ].count + v
     end
   end

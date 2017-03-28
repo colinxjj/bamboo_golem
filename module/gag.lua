@@ -5,40 +5,44 @@ local gag = {}
 -- This module handles gagging (for predefined groups only)
 --------------------------------------------------------------------------------
 
-local pending_gag, active_gag, excessive_count = {}, {}, {}
+local list, excessive_count = {}, {}
+
+local sp = lpeg.P ' '
+local nonsp = any_but( sp )
+local prompt = lpeg.P '> '
 
 local gag_def = {
   score = {
-    startp = '^╭━━【书剑个人资料卡】',
-    endp = 1 - lpeg.S '┃┠╰ ',
+    startp = lpeg.P '╭━━【书剑个人资料卡】',
+    endp = any_but( lpeg.S '┃┠╰ ' ),
     exclude_endp = true },
   skills = {
-    startp = '^(> )*【你的技能表】',
-    endp = 1 - lpeg.S '┌│├└',
+    startp = prompt^-1 * '【你的技能表】',
+    endp = any_but( lpeg.S '┌│├└' ),
     exclude_endp = true },
   hp = {
-    startp = '^·精血·',
+    startp = lpeg.P '·精血·',
     endp = lpeg.P '·饮水·' },
   cond = {
-    startp = '^┌────────────────────────┐',
+    startp = lpeg.P '┌────────────────────────┐',
     endp = lpeg.P '└────────────────────────┘' },
   time = {
-    startp = '^(> )*现在是书剑',
+    startp = prompt^-1 * '现在是书剑',
     endp = lpeg.P '鬼谷算术状态：' },
   inventory = {
-    startp = '^(> )*你身上带着',
-    endp = 1 - lpeg.S '□ ',
+    startp = prompt^-1 * '你身上带着',
+    endp = any_but( lpeg.P '□' + '  ' ),
     exclude_endp = true },
   enable = {
-    startp = '^(> )*以下是你目前使用中的特殊技能。',
-    endp = 1 - lpeg.P ' ',
+    startp = prompt^-1 * '以下是你目前使用中的特殊技能。',
+    endp = any_but( sp * sp * nonsp^4 * ' (' * lpeg.R 'az'^1 * ')' * sp^1 * '：' ),
     exclude_endp = true },
   set = {
-    startp = '^(> )*你目前设定的环境变量有：$',
-    endp = lpeg.P '> ',
+    startp = prompt^-1 * '你目前设定的环境变量有：',
+    endp = any_but( nonsp^1 * sp^1 * ( lpeg.R '09' + lpeg.P '"' ) ),
     exclude_endp = true },
 
-  title = { linep = '^(> )*【(.+)】\\S+( |「)\\S+\\(\\w+\\)$' }
+  title = { startp = prompt^-1 * '【' * upto '】' * nonsp^1 * lpeg.S' 「' }
 }
 
 local always_gag_def = {
@@ -56,71 +60,39 @@ local excessive_gag_def = {
 function gag.once( group )
   assert( type( group ) == 'string', 'gag.once - parameter must be a string' )
   if not gag_def[ group ] then message.debug( '未找到 gag 组定义：' .. group ); return end
-  pending_gag[ #pending_gag + 1 ] = { group = group, add_time = os.time() }
-  trigger.enable( 'gag_' .. group )
+  list[ #list + 1 ] = { group = group, status = 'pending', add_time = os.time() }
 end
 
-function gag.start( name )
-  local group, i, count, entry = string.gsub( name, 'gag_', '' ), 1, 0
-  -- remove the gag entry from pending list
-  while pending_gag[ i ] do
-    if pending_gag[ i ].group == group then
-      count = count + 1
-      if count == 1 then
-        entry = table.remove( pending_gag, i )
-      else
-        i = i + 1
-      end
-    else
-      i = i + 1
-    end
-  end
-  -- if no further gag with the same group, disable the startp trigger
-  if count == 1 then trigger.disable( name ) end
-  -- add the gag entry to active list if it's a multiline gag
-  if gag_def[ group ].endp then
-    active_gag[ #active_gag + 1 ] = entry
-    trigger.enable 'gag'
-  end
-end
-
-local function remove_expired_gag( list, timeout )
-  local i = 1
-  while list[ i ] do -- check for
-    if os.time() - list[ i ].add_time > timeout then
-      table.remove( list, i )
-    else
-      i = i + 1
-    end
-  end
-end
-
--- check if an endp pattern is matched
--- this function is called by OnPluginPartialLine so it's fired (one or more times) before any trigger will be fired on the line
+-- this function is called by OnPluginLineReceived
 function gag.check( text )
-  if not next( pending_gag ) and not next( active_gag ) then return end
-  remove_expired_gag( pending_gag, 1 )
-  local i = 1
-  while active_gag[ i ] do
-    local entry = active_gag[ i ]
+  if not next( list ) then return true end
+  local i, is_gag_needed = 1
+  while list[ i ] do
+    local entry, is_item_removed = list[ i ]
     local def = gag_def[ entry.group ]
-    -- remove active gag that is pending stop
-    if entry.is_pending_removal then
-      table.remove( active_gag, i )
-    -- stop active gag whose endp has matched
-    elseif def.endp:match( text ) then
-      if def.exclude_endp then
-        table.remove( active_gag, i )
-      else -- if exclude_endp is not set, then removal is delayed so that current line will fire the gag trigger and be omitted
-        entry.is_pending_removal = true
-        i = i + 1
+    if os.time() - entry.add_time > 4 then
+      table.remove( list, i )
+      is_item_removed = true
+    elseif entry.status == 'pending' then
+      if def.startp:match( text ) then
+        entry.status, is_gag_needed = 'active', true
+        if not def.endp then
+          table.remove( list, i )
+          is_item_removed = true
+        end
       end
-    else
-      i = i + 1
+    elseif entry.status == 'active' then
+      if def.endp:match( text ) then
+        table.remove( list, i )
+        is_item_removed = true
+        if not def.exclude_endp then is_gag_needed = true end
+      else
+        is_gag_needed = true
+      end
     end
+    if not is_item_removed then i = i + 1 end
   end
-  remove_expired_gag( active_gag, 2 )
-  if not next( active_gag ) then trigger.disable 'gag' end
+  return not is_gag_needed
 end
 
 function gag.excessive( name )
@@ -140,23 +112,16 @@ local function reset_excessive()
   excessive_count = {}
 end
 
+local function blackhole() end
+
 event.listen{ event = 'located', func = reset_excessive, persistent = true, id = 'gag.excessive' }
 
-function gag.blackhole()
-end
-
-trigger.new{ name = 'gag', match = '.', func = gag.blackhole, sequence = 50, keep_eval = true, omit = true }
-
-for group, t in pairs( gag_def ) do
-  trigger.new{ name = 'gag_' .. group, match = t.startp or t.linep, func = gag.start, sequence = 50, keep_eval = true, omit = true }
-end
-
 for name, patt in pairs( always_gag_def ) do
-  trigger.new{ name = 'gag_always_' .. name, match = patt, func = gag.blackhole, sequence = 50, omit = true, enabled = true }
+  trigger.new{ name = 'gag_always_' .. name, match = patt, func = blackhole, sequence = 50, omit = true, keep_eval = true, enabled = true }
 end
 
 for name, patt in pairs( excessive_gag_def ) do
-  trigger.new{ name = 'gag_excessive_' .. name, group = 'gag_excessive', match = patt, func = gag.excessive, sequence = 50, enabled = true }
+  trigger.new{ name = 'gag_excessive_' .. name, group = 'gag_excessive', match = patt, func = gag.excessive, sequence = 50, keep_eval = true, enabled = true }
 end
 
 

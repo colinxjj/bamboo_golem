@@ -40,8 +40,8 @@ local function clear_sub( task )
 	end
 end
 
+-- find task to run and remove dead tasks (and their subtasks)
 local function refresh_grid()
-	-- find task to run and remove dead tasks (and their subtasks)
 	local task_to_run
 	for priority, list in ipairs( grid ) do
 		local sequence = 1
@@ -66,18 +66,23 @@ local function refresh_grid()
 			end
 		end
 	end
+	return task_to_run
+end
 
-	-- handover from the previous running task to the new one
+-- handover from the previous running task to the new one
+local function takeover( task_to_run )
 	if current_task and current_task ~= task_to_run then
-		local func = current_task[ current_task.is_successful and 'complete_func' or 'fail_func' ]
+		local is_suc = current_task.is_successful
+		--print( 'task handover: ' .. current_task.id .. ' ( ' .. current_task.status .. ', ' .. tostring( is_suc ) .. ' ) > ' ..  task_to_run.id )
+		local func = current_task[ is_suc == true and 'complete_func' or is_suc == false and 'fail_func' or '' ]
 		local result = current_task.result
 		if current_task.parent == task_to_run then
-			--print( current_task.id .. ' ( ' .. tostring( current_task.is_successful ) .. ' ) > ' ..  task_to_run.id )
-			task_to_run.status = ( func or current_task.is_successful ~= false ) and 'running' or 'dead'
-			func = func or task_to_run[ current_task.is_successful ~= false and '_resume' or '_fail' ]
+			task_to_run.status = ( func or is_suc ~= false ) and 'running' or 'dead'
+			func = func or task_to_run[ is_suc ~= false and '_resume' or '_fail' ]
 			current_task = task_to_run
 			if func then func( task_to_run, result ) end
-			return
+			if task_to_run.status == 'dead' then task_to_run.is_successful = false end
+			return task_to_run.status ~= 'dead'
 		elseif current_task.status == 'dead' then
 			if func then func( current_task.parent or current_task, result ) end
 		elseif task_to_run.parent ~= current_task then
@@ -87,34 +92,42 @@ local function refresh_grid()
 	end
 	current_task, task_to_run.status = task_to_run, 'running'
 	if task_to_run._resume then task_to_run:_resume() end
+	return true
 end
 
 dispatch = function()
 	is_dispatching = true
 	local item = table.remove( queue, 1 ) -- get next item from queue
 	local task, action = item.task, item.action
-	if task.status == 'dead' then return end -- ignore action on dead tasks
+	if task.status ~= 'dead' then -- ignore action on dead tasks
 
-	clear_sub( task ) -- acting on a task always clears its subtasks
+		clear_sub( task ) -- acting on a task always clears its subtasks
 
-	if action == 'new' then
-		local stack = { task; priority = task.priority }
-		task.stack = stack
-		table.insert( grid[ stack.priority ], stack )
-	elseif action == 'newsub' or action == 'newweaksub' then
-		table.insert( item.parent.stack, task )
-		item.parent.status = action == 'newsub' and 'waiting' or 'lurking'
-	elseif action == 'complete' or action == 'fail' then
-		task.is_successful = action == 'complete'
+		--print( 'task.dispatch: ' .. action .. ' - ' .. task.id .. ' (' .. task.status .. ')' )
+
+		if action == 'new' then
+			local stack = { task; priority = task.priority }
+			task.stack = stack
+			table.insert( grid[ stack.priority ], stack )
+		elseif action == 'newsub' or action == 'newweaksub' then
+			table.insert( item.parent.stack, task )
+			item.parent.status = action == 'newsub' and 'waiting' or 'lurking'
+		elseif action == 'complete' or action == 'fail' then
+			-- set the task as current_task for proper handover
+			if not current_task or current_task.status == 'dead' then current_task = task end
+			task.is_successful = action == 'complete'
+		end
+
+		if action ~= 'resume' and task[ '_' .. action ] then task[ '_' .. action ]( task ) end
+
+		task.status = ( action == 'suspend' and 'suspended' )
+						 	 or ( ( action == 'complete' or action == 'fail' or action == 'kill' ) and 'dead' )
+							 or task.status
+
+		repeat -- until we have a valid task to run
+			local task_to_run = refresh_grid()
+		until takeover( task_to_run )
 	end
-
-	if action ~= 'resume' and task[ '_' .. action ] then task[ '_' .. action ]( task ) end
-
-	task.status = ( action == 'suspend' and 'suspended' )
-					 	 or ( ( action == 'complete' or action == 'fail' or action == 'kill' ) and 'dead' )
-						 or task.status
-
-	refresh_grid()
 
 	is_dispatching = false
 	if next( queue ) then dispatch() end -- process next event in queue if any
@@ -124,6 +137,7 @@ function taskmaster.operate( t )
 	assert( type( t ) == 'table', 'taskmaster.operate - the param must be a table' )
 	assert( type( t.task ) == 'table', 'taskmaster.operate - the task param must be a table' )
 	assert( type( t.action ) == 'string', 'taskmaster.operate - the action param must be a string' )
+	--print( 'taskmaster.operate: ' .. t.action .. ' - ' .. t.task.id .. ' (' .. t.task.status .. ')' )
 	table.insert( queue, t )
 	if not is_dispatching then dispatch() end
 end

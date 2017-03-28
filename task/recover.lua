@@ -38,7 +38,7 @@ local function validate_recover_param( self )
     if self.all and not tgt and attr ~= 'food' and attr ~= 'water' then self[ attr ] = self.all end
     -- task fails if targets exceed what is achievable
     if ( ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and tgt == 'double' ) or ( type( tgt ) == 'number' and ( tgt > max * 2 or ( ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and tgt > max ) ) ) then
-      message.verbose( '恢复任务失败：' .. attr .. ' 恢复目标 ' .. tgt .. ' 超出了能达到的上限' )
+      message.warning( '恢复任务失败：' .. attr .. ' 恢复目标 ' .. tgt .. ' 超出了能达到的上限' )
       self:fail()
     end
   end
@@ -152,7 +152,7 @@ end
 
 function task:_complete()
   if player.set[ '积蓄' ] then cmd.new{ 'unset 积蓄' } end
-  message.verbose( '完成恢复任务：' .. get_param_string( self ) )
+  message.debug( '完成恢复任务：' .. get_param_string( self ) )
 end
 
 local function food_source_evaluator( source )

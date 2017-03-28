@@ -115,6 +115,7 @@ function task:check_inventory()
 end
 
 function task:check_source_result()
+  if current_source.handler then self:disable_trigger_group( 'item_finder.' .. current_source.handler ) end
   if inventory.has_item( self.item, self.count_min or self.count ) then
     self.result = current_source.item
     -- if a source is available  only once per session, mark it as invalid until session reset

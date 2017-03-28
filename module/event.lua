@@ -122,9 +122,10 @@ local function process_next_event()
   local i, exec_list, listener = 1, {}
   while i <= #list do -- process the listeners
     listener = list[ i ]
-    if listener.task and ( listener.task.status == 'running' or listener.task.status == 'lurking' ) or not listener.task then -- only process listeners from running or lurking tasks and those with no associated tasks
+    if not listener.task or listener.task.status == 'running' or listener.task.status == 'lurking' then -- only process listeners from running or lurking tasks and those with no associated tasks
       table.insert( exec_list, listener ) -- copy listeners to execute to a seperate list first to avoid recursion
       if not listener.persistent then -- remove non-persistent listeners
+        --print( 'remove non-persistent listener: ' .. listener.id )
         table.remove( list, i )
         i = i - 1
       end
@@ -133,10 +134,11 @@ local function process_next_event()
     if listener.keep_eval == false then break end -- if keep_eval is false then stop processing remaining listeners
   end
   for _, listener in pairs( exec_list ) do
-    -- message.debug( evt.event .. ' > ' .. listener.id )
     if listener.task then
+      --print( evt.event .. ' > ' .. listener.id .. ' (' .. listener.task.id .. ', ' .. listener.task.status .. ')' )
       listener.func( listener.task, evt ) -- pass the task and/or event data as argument(s)
     else
+      --print( evt.event .. ' > ' .. listener.id )
       listener.func( evt )
     end
   end
@@ -151,6 +153,7 @@ local function remove_listener_by_id()
       while i <= #list do
         listener = list[ i ]
         if listener.id == id then
+          --print( 'remove listener by id: ' .. listener.id )
           table.remove( list, i )
         else
           i = i + 1
@@ -168,6 +171,7 @@ local function remove_listener_by_dead_task()
     while i <= #list do
       listener = list[ i ]
       if listener.task and listener.task.status == 'dead' then
+        --print( ( 'remove listener by dead task: "%s" on "%s" by "%s"' ):format( listener.id, listener.event, listener.task.id ) )
         table.remove( list, i )
       else
         i = i + 1

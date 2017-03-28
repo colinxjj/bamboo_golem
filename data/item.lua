@@ -2410,6 +2410,94 @@ local item = {
   value = 499,
 },
 
+['天神篇'] = {
+  iname = '天神篇',
+	name = '天神篇',
+  id = 'tianshen pian',
+  alternate_id = { 'shu', 'book' },
+  weight = 80,
+  source = {
+    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+  },
+},
+
+['龙神篇'] = {
+  iname = '龙神篇',
+	name = '龙神篇',
+  id = 'longshen pian',
+  alternate_id = { 'shu', 'book' },
+  weight = 80,
+  source = {
+    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+  },
+},
+
+['夜叉篇'] = {
+  iname = '夜叉篇',
+	name = '夜叉篇',
+  id = 'yecha pian',
+  alternate_id = { 'shu', 'book' },
+  weight = 80,
+  source = {
+    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+  },
+},
+
+['乾达婆篇'] = {
+  iname = '乾达婆篇',
+	name = '乾达婆篇',
+  id = 'qiandapo pian',
+  alternate_id = { 'shu', 'book' },
+  weight = 80,
+  source = {
+    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+  },
+},
+
+['阿修罗篇'] = {
+  iname = '阿修罗篇',
+	name = '阿修罗篇',
+  id = 'axiuluo pian',
+  alternate_id = { 'shu', 'book' },
+  weight = 80,
+  source = {
+    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+  },
+},
+
+['迦楼罗篇'] = {
+  iname = '迦楼罗篇',
+	name = '迦楼罗篇',
+  id = 'jialouluo pian',
+  alternate_id = { 'shu', 'book' },
+  weight = 80,
+  source = {
+    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+  },
+},
+
+['紧那罗篇'] = {
+  iname = '紧那罗篇',
+	name = '紧那罗篇',
+  id = 'jinnaluo pian',
+  alternate_id = { 'shu', 'book' },
+  weight = 80,
+  source = {
+    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+  },
+},
+
+['摩呼罗迦篇'] = {
+  iname = '摩呼罗迦篇',
+	name = '摩呼罗迦篇',
+  id = 'mohuluojia pian',
+  alternate_id = { 'shu', 'book' },
+  weight = 80,
+  source = {
+    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+  },
+},
+
 }
 
 return item

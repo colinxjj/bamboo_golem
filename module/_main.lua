@@ -15,7 +15,6 @@ function world.OnPluginPartialLine( text )
 		world.Send ''
 	else
 		trigger.lpeg_match( text )
-		gag.check( text ) -- check if the line should be gagged
 		if is_line_processed then return end -- to avoid raising multiple prompt / headline events for the same line if it has been updated multiple times
 		is_line_processed = true
 		if string.find( text, PROMPT ) then
@@ -25,8 +24,9 @@ function world.OnPluginPartialLine( text )
 	end
 end
 
-function world.OnPluginLineReceived()
-	is_line_processed = false
+function world.OnPluginLineReceived( text )
+	is_line_processed = false -- reset for next partial line
+	return gag.check( text ) -- check if the line should be gagged
 end
 
 --------------------------------------------------------------------------------

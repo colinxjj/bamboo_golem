@@ -263,9 +263,8 @@ cli.register{ cmd = 't', desc = '≤‚ ‘', func = parse_t, no_prefix = true }
 -- test2
 
 local function parse_tt()
-  gag.once 'hp'
-  gag.once 'hp'
-  cmd.new{ 'hp;hp'; no_echo = true }
+  local manual = taskmaster.current_manual_task
+  manual:newweaksub{ class = 'get_flag', flag = 'dlhg_bookshelf' }
 end
 
 cli.register{ cmd = 'tt', desc = '≤‚ ‘', func = parse_tt, no_prefix = true }

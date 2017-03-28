@@ -168,6 +168,34 @@ end
 trigger.new{ name = 'sit_and_wait_succeed', group = 'item_finder.sit_and_wait', match = '^(> )*(丫鬟|哑仆|仆役|小沙弥)走过来，给你(端来|倒)了(一杯茉莉花茶|一杯茶|一碗米饭)。', func = finder.sit_and_wait_succeed }
 trigger.new{ name = 'sit_and_wait_fail', group = 'item_finder.sit_and_wait', match = '^(> )*(丫鬟走过来对你说|仆役走过来对你说|小沙弥走过来对你说|哑仆走过来对你打手势)', func = finder.sit_and_wait_fail }
 
+-- get 天龙八部 books
+function finder:tlbb_book( source )
+  -- a temp flag is needed to get the item
+  if not player.temp_flag.dlhg_bookshelf then self:newsub{ class = 'get_flag', flag = 'dlhg_bookshelf' } return end
+  -- if previously failed to get a book, no more chance in this session
+  if player.temp_flag.dlhg_bookshelf_failed then self:fail() end
+  if type( source ) == 'table' then finder.data.tlbb_book = source.item end
+  self:send{ 'fan jia' }
+end
+function finder:tlbb_book_got_book()
+  self:newsub{ class = 'get_info', inventory = true, complete_func = finder.tlbb_book_check_inventory }
+end
+function finder:tlbb_book_check_inventory()
+  if inventory.has_item( finder.data.tlbb_book ) then
+    self:check_source_result()
+  else
+    self:send{ 'fan jia' }
+  end
+end
+function finder:tlbb_book_no_more_book()
+  player.temp_flag.dlhg_bookshelf_failed = true
+  self:fail()
+end
+trigger.new{ name = 'tlbb_book_got_book', group = 'item_finder.tlbb_book', match = '^(> )*你费劲周折，终于从书架上找到一本书！$', func = finder.tlbb_book_got_book }
+trigger.new{ name = 'tlbb_book_no_book', group = 'item_finder.tlbb_book', match = '^(> )*你翻了半天，结果什么也没找到。$', func = finder.tlbb_book }
+trigger.new{ name = 'tlbb_book_no_more_book', group = 'item_finder.tlbb_book', match = '^(> )*你已经拿过书了，怎么还想拿？$', func = finder.tlbb_book_no_more_book }
+
+
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------

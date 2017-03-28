@@ -25697,7 +25697,7 @@ local map = {
     e = { to = '大理皇宫书房', },
     s = { to = '大理皇宫走廊#1N', },
     w = { to = '大理皇宫御膳房', },
-    n = { to = '大理皇宫走廊#2N', cond = 'player.exp >= 100000', handler = 'dl_hougong', },
+    n = { to = '大理皇宫走廊#2N', cond = 'player.exp >= 100000', req = { dlhg_access = true }, },
   },
 },
 
