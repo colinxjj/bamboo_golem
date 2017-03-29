@@ -86,6 +86,7 @@ end
 local function parse_end()
   trigger.disable 'room_object' -- stop parsing objects
   timer.remove_by_id 'parser.room'
+  if not cache then return end
   cache.time = os.time() -- add a time stamp to room data
   for name, object in pairs( cache.object ) do
     event.new{ event = 'room_object', name = name, object = object }

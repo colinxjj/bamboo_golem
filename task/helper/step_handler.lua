@@ -726,24 +726,15 @@ function handler:look_around( t )
 	t.is_look_ok = cond.look or function() return true end
 	t.is_exit = cond.exit
 	t.is_alt_exit = cond.alt_exit or function() return false end
-	t.look = coroutine.wrap( handler.look )
-	t.look( self, t )
+	handler.look( self, t )
 end
 function handler:look( t )
-	local exit, dir_list = room.get().exit, {}
-	for dir, roomname in pairs( exit ) do
-		table.insert( dir_list, dir )
-		if t.is_look_ok( roomname ) then
-			self:newsub{ class = 'get_info', room = dir, complete_func = handler.look_around_result }
-			coroutine.yield()
-		end
+	t.exit_dir_list, t.look_dir_list = {}, {}
+	for dir, roomname in pairs( room.get().exit ) do
+		table.insert( t.exit_dir_list, dir )
+		if t.is_look_ok( roomname ) then t.look_dir_list[ dir ] = true end
 	end
-	if t.alt_exit or t.cmd then -- go alternate exit or back to XX旗
-		self:send{ t.alt_exit or t.cmd }
-		t.alt_exit = nil
-	else -- go random direction
-		self:send{ dir_list[ math.random( #dir_list ) ] }
-	end
+	self:newsub{ class = 'get_info', room = t.look_dir_list, complete_func = handler.look_around_result }
 end
 function handler:look_around_result( result )
 	local t = self.step
@@ -751,7 +742,12 @@ function handler:look_around_result( result )
 		if t.is_exit( room.exit ) then self:send{ dir } return end
 		if t.is_alt_exit( room.exit ) then t.alt_exit = dir end
 	end
-	t.look( self, t )
+	if t.alt_exit or t.cmd then -- go alternate exit or back to XX旗
+		self:send{ t.alt_exit or t.cmd }
+		t.alt_exit = nil
+	else -- go random direction
+		self:send{ t.exit_dir_list[ math.random( #t.exit_dir_list ) ] }
+	end
 end
 
 -- 武当后山丛林
@@ -823,26 +819,17 @@ function handler:wdhs_conglin( t )
 				end
 			end
 			-- look around
-			t.look_around = coroutine.wrap( handler.wdhs_conglin_look )
-			t.look_around( self, t )
+			handler.wdhs_conglin_look( self, t )
 		end
 	end
 end
 -- look around
 function handler:wdhs_conglin_look( t )
-	local room = room.get()
+	local room, look_dir_list = room.get(), {}
 	for dir, roomname in pairs( room.exit ) do
-		if roomname == room.name then
-			self:newsub{ class = 'get_info', room = dir, complete_func = handler.wdhs_conglin_look_result }
-			coroutine.yield()
-		end
+		if roomname == room.name then look_dir_list[ dir ] = true end
 	end
-	if t.alt_exit then -- go alternate exit (exit leading to room with same name)
-		self:send{ t.alt_exit .. ( room.name == '积雪丛林' and ';#wb 3500' or '' ) }
-		t.alt_exit = nil
-	else -- go random direction
-		self:send{ DIR8[ math.random( 8 ) ] .. ( room.name == '积雪丛林' and ';#wb 3500' or '' )  }
-	end
+	self:newsub{ class = 'get_info', room = look_dir_list, complete_func = handler.wdhs_conglin_look_result }
 end
 -- parse look result
 function handler:wdhs_conglin_look_result( result )
@@ -851,7 +838,12 @@ function handler:wdhs_conglin_look_result( result )
 		if wdhs_conglin_locate( room ) then self:send{ dir } return end -- go to room that can be uniquely identified
 		t.alt_exit = dir
 	end
-	t.look_around( self, t )
+	if t.alt_exit then -- go alternate exit (exit leading to room with same name)
+		self:send{ t.alt_exit .. ( room.name == '积雪丛林' and ';#wb 3500' or '' ) }
+		t.alt_exit = nil
+	else -- go random direction
+		self:send{ DIR8[ math.random( 8 ) ] .. ( room.name == '积雪丛林' and ';#wb 3500' or '' )  }
+	end
 end
 
 -- 武当山后院小径
@@ -1148,39 +1140,20 @@ function handler:breadcrumb( t )
 		if reliable_dir then
 			move( self, reliable_dir )
 		else -- otherwise, look around
-			t.look_around = coroutine.wrap( handler.breadcrumb_look )
-			t.look_around( self, t )
+			handler.breadcrumb_look( self, t )
 		end
 	end
 end
 -- look around
 function handler:breadcrumb_look( t )
+	local look_dir_list = {}
 	for _, dir in pairs( DIR4 ) do -- check 4 directions
 		local d = t.map[ t.curr ][ dir ]
 		if t.map[ t.curr ].is_reliable == false or not d or ( type( d ) == 'number' and t.map[ d ].is_reliable == false ) then -- if this room is unreliable, or we don't have data for a dir or the room in that dir is marked as unreliable, then look at it, but avoid exits with string labels
-			self:newsub{ class = 'get_info', room = dir, complete_func = handler.breadcrumb_look_result }
-			coroutine.yield()
+			look_dir_list[ dir ] = true
 		end
 	end
-	if t.preferred_exit then -- if got preferred exit, then go this dir
-		move( self, t.preferred_exit )
-		t.preferred_exit, t.alt_exit = nil
-	elseif t.alt_exit then -- then, if got alternate exit, then go this dir
-		move( self, t.alt_exit )
-		t.alt_exit = nil
-	else -- otherwise, walk to a room that has an exit leading to an unknown or empty room, or is marked unreliable, or is marked as bad
-		t.path = findpath_to( 'unknown', t ) or findpath_to( 'unsure', t ) or findpath_to( 'bad', t )
-		if t.path then
-			local dir = table.remove( t.path, 1 )
-			move( self, dir )
-		else -- if no path, then mark all rooms as unreliable and start over
-			for _, room in ipairs( t.map ) do
-				room.is_reliable = false
-			end
-			t.map.is_reusable = false -- mark current map as non-reusable because of poor quality
-			self:send{ 'l' }
-		end
-	end
+	self:newsub{ class = 'get_info', room = look_dir_list, complete_func = handler.breadcrumb_look_result }
 end
 -- parse look result
 function handler:breadcrumb_look_result( result )
@@ -1215,7 +1188,26 @@ function handler:breadcrumb_look_result( result )
 			if item_count == 0 or ( t.map[ item_count ].is_reliable == false and not t.map[ item_count ].is_bad ) then t.alt_exit = dir end -- then, prefer exit to an empty room or unreliable room (so that we can fix it first)
 		end
 	end
-	t.look_around( self, t )
+
+	if t.preferred_exit then -- if got preferred exit, then go this dir
+		move( self, t.preferred_exit )
+		t.preferred_exit, t.alt_exit = nil
+	elseif t.alt_exit then -- then, if got alternate exit, then go this dir
+		move( self, t.alt_exit )
+		t.alt_exit = nil
+	else -- otherwise, walk to a room that has an exit leading to an unknown or empty room, or is marked unreliable, or is marked as bad
+		t.path = findpath_to( 'unknown', t ) or findpath_to( 'unsure', t ) or findpath_to( 'bad', t )
+		if t.path then
+			local dir = table.remove( t.path, 1 )
+			move( self, dir )
+		else -- if no path, then mark all rooms as unreliable and start over
+			for _, room in ipairs( t.map ) do
+				room.is_reliable = false
+			end
+			t.map.is_reusable = false -- mark current map as non-reusable because of poor quality
+			self:send{ 'l' }
+		end
+	end
 end
 
 -- 桃花岛八卦桃花阵

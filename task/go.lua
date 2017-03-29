@@ -52,7 +52,7 @@ function task:_resume()
 end
 
 function task:_complete()
-  message.verbose '到达目的地'
+  message.verbose '行走完成'
 end
 
 function task:_fail()

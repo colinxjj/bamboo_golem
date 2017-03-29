@@ -7,9 +7,10 @@ local task = {}
 Params:
 one or more of the info types (see info_type below) set to non-false values
 room = true: get info for current room
-     = 'e': get info for room in that direction to the current room
      = 'surrounding': get info for all rooms surrounding the current room
      = 'all': get info for all rooms including the current room and the surrounding rooms
+     = 'e': get info for room in that direction to the current room
+     = { 'e' = true, 'n' = true }: a table with directions to look at as keys
 ----------------------------------------------------------------------------]]--
 
 task.class = 'get_info'
@@ -42,18 +43,13 @@ function task:get_room_info( cmd_list )
   self.dir_list = {}
   local target = self.room
   -- look current room
-  if target == 'all' or target == true then
-    look_dir( self, 'here', cmd_list )
-  end
+  if target == 'all' or target == true then look_dir( self, 'here', cmd_list ) end
   -- look surrounding rooms
-  if target == 'all' or target == 'surrounding' then
+  if target ~= true then
     for dir in pairs( room.get().exit ) do
-      look_dir( self, dir, cmd_list )
+      if target == dir or target == 'all' or target == 'surrounding' or target[ dir ] then look_dir( self, dir, cmd_list ) end
     end
-  elseif target ~= true then
-    look_dir( self, target, cmd_list )
   end
-  self.room = 'sent'
   setup_listener( self )
 end
 
@@ -66,9 +62,6 @@ function task:parse_look_result( evt )
 end
 
 function task:_resume( evt )
-  if not self.start_time then
-    self.start_time = os.clock() * 1000
-  end
   local cmd_list = { no_echo = true, complete_func = self.resume }
   for _, info in pairs( info_type ) do
     local target = self[ info ]

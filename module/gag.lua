@@ -39,7 +39,7 @@ local gag_def = {
     exclude_endp = true },
   set = {
     startp = prompt^-1 * '你目前设定的环境变量有：',
-    endp = any_but( nonsp^1 * sp^1 * ( lpeg.R '09' + lpeg.P '"' ) ),
+    endp = any_but( nonsp^1 * sp^1 * ( lpeg.R '09'^1 + ( lpeg.P '"' * upto( '"' ) ) ) * -lpeg.P( 1 ) ),
     exclude_endp = true },
 
   title = { startp = prompt^-1 * '【' * upto '】' * nonsp^1 * lpeg.S' 「' }
@@ -61,6 +61,7 @@ function gag.once( group )
   assert( type( group ) == 'string', 'gag.once - parameter must be a string' )
   if not gag_def[ group ] then message.debug( '未找到 gag 组定义：' .. group ); return end
   list[ #list + 1 ] = { group = group, status = 'pending', add_time = os.time() }
+  --print( 'gag.once: ' .. group )
 end
 
 -- this function is called by OnPluginLineReceived
@@ -71,20 +72,17 @@ function gag.check( text )
     local entry, is_item_removed = list[ i ]
     local def = gag_def[ entry.group ]
     if os.time() - entry.add_time > 4 then
-      table.remove( list, i )
-      is_item_removed = true
+      is_item_removed = table.remove( list, i )
     elseif entry.status == 'pending' then
       if def.startp:match( text ) then
         entry.status, is_gag_needed = 'active', true
-        if not def.endp then
-          table.remove( list, i )
-          is_item_removed = true
-        end
+        --print( 'gag.start: ' .. entry.group .. ' - ' .. text )
+        if not def.endp then is_item_removed = table.remove( list, i ) end
       end
     elseif entry.status == 'active' then
       if def.endp:match( text ) then
-        table.remove( list, i )
-        is_item_removed = true
+        is_item_removed = table.remove( list, i )
+        --print( 'gag.end: ' .. entry.group .. ' - ' .. text )
         if not def.exclude_endp then is_gag_needed = true end
       else
         is_gag_needed = true

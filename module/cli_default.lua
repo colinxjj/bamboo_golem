@@ -212,15 +212,13 @@ local function food_source_evaluator( source )
   local food_supply = ( it.consume_count or 1 ) * it.food_supply * 0.5
   local gap = 100 - player.food
     -- demote food with excessive supply
-    if food_supply > gap then
-      if source.type == 'shop' then
-        return ( gap - food_supply ) * 0.5
-      else
-        return ( gap - food_supply ) * 0.3
-      end
+  if food_supply > gap then
+    if source.type == 'shop' then
+      return ( gap - food_supply ) * 0.5
+    else
+      return ( gap - food_supply ) * 0.3
     end
-  -- demote food with too low supply
-  if gap / food_supply > 2 then return 0 - ( gap - food_supply ) * 0.5 end
+  end
 end
 
 local function drink_source_evaluator( source )
@@ -264,7 +262,7 @@ cli.register{ cmd = 't', desc = '≤‚ ‘', func = parse_t, no_prefix = true }
 
 local function parse_tt()
   local manual = taskmaster.current_manual_task
-  manual:newweaksub{ class = 'get_flag', flag = 'dlhg_bookshelf' }
+  manual:newweaksub{ class = 'get_info', room = { w = true, e = true } }
 end
 
 cli.register{ cmd = 'tt', desc = '≤‚ ‘', func = parse_tt, no_prefix = true }

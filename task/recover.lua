@@ -159,17 +159,15 @@ local function food_source_evaluator( source )
   local it = item.get( source.item )
   local food_supply = ( it.consume_count or 1 ) * it.food_supply * 0.5
   local gap = 100 - player.food
-    -- demote food with excessive supply
-    if food_supply > gap then
-      -- demote more for shop food and less for others
-      if source.type == 'shop' then
-        return ( gap - food_supply ) * 0.5
-      else
-        return ( gap - food_supply ) * 0.3
-      end
+  -- demote food with excessive supply
+  if food_supply > gap then
+    -- demote more for shop food and less for others
+    if source.type == 'shop' then
+      return ( gap - food_supply ) * 0.5
+    else
+      return ( gap - food_supply ) * 0.3
     end
-  -- demote food with too low supply
-  if gap / food_supply > 2 then return 0 - ( gap - food_supply ) * 0.5 end
+  end
 end
 
 local function drink_source_evaluator( source )
