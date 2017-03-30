@@ -296,8 +296,6 @@ end
 
 -- from 萧府后院 to 萧府树林
 
--- 大理皇宫后宫
-
 -- 大理王府
 -- TODO 如果门派不是天龙寺，那么晚8点到早5点之间需要杀掉npc
 
@@ -505,6 +503,12 @@ function handler:drop_item( t )
 	else
 		self:send{ t.cmd }
 	end
+end
+
+-- 嘉峪关东城门
+function handler:pass_check( t )
+	if room.has_object '边防官兵' then self:send{ '#wa 2000' } end
+	self:send{ t.cmd }
 end
 
 --------------------------------------------------------------------------------
@@ -738,7 +742,7 @@ function handler:look( t )
 end
 function handler:look_around_result( result )
 	local t = self.step
-	for dir, room in pairs( result ) do
+	for dir, room in pairs( result or {} ) do
 		if t.is_exit( room.exit ) then self:send{ dir } return end
 		if t.is_alt_exit( room.exit ) then t.alt_exit = dir end
 	end
@@ -834,7 +838,7 @@ end
 -- parse look result
 function handler:wdhs_conglin_look_result( result )
 	local t = self.step
-	for dir, room in pairs( result ) do
+	for dir, room in pairs( result or {} ) do
 		if wdhs_conglin_locate( room ) then self:send{ dir } return end -- go to room that can be uniquely identified
 		t.alt_exit = dir
 	end
@@ -1158,7 +1162,7 @@ end
 -- parse look result
 function handler:breadcrumb_look_result( result )
 	local t = self.step
-	for dir, room in pairs( result ) do
+	for dir, room in pairs( result or {} ) do
 		-- already at room exit?
 		if room.name ~= t.from.name then -- if we have to look around at maze exit to know that we're at one, then things are seriously wrong
 			handler.data[ t.from.id ] = nil -- clear all data
@@ -1226,7 +1230,7 @@ function handler:thd_bagua( t )
 end
 function handler:thd_bagua_blocked()
 	player.temp_flag.thd_bagua = nil
-	self:reset()
+	self:newsub{ class = 'get_flag', flag = 'thd_bagua', complete_func = handler.thd_bagua }
 end
 trigger.new{ name = 'thd_bagua_blocked', group = 'step_handler.thd_bagua', match = '^(> )*你感觉这个桃花阵中暗藏八卦，隐隐生出阻力，将你推了回来！$', func = handler.thd_bagua_blocked }
 

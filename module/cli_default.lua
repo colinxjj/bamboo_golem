@@ -261,8 +261,8 @@ cli.register{ cmd = 't', desc = '≤‚ ‘', func = parse_t, no_prefix = true }
 -- test2
 
 local function parse_tt()
-  local manual = taskmaster.current_manual_task
-  manual:newweaksub{ class = 'get_info', room = { w = true, e = true } }
+  local t = item.get_sorted_source{ item = 'Õ≠«Æ' }
+  tprint( t )
 end
 
 cli.register{ cmd = 'tt', desc = '≤‚ ‘', func = parse_tt, no_prefix = true }
