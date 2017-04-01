@@ -21,7 +21,7 @@ local gag_def = {
     endp = any_but( lpeg.S '┌│├└' ),
     exclude_endp = true },
   hp = {
-    startp = lpeg.P '·精血·',
+    startp = -lpeg.P( 1 ) + lpeg.P '·精血·',
     endp = lpeg.P '·饮水·' },
   cond = {
     startp = lpeg.P '┌────────────────────────┐',
@@ -61,28 +61,28 @@ function gag.once( group )
   assert( type( group ) == 'string', 'gag.once - parameter must be a string' )
   if not gag_def[ group ] then message.debug( '未找到 gag 组定义：' .. group ); return end
   list[ #list + 1 ] = { group = group, status = 'pending', add_time = os.time() }
-  --print( 'gag.once: ' .. group )
+  --log.normal( 'gag.once: ' .. group )
 end
 
 -- this function is called by OnPluginLineReceived
 function gag.check( text )
   if not next( list ) then return true end
-  local i, is_gag_needed = 1
+  local i, triggered_start, is_gag_needed = 1, {}
   while list[ i ] do
     local entry, is_item_removed = list[ i ]
     local def = gag_def[ entry.group ]
     if os.time() - entry.add_time > 4 then
       is_item_removed = table.remove( list, i )
     elseif entry.status == 'pending' then
-      if def.startp:match( text ) then
-        entry.status, is_gag_needed = 'active', true
-        --print( 'gag.start: ' .. entry.group .. ' - ' .. text )
+      if not triggered_start[ entry.group ] and def.startp:match( text ) then
+        entry.status, is_gag_needed, triggered_start[ entry.group ] = 'active', true, true
+        --log.normal( 'gag.start: ' .. entry.group .. ' - ' .. text )
         if not def.endp then is_item_removed = table.remove( list, i ) end
       end
     elseif entry.status == 'active' then
       if def.endp:match( text ) then
         is_item_removed = table.remove( list, i )
-        --print( 'gag.end: ' .. entry.group .. ' - ' .. text )
+        --log.normal( 'gag.end: ' .. entry.group .. ' - ' .. text )
         if not def.exclude_endp then is_gag_needed = true end
       else
         is_gag_needed = true

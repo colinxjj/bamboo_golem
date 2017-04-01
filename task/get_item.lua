@@ -35,7 +35,7 @@ function task:_resume()
   -- already have the required item(s)?
   local has_item = inventory.has_item( self.item, self.count_min or self.count )
   -- update inventory info if no count data or current count data can be higher than the actual count TODO inventory.has_item currently doesn't return 'unsure'
-  if has_item == 'unsure' then self:newsub{ class = 'get_info', inventory = 'forced' } return end
+  if has_item == 'unsure' then self:newsub{ class = 'get_info', inventory = true } return end
   -- complete the task if have enough item
   if has_item then self.result = has_item; self:complete() return end
   -- otherwise, try the best source available

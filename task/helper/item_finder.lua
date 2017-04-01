@@ -17,14 +17,23 @@ end
 
 -- drink water from source
 function finder:drink()
-  self:send{ 'drink' }
+  self:send{ 'drink'; retry_until_msg = '(你已经喝得太多了|你喝太多了|喝不下了|喝那么多的凉水)'; complete_func = finder.drink_full }
 end
 function finder:drink_full()
   self.result = '清水'
-  self:complete()
+  local cmd_list = { complete_func = self.complete }
+  for iname, it in pairs( player.inventory ) do
+    if item.is_type( iname, 'drink_container' ) then
+      cmd_list[ #cmd_list + 1 ] = 'fill ' .. it.id
+      it.is_depleted = nil
+    end
+  end
+  if #cmd_list > 0 then
+    self:send( cmd_list )
+  else
+    self:complete()
+  end
 end
-trigger.new{ name = 'drink_succeed', group = 'item_finder.drink', match = '^(> )*你(喝了一口|趴在|捧起一|舀了一口|端起杯香茶|从蒙恬井中|用水瓢舀了一口)', func = finder.drink }
-trigger.new{ name = 'drink_full', group = 'item_finder.drink', match = '^(> )*(你喝太多了|你已经喝得太多了|你再也喝不下了|喝那么多的凉水|虽然你还想喝)', func = finder.drink_full }
 
 -- ask for an item from npc and get it from ground
 function finder:cmd_and_get( source )

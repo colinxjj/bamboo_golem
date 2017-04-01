@@ -20,8 +20,9 @@ function inventory.has_item( name, count )
 		end
 	else
 		-- TODO also check for item count of the specified type
-		for iname in pairs( player.inventory ) do
+		for iname, it in pairs( player.inventory ) do
 			if item.is_type( iname, name ) then return iname end
+			if name == 'drink' and item.is_type( iname, 'drink_container' ) and not it.is_depleted then return iname end
 		end
 	end
 end

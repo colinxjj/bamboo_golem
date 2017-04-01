@@ -89,13 +89,11 @@ function task:wield()
 end
 
 function task:consume()
-  -- only try consumption once
-  if not self.has_tried_consume and inventory.has_item( self.item ) then
-    self.has_tried_consume, self.has_updated_info = true, false
+  if inventory.has_item( self.item ) then
+    self.has_updated_info = false
     local it = item.get( self.item )
-    local count, id = it.consume_count or 1, it.id
-    local action = it.type == 'food' and 'eat' or 'drink'
-    self:send{ ( '#%d %s %s' ):format( count, action, id ); complete_func = self.resume } -- check inventory again after
+    local action = it.type == 'food' and 'eat ' or 'drink '
+    self:send{ action .. it.id; retry_until_msg = '(喝得一滴也不剩了|吃得干干净净|已经没什么好吃的了|身上没有这样东西|你已经吃太饱了|你已经喝得太多了|你喝太多了|喝不下了|喝那么多的凉水)', complete_func = self.complete } -- check inventory again after
   else
     self:complete()
   end

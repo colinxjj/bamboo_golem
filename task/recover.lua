@@ -135,19 +135,24 @@ function task:_resume()
     return
   end
   -- if all targets have been reached then complete
-  if has_reached_all_target( self ) then self:complete() return end
+  if has_reached_all_target( self ) then self:complete()
   -- evaluate each type of action in order
-  if is_eat_needed( self ) or is_drink_needed( self ) then self:eat_drink() return end
-  if is_heal_needed( self ) then self:heal() return end
-  if is_sleep_needed( self ) then self:go_to_sleep() return end
-  if player.enable.force then
-    if is_exert_needed( self ) then self:exert() return end
-    if is_tuna_needed( self ) then self:tuna() return end
-    if is_dazuo_needed( self ) then self:dazuo() return end
+  elseif is_eat_needed( self ) or is_drink_needed( self ) then
+    self:eat_drink()
+  elseif is_heal_needed( self ) then
+    self:heal()
+  elseif is_sleep_needed( self ) then
+    self:go_to_sleep()
+  elseif player.enable.force and is_exert_needed( self ) then
+    self:exert()
+  elseif player.enable.force and is_tuna_needed( self ) then
+    self:tuna()
+  elseif player.enable.force and is_dazuo_needed( self ) then
+    self:dazuo()
+  else -- if no action is possbile at the moment, wait
+    self.has_updated_hp = false
+    self:newsub{ class = 'kill_time', duration = 20, idle_only = true }
   end
-  -- if no action is possbile at the moment, wait
-  self.has_updated_hp = false
-  self:newsub{ class = 'kill_time', duration = 20, idle_only = true }
 end
 
 function task:_complete()
@@ -187,19 +192,19 @@ function task:eat_drink()
     choice = 'drink'
   else
     local curr_loc = map.get_current_location()[ 1 ].id
-    local best_food_source = item.get_best_source{ item = 'food', source_evaluator = food_source_evaluator }
-    local best_drink_source = item.get_best_source{ item = 'drink', source_evaluator = drink_source_evaluator }
+    local best_food_source = item.get_best_source{ item = 'food', source_evaluator = food_source_evaluator, is_quality_ignored = true }
+    local best_drink_source = item.get_best_source{ item = 'drink', source_evaluator = drink_source_evaluator, is_quality_ignored = true }
     choice = ( best_food_source.location == curr_loc and 'food' )
-                or ( best_drink_source.location == curr_loc and 'drink' )
-                or ( best_food_source.score > best_drink_source.score and 'food' )
-                or 'drink'
+          or ( best_drink_source.location == curr_loc and 'drink' )
+          or ( best_food_source.score > best_drink_source.score and 'food' )
+          or 'drink'
   end
-  self:newsub{ class = 'get_item', item = choice, source_evaluator = ( choice == 'food' and food_source_evaluator or drink_source_evaluator ), complete_func = task.consume }
+  self:newsub{ class = 'get_item', item = ( choice == 'drink' and self.water == 'double' and '双倍清水' or choice ) , source_evaluator = ( choice == 'food' and food_source_evaluator or drink_source_evaluator ), is_quality_ignored = true, complete_func = task.consume }
 end
 
 function task:consume( name )
   self.has_updated_hp = false
-  if name == '清水' then
+  if name == '清水' or name == '双倍清水' then
     self:resume()
   else
     self:newsub{ class = 'manage_inventory', action = 'consume', item = name }

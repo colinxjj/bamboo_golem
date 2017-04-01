@@ -107,11 +107,14 @@ for type, patt in pairs( item_type_name_patt ) do
 end
 
 -- generate type indices
-local type_index = { weapon = {}, sharp_weapon = {}, armor = {} }
+local type_index = { weapon = {}, sharp_weapon = {}, armor = {}, drink = {} }
 for iname, it in pairs( index ) do
 	if it.type then
+		-- add to type indeces
 		type_index[ it.type ] = type_index[ it.type ] or {}
 		type_index[ it.type ][ iname ] = it
+		-- add to special type indices
+		if it.type == 'drink_container' then type_index.drink[ iname ] = it end
 		if weapon_type[ it.type ] then type_index.weapon[ iname ] = it end
 		if sharp_weapon_type[ it.type ] then type_index.sharp_weapon[ iname ] = it end
 		if armor_type[ it.type ] then type_index.armor[ iname ] = it end
@@ -283,6 +286,10 @@ local function calculate_item_quality_score( it )
 	if it.quality then return it.quality end
 	-- for food and drinks, quality is based its total supply
 	if it.food_supply or it.water_supply then return ( it.consume_count or 1 ) * ( ( it.food_supply or 0 ) + ( it.water_supply or 0 ) ) * 0.2 end
+	-- for drink containers, quality is based its initial drink supply
+	if it.drink then return it.drink.consume_count * 6 end
+	-- default is 0
+	return 0
 end
 
 local function calculate_source_score( source, t )

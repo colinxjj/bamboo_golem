@@ -8,9 +8,10 @@ local cache
 local end_patt = any_but( lpeg.P '□' + '  ' )
 
 local function parse_end()
-  -- copy existing alternate id info
+  -- copy some existing info which could not be directly got from inventory display
   for name, it in pairs( player.inventory ) do
     if cache[ name ] then
+      cache[ name ].is_depleted = it.is_depleted
       cache[ name ].alternate_id = it.alternate_id
     end
   end
@@ -183,6 +184,12 @@ local function parse_ferry_pay()
   it.count_is = 'max'
 end
 
+local function drink_container_depleted( _, t )
+  local it = player.inventory[ t[ 3 ] ]
+  if not it then return end
+  it.is_depleted = true
+end
+
 trigger.new{ name = 'inventory1', match = '^(> )*你身上(带着(\\S+)件|带著下列这些)东西\\(负重\\s*(\\S+)%\\)：$', func = parse_header, enabled = true }
 trigger.new{ name = 'inventory2', match = '^(□|  )([^ (]+)\\(([\\w\\s\\\'-]+)\\)$', func = parse_content }
 
@@ -214,6 +221,7 @@ trigger.new{ name = 'inventory_zhujian_unwield', match = '^(> )*你放下手中的\\S+
 
 trigger.new{ name = 'inventory_ferry_pay', match = '^(> )*你把钱交给船家', func = parse_ferry_pay, enabled = true }
 
+trigger.new{ name = 'inventory_drink_container_depleted', match = '^(> )*(你已经将)?(\\S+)(里的\\S+|已经被)喝得一滴也不剩了。', func = drink_container_depleted, enabled = true }
 
 --------------------------------------------------------------------------------
 -- End of module

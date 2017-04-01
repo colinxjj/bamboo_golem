@@ -22,7 +22,7 @@ function timer.new( t )
 
   timer.remove_by_id( t.id ) -- remove existing timer with same id, if there's one
 
-  t.target_hbcount = get_heartbeat_count() + t.duration / HEARTBEAT_INTERVAL
+  t.target_hbcount = get_heartbeat_count() + math.ceil( t.duration / HEARTBEAT_INTERVAL )
   timetable[ t.target_hbcount ] = timetable[ t.target_hbcount ] or {}
   table.insert( timetable[ t.target_hbcount ], t )
 end

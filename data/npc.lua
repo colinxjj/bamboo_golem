@@ -745,7 +745,7 @@ local npc = {
   name = '小贩子',
   id = 'xiao fan',
   alternate_id = { 'xiao', 'fan' },
-  location = '峨嵋山草棚',
+  location = '明教山亭',
   label = { shop = true, },
   catalogue = { '牛皮酒袋', '包子', '竹壶' }
 },

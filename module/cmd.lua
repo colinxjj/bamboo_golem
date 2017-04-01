@@ -131,7 +131,6 @@ local function send( c )
   if c.type == '#wa' or c.type == '#wb' then
     c.duration = tonumber( ( string.gsub( c.cmd, '#w[ab] ', '' ) ) )
     c.hbcount = c.duration / ( HEARTBEAT_INTERVAL * 1000 ) -- convert duration to number of heartbeats
-    -- message.debug( 'CMD 模块按照 #wa 命令等待 ' .. c.duration .. ' 毫秒 / ' .. c.hbcount .. ' 次心跳' )
     c.target_hbcount = get_heartbeat_count() + c.hbcount
     c.status = 'waiting'
     if c.type == '#wb' then -- mark player as busy for the same period for #wb
@@ -143,6 +142,11 @@ local function send( c )
       is_possibly_still_busy = 'halt_sent'
       world.Send( 'halt' )
     end
+  elseif player.lasting_action == 'dazuo' or player.lasting_action == 'tuna' or player.lasting_action == 'heal' then
+    player.lasting_action = 'halt_sent'
+    c.status = 'encountered_busy'
+    addbusy( 1.5 )
+    world.Send( 'halt' )
   else
     is_possibly_still_busy = false
     trigger.enable_group 'cmd'

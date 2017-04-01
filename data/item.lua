@@ -742,7 +742,7 @@ local item = {
   weight = 700,
   value = 300,
   consume_count = 5,
-  food_supply = 50, -- is actually 100
+  food_supply = 100,
 },
 
 ['红烧牛肉#TZ'] = {
@@ -1107,9 +1107,8 @@ local item = {
 	name = '清水',
   id = 'water',
   type = 'drink',
-  water_supply = 120,
+  water_supply = 200,
   source = {
-    { type = 'local_handler', handler = 'drink', location = '伊犁城客栈', limit = 200, },
     { type = 'local_handler', handler = 'drink', location = '星宿海月牙泉', },
     { type = 'local_handler', handler = 'drink', location = '福州城茶楼', },
     { type = 'local_handler', handler = 'drink', location = '福州城茶楼二楼', },
@@ -1128,22 +1127,14 @@ local item = {
     { type = 'local_handler', handler = 'drink', location = '燕子坞厨房', },
     { type = 'local_handler', handler = 'drink', location = '曼佗罗山庄后花园', },
     { type = 'local_handler', handler = 'drink', location = '姑苏慕容厨房#D', },
-    { type = 'local_handler', handler = 'drink', location = '明教沙漠绿洲', limit = 200, },
     { type = 'local_handler', handler = 'drink', location = '兰州城营盘水', },
     { type = 'local_handler', handler = 'drink', location = '华山玉女祠', },
     { type = 'local_handler', handler = 'drink', location = '华山瀑布', },
     { type = 'local_handler', handler = 'drink', location = '黑木崖百丈泉', },
-    { type = 'local_handler', handler = 'drink', location = '回疆坎儿井', limit = 200, },
     { type = 'local_handler', handler = 'drink', location = '回疆马棚', },
     { type = 'local_handler', handler = 'drink', location = '回疆黑石围子', },
     { type = 'local_handler', handler = 'drink', location = '恒山苦甜井', },
-    { type = 'local_handler', handler = 'drink', location = '终南山果园', limit = 200, },
     { type = 'local_handler', handler = 'drink', location = '昆仑山瀑布', },
-    { type = 'local_handler', handler = 'drink', location = '无量山东湖边', limit = 200, },
-    { type = 'local_handler', handler = 'drink', location = '无量山北湖边', limit = 200, },
-    { type = 'local_handler', handler = 'drink', location = '无量山南湖边', limit = 200, },
-    { type = 'local_handler', handler = 'drink', location = '无量山西湖边', limit = 200, },
-    { type = 'local_handler', handler = 'drink', location = '无量山山中小溪', limit = 200, },
     { type = 'local_handler', handler = 'drink', location = '大理城茶馆', },
     { type = 'local_handler', handler = 'drink', location = '扬州城小墓室', },
     { type = 'local_handler', handler = 'drink', location = '扬州城茶馆', },
@@ -1151,6 +1142,25 @@ local item = {
     { type = 'local_handler', handler = 'drink', location = '长安城茶馆', },
     { type = 'local_handler', handler = 'drink', location = '沧州城厅堂', },
     { type = 'local_handler', handler = 'drink', location = '白驼山空地', },
+  },
+},
+
+['双倍清水'] = {
+  iname = '双倍清水',
+	name = '双倍清水',
+  id = 'double_water',
+  type = 'drink',
+  water_supply = 400,
+  source = {
+    { type = 'local_handler', handler = 'drink', location = '伊犁城客栈', },
+    { type = 'local_handler', handler = 'drink', location = '明教沙漠绿洲', },
+    { type = 'local_handler', handler = 'drink', location = '回疆坎儿井', },
+    { type = 'local_handler', handler = 'drink', location = '终南山果园', },
+    { type = 'local_handler', handler = 'drink', location = '无量山东湖边', },
+    { type = 'local_handler', handler = 'drink', location = '无量山北湖边', },
+    { type = 'local_handler', handler = 'drink', location = '无量山南湖边', },
+    { type = 'local_handler', handler = 'drink', location = '无量山西湖边', },
+    { type = 'local_handler', handler = 'drink', location = '无量山山中小溪', },
   },
 },
 
@@ -1202,8 +1212,8 @@ local item = {
   weight = 700,
   value = 5000,
   consume_count = 1,
-  food_supply = 160,
-  water_supply = 160,
+  food_supply = 200,
+  water_supply = 200,
 },
 
 ['酥油茶'] = {
@@ -1243,7 +1253,7 @@ local item = {
   weight = 700,
   value = 1000,
   consume_count = 1,
-  water_supply = 160,
+  water_supply = 200,
 },
 
 --------------------------------------------------------------------------------

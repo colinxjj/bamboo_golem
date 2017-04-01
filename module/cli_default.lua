@@ -232,7 +232,7 @@ end
 
 local function parse_t( _, input )
   local time = os.clock() * 1000
-  local t = item.get_sorted_source{ item = 'food', source_evaluator = food_source_evaluator }
+  local t = item.get_sorted_source{ item = 'food', source_evaluator = food_source_evaluator, is_quality_ignored = true }
   print( '食物计算过程耗时 ' .. os.clock() * 1000 - time .. ' 毫秒' )
   for i = 1, 5 do
     print( i )
@@ -243,7 +243,7 @@ local function parse_t( _, input )
     print( '  score:', t[ i ].score )
   end
   time = os.clock() * 1000
-  t = item.get_sorted_source{ item = 'drink', source_evaluator = drink_source_evaluator }
+  t = item.get_sorted_source{ item = 'drink', source_evaluator = drink_source_evaluator, is_quality_ignored = true }
   print( '饮水计算过程耗时 ' .. os.clock() * 1000 - time .. ' 毫秒' )
   for i = 1, 5 do
     print( i )
@@ -261,8 +261,8 @@ cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }
 -- test2
 
 local function parse_tt()
-  local t = item.get_sorted_source{ item = '铜钱' }
-  tprint( t )
+  local manual = taskmaster.current_manual_task
+  manual:newweaksub{ class = 'kill_time' }
 end
 
 cli.register{ cmd = 'tt', desc = '测试', func = parse_tt, no_prefix = true }
