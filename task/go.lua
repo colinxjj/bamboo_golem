@@ -25,11 +25,7 @@ function task:_resume()
     if #loc > 1 then self.be_cautious = true end -- be cautious if current loc is not exact
 
     -- generate a list of dests based on the "to" and the optional "range" param, and a list requirements for traversing these dests
-    self.dest, self.req = map.expand_loc( self.to, self.range or 0 )
-
-    local s = '前往“' .. ( type( self.to ) == 'table' and self.to.id or self.to ) .. '”'
-    s = self.range and ( s .. '，遍历方圆 ' .. self.range .. ' 步' ) or s
-    message.verbose( s )
+    self.dest, self.traverse_req = map.expand_loc( self.to, self.range or 0 )
 
     -- make a func used in path generation to decide if a room is a dest or not
     self.is_dest = function( room )
@@ -42,17 +38,13 @@ function task:_resume()
     if not self.path then self:fail(); return end
 
     -- get a list of items / flags required to complete the path (in addition to those needed for traversing )
-    self.req = map.get_path_req( self.path, self.req )
+    self.path_req = map.get_path_req( self.path )
 
     self:listen{ event = 'located', func = self.resume, id = 'task.go', persistent = true }
     self.step_num, self.error_count = 1, self.error_count or 0
   end
 
   self:check_step()
-end
-
-function task:_complete()
-  message.verbose '行走完成'
 end
 
 function task:_fail()
@@ -72,8 +64,10 @@ function task:check_step()
   --print( 'go to ' .. ( type( self.to ) == 'string' and self.to or self.to.id ) .. ' (' .. self.status .. '), check_step: ' .. ( prev_room and prev_room.id or '***' ) .. ' > ' .. expected_room.id )
   -- step ok?
   if map.is_current_location( expected_room ) and ( not self.is_still_in_step or ( room.name == expected_room.name and room.name ~= prev_room.name ) ) then -- move on to next step
-    if self.req and next( self.req ) then
-      self:prepare()
+    if self.traverse_req and next( self.traverse_req ) then
+      self:prepare( self.traverse_req )
+    elseif self.path_req and next( self.path_req ) then
+      self:prepare( self.path_req )
     elseif self.batch_step_num and self.step_num < self.batch_step_num then
       self.step_num = self.step_num + 1
     elseif not self.batch_step_num or self.step_num >= self.batch_step_num then
@@ -91,18 +85,18 @@ function task:check_step()
 end
 
 -- prepare the items / get the flags required to complete the path
-function task:prepare()
+function task:prepare( req_list )
   -- get next entry from the req list and remove it from the list
   local req, subtask
-  for k, v in pairs( self.req ) do
+  for k, v in pairs( req_list ) do
     req = v
-    self.req[ k ] = nil
+    req_list[ k ] = nil
     break
   end
   message.debug( '行走准备：' .. ( req.item or req.flag ) )
   if req.item then -- an item req
     if inventory.has_item( req.item, req.count ) then self:resume() return end
-    subtask = self:newsub{ class = 'get_item', item = req.item, count = req.count }
+    subtask = self:newsub{ class = 'get_item', item = req.item, count = req.target_count or req.count }
   else -- a flag req
     if player.temp_flag[ req.flag ] then self:resume() return end
     subtask = self:newsub{ class = 'get_flag', flag = req.flag }
@@ -121,6 +115,7 @@ function task:reset()
 
   self.path = map.get_path( loc[ 1 ], self.is_dest ) -- get path to next dest
   if not self.path then self:fail() return end -- if dests are unreachable, task fails
+  self.path_req = map.get_path_req( self.path )
 
   message.debug '路径行走需要调整路线'
   self:check_step()

@@ -8,13 +8,18 @@ cli.register{ cmd = 'auto', desc = '控制自动模式。auto start：开始自动模式，auto
 --------------------------------------------------------------------------------
 -- g
 
+local function display_arrival()
+  message.verbose '行走完成'
+end
+
 local function start_go_task( dest )
   dest = dest and map.get_room_by_id( dest ) or dest
   if not dest then
     message.normal '未找到对应的目的地，请检查'
   else
+    message.verbose( '前往“' .. dest.id .. '”' )
     local manual = taskmaster.current_manual_task
-    manual:newweaksub{ class = 'go', to = dest, fail_func = manual.fail_catcher }
+    manual:newweaksub{ class = 'go', to = dest, fail_func = manual.fail_catcher, complete_func = display_arrival }
   end
 end
 

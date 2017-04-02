@@ -9,29 +9,30 @@ local map = {}
 local index = require 'data.map'
 
 -- load all exit conditions from map index as functions
-local cond_checker = {}
-for id, room in pairs( index ) do
-  for dir, exit in pairs( room.exit ) do
-    if exit.cond and not cond_checker[ exit.cond ] then
-      cond_checker[ exit.cond ] = loadstring( 'return ' .. exit.cond )
-      if not cond_checker[ exit.cond ] then error( 'error compiling function for exit.cond: ' .. exit.cond ) end
+do
+  local cond_checker = {}
+  for id, room in pairs( index ) do
+    for dir, exit in pairs( room.exit ) do
+      if exit.cond then
+        local f = cond_checker[ exit.cond ] or loadstring( 'return ' .. exit.cond )
+        if not f then error( 'error compiling function for exit.cond: ' .. exit.cond ) end
+        cond_checker[ exit.cond ], exit.cond = f, f
+      end
     end
   end
 end
 
 -- generate room name indices
 local name_index, longname_index = {}, {}
--- index by room name like 北大街
 do
+  -- index by room name like 北大街
   local name
   for _, room in pairs( index ) do
     name = room.name
     name_index[ name ] = name_index[ name ] or {}
     table.insert( name_index[ name ], room )
   end
-end
--- index by long room names like 长安城北大街
-do
+  -- index by long room names like 长安城北大街
   local longname
   for _, room in pairs( index ) do
     longname = room.area .. room.name
@@ -79,8 +80,8 @@ local function genpath( from, is_dest )
       new_cost = cost[ from ] + ( exit.cost or 1 )
       if to and from ~= to and not exit.ignore and
       ( not exit.blocked_by_task or not map.is_block_valid( exit ) ) and
-      ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) and
-      ( max_cost and new_cost < max_cost or not max_cost ) and
+      ( not exit.cond or exit.cond() ) and
+      ( not max_cost or new_cost < max_cost ) and
       ( not cost[ to ] or new_cost < cost[ to ] ) then -- add new node
         cost[ to ], prev[ to ] =  new_cost, from
         list[ #list + 1 ] = to
@@ -162,7 +163,7 @@ function map.expand_loc( loc, range )
         new_distance = distance[ from ] + 1
         if to and not exit.no_wander and not exit.ignore
         and ( not exit.blocked_by_task or not map.is_block_valid( exit ) )
-        and ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond )
+        and ( not exit.cond or exit.cond() )
         and new_distance <= range and not distance[ to ] then -- add new node
           distance[ to ] = new_distance
           list[ #list + 1 ] = to
@@ -196,7 +197,7 @@ local function find_room( from, is_dest, prefer_furthest )
       new_cost = cost[ from ] + ( exit.cost or 1 )
       if to and from ~= to and not exit.ignore and
       ( not exit.blocked_by_task or not map.is_block_valid( exit ) ) and
-      ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) and
+      ( not exit.cond or exit.cond() ) and
       ( prefer_furthest or cost_ok( new_cost, max_cost ) ) and
       ( not cost[ to ] or new_cost < cost[ to ] ) then -- add new node
         cost[ to ] =  new_cost
@@ -257,7 +258,7 @@ local function calculate_cost( from )
       new_cost = cost[ from ] + ( exit.cost or 1 )
       if to and from ~= to and not exit.ignore and
       ( not exit.blocked_by_task or not map.is_block_valid( exit ) ) and -- this can cause problems when block status is updated but memoized results are used
-      ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) and
+      ( not exit.cond or exit.cond() ) and
       ( not cost[ to ] or new_cost < cost[ to ] ) then -- add new node
         cost[ to ] =  new_cost
         list[ #list + 1 ] = to
@@ -316,7 +317,7 @@ function map.block_exit( from, to, task )
   for _, exit in pairs( from.exit ) do
     if exit.to == to.id and not exit.ignore and
     -- exit cond will be checked so only exits that the player can use otherwise are blocked
-    ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) then
+    ( not exit.cond or exit.cond() ) then
       exit.blocked_by_task = task
     end
   end
@@ -334,15 +335,14 @@ function map.is_block_valid( exit )
 end
 
 -- generate the list of items / flags needed to complete the path
--- the optional "list" param is the list to append to
-function map.get_path_req( path, list )
-  local list, from, to, entry = list or {}
+function map.get_path_req( path )
+  local list, from, to, entry = {}
   for i = 1, #path - 1 do
     from, to = path[ i ], path[ i + 1 ]
     for _, exit in pairs( from.exit ) do
       if exit.req and exit.to == to.id and not exit.ignore
       -- check the exit cond because there can be multiple exits from a room to another and we need to get the requirement for the right exit
-      and ( exit.cond and cond_checker[ exit.cond ]() or not exit.cond ) then
+      and ( not exit.cond or exit.cond() ) then
         list = map.add_req_to_list( list, exit.req, from, to )
       end
     end
@@ -357,6 +357,10 @@ function map.add_req_to_list( list, req, from, to )
     if type( v ) == 'number' then -- a numeric value means that it's an item req
       entry.item = k
       entry.count = entry.count and entry.count + v or v -- this might result in preparing more than what we actually need but for now it should be OK
+    elseif type( v ) == 'table' then -- an item req with min and target count
+      entry.item = k
+      entry.count = ( entry.count or 0 ) + v[ 1 ]
+      entry.target_count = ( entry.target_count or 0 ) + v[ 2 ]
     else -- otherwise it's flag req
       entry.flag = k
     end

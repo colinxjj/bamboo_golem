@@ -135,21 +135,24 @@ function task:_resume()
     return
   end
   -- if all targets have been reached then complete
-  if has_reached_all_target( self ) then self:complete()
+  if has_reached_all_target( self ) then self:complete() return end
   -- evaluate each type of action in order
-  elseif is_eat_needed( self ) or is_drink_needed( self ) then
-    self:eat_drink()
+  local is_action_skipped = true
+  if is_eat_needed( self ) or is_drink_needed( self ) then
+    is_action_skipped = self:eat_drink()
   elseif is_heal_needed( self ) then
-    self:heal()
+    is_action_skipped = self:heal()
   elseif is_sleep_needed( self ) then
-    self:go_to_sleep()
+    is_action_skipped = self:go_to_sleep()
   elseif player.enable.force and is_exert_needed( self ) then
-    self:exert()
+    is_action_skipped = self:exert()
   elseif player.enable.force and is_tuna_needed( self ) then
-    self:tuna()
+    is_action_skipped = self:tuna()
   elseif player.enable.force and is_dazuo_needed( self ) then
-    self:dazuo()
-  else -- if no action is possbile at the moment, wait
+    is_action_skipped = self:dazuo()
+  end
+  -- if no action is possbile at the moment, wait
+  if is_action_skipped then
     self.has_updated_hp = false
     self:newsub{ class = 'kill_time', duration = 20, idle_only = true }
   end
@@ -211,8 +214,37 @@ function task:consume( name )
   end
 end
 
+function is_self_heal_best_choice()
+  -- if can't self heal, return false
+  if player.neili_max < 200 or player.qi_perc <= 33 or not player.enable.force or player.enable.force.level < 50 or not player.skill[ '本草术理' ] or player.skill[ '本草术理' ].level < 30 then return false end
+  -- if qi percentage is lower than config threshold, return false
+  --if player.qi_perc < config.get 'self_heal_threshold' then return false end
+  return true
+end
+
+local function convert_tgt_to_num( self, attr )
+  local tgt, max = self[ attr ], player[ attr .. '_max' ]
+  return ( not tgt and 0 )
+      or ( type( tgt ) == 'number' and tgt )
+      or ( tgt == 'double' and max * 2 )
+      or ( tgt == 'full' and max )
+      or ( tgt == 'half' and max * 0.5 )
+      or ( tgt == 'a_little' and max * 0.1 )
+end
+
 function task:heal()
-  print 'heal placeholder'
+  if is_self_heal_best_choice() then -- yun heal
+    -- if no neili, then recover neili first
+    if player.neili < 50 then
+      self.neili = convert_tgt_to_num( self, 'neili' ) < 50 and 'half' or self.neili
+      return true
+    end
+    self:listen{ event = 'heal_end', func = self.resume, id = 'task.recover' }
+    self.has_updated_hp = false
+    self:send{ 'yun heal' }
+  else
+    -- TODO other ways to heal
+  end
 end
 
 function task:exert()
@@ -246,15 +278,6 @@ function task:go_to_sleep()
     local dest = map.find_nearest( loc, is_valid_sleep_room )
     self:newsub{ class = 'go', to = dest }
   end
-end
-
-local function convert_tgt_to_num( self, attr )
-  local tgt, max = self[ attr ], player[ attr .. '_max' ]
-  return ( type( tgt ) == 'number' and tgt )
-      or ( tgt == 'double' and max * 2 )
-      or ( tgt == 'full' and max )
-      or ( tgt == 'half' and max * 0.5 )
-      or ( tgt == 'a_little' and max * 0.1 )
 end
 
 local function is_valid_dazuo_tuna_room( room )

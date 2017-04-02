@@ -46,12 +46,18 @@ for person_id, person in pairs( npc ) do
 end
 
 -- add iname to each item source and compile source conditions to functions
-local cond_checker = {}
-for iname, it in pairs( index ) do
-	if it.source then
-		for _, source in pairs( it.source ) do
-			source.item = iname
-			if source.cond then cond_checker[ source.cond ] = loadstring( 'return ' .. source.cond ) end
+do
+	local cond_checker = {}
+	for iname, it in pairs( index ) do
+		if it.source then
+			for _, source in pairs( it.source ) do
+				source.item = iname
+				if source.cond then
+					local f = cond_checker[ source.cond ] or loadstring( 'return ' .. source.cond )
+	        if not f then error( 'error compiling function for source.cond: ' .. source.cond ) end
+	        cond_checker[ source.cond ], source.cond = f, f
+				end
+			end
 		end
 	end
 end
@@ -296,7 +302,7 @@ local function calculate_source_score( source, t )
 	-- if source has been marked as invalid, then return a very low score
 	if source.is_invalid then return -1000000 end
 	-- rank sources whose condition the player doesn't meet very low scores
-	if source.cond and not cond_checker[ source.cond ]() then return -1000000 end
+	if source.cond and not source.cond() then return -1000000 end
 	--print( source.item, source.location )
 	local score = 0
 	-- distance score
@@ -363,7 +369,7 @@ end
 function item.is_valid_source( source )
 	local is_valid = not source.is_invalid
 							 and ( not source.last_fail_time or os.time() - source.last_fail_time > 200 ) -- if last try at a source failed, then only retry that source at least 200 seconds later
-							 and ( not source.cond or cond_checker[ source.cond ]() ) -- always check source cond in case player status changed, e.g. bank balance update could result in all bank sources not being valid any more
+							 and ( not source.cond or source.cond() ) -- always check source cond in case player status changed, e.g. bank balance update could result in all bank sources not being valid any more
 							 and source.score > -1000 -- ignore soure with very low scores
 	return is_valid
 end

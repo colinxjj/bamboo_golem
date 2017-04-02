@@ -51,6 +51,29 @@ local extra_sep_patt = lpeg.Cs( nsep^-1 / '' * ( ( ( nsep * -1 ) / '' ) + 1 )^1 
 -- pattern used to determine if a string contains '|' or not
 local has_sep = ( 1 - nsep )^0 * nsep
 
+-- a list of commands that can penetrate busy / lasting action
+local penetrate_cmd_tbl = {
+  chat = true, cond = true, enable = true, group = true, hp = true, id = true, i = true, inventory = true, l = true, look = true, party = true, rumor = true, score = true, set = true, skills = true, time = true, title = true, uptime = true, ['#wa'] = true, ['#wb'] = true
+}
+
+-- pattern used to extract all command cores from a '|' seperated string
+local a_core = lpeg.C( ( lpeg.R 'az' + '#' )^1 ) * #( lpeg.P ' ' + nsep + -1 )
+local sep_or_end = nsep + -1
+local batch_core_patt = lpeg.Ct( ( a_core * any_but( sep_or_end )^0 * sep_or_end )^1 )
+
+-- parse if a unit of commands can penetrate busy /lasting action or not
+local function is_penetratable( type, unit )
+  if type ~= 'batch' then
+    return penetrate_cmd_tbl[ type ]
+  else
+    local core_tbl = batch_core_patt:match( unit )
+    for _, core in pairs( core_tbl ) do
+      if not penetrate_cmd_tbl[ core ] then return false end
+    end
+    return true
+  end
+end
+
 local function convert_to_unit( t )
   t.__index = t -- prepare the orignal table for inheritance
   local s = table.concat( t, ';' ) -- first concat all commands into a single string
@@ -62,8 +85,9 @@ local function convert_to_unit( t )
   for i, unit in ipairs( result ) do
     unit = extra_sep_patt:match( unit ) -- remove leading and trailing '|'
     local type = has_sep:match( unit ) and 'batch' or cmd.extract_core( unit )
+    local can_penetrate = is_penetratable( type, unit )
     unit = type == 'batch' and ( 'ado ' .. unit ) or unit
-    result[ i ] = { cmd = unit, status = 'pending', type = type, complete_func = ( i == #result and t.complete_func or false ) } -- make sure only the last unit in a batch triggers the complete_func
+    result[ i ] = { cmd = unit, status = 'pending', type = type, can_penetrate = can_penetrate, complete_func = ( i == #result and t.complete_func or false ) } -- make sure only the last unit in a batch triggers the complete_func
     setmetatable( result[ i ], t ) -- units inherit values from the original table, .e.g add_time, ignore_result
   end
   return result
@@ -137,16 +161,18 @@ local function send( c )
       addbusy( c.duration / 1000 )
       is_possibly_still_busy = true
     end
-  elseif is_possibly_still_busy and c.type == 'batch' and not c.ignore_result then -- try halting first if might still be in busy and next command is a batch
+  elseif is_possibly_still_busy and c.type == 'batch' and not c.ignore_result and not c.can_penetrate then -- try halting first if might still be in busy and next command is a batch
     if is_possibly_still_busy == true then
       is_possibly_still_busy = 'halt_sent'
       world.Send( 'halt' )
     end
-  elseif player.lasting_action == 'dazuo' or player.lasting_action == 'tuna' or player.lasting_action == 'heal' then
-    player.lasting_action = 'halt_sent'
-    c.status = 'encountered_busy'
-    addbusy( 1.5 )
-    world.Send( 'halt' )
+  elseif player.lasting_action and not c.ignore_result and not c.can_penetrate then
+    if player.lasting_action ~= 'halt_sent' then
+      player.lasting_action = 'halt_sent'
+      c.status = 'encountered_busy'
+      addbusy( 1.5 )
+      world.Send( 'halt' )
+    end
   else
     is_possibly_still_busy = false
     trigger.enable_group 'cmd'
@@ -221,7 +247,7 @@ local function parse_busy()
   local c = list[ list_curpos ]
   if not c then return end
   c.status = 'encountered_busy'
-  addbusy( 2 )
+  addbusy( 1.5 )
 end
 
 trigger.new{ name = 'cmd_busy', match = '^(> )*(你正忙着|你的动作还没有完成|你逃跑失败|您先歇口气再说话吧|你现在正忙着做其他事|\\S*哟，抱歉啊，我这儿正忙着呢……您请稍候。|\\( 你上一个动作还没有完成，不能施用内功。\\)|你现在很忙，停不下来)', func = parse_busy, group = 'cmd' }

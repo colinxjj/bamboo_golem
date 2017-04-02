@@ -7,9 +7,26 @@ local kungfu = {}
 
 local index = require 'data.kungfu'
 
+local force_trigger_list = { 'dazuo_start', 'dazuo_end', 'dazuo_halt', 'heal_start', 'heal_halt' }
+
+local function setup_force_trigger( enabled )
+  local skill = index[ enabled.force and enabled.force.skill or '' ] or {}
+  local default = index.default_force
+  for _, trigger_name in pairs( force_trigger_list ) do
+    local msg_name = trigger_name .. '_msg'
+    local match = '^(> )*' .. ( skill[ msg_name ] or default[ msg_name ] )
+    --print( trigger_name .. ': ' .. match )
+    trigger.update{ name = trigger_name, match = match }
+  end
+  local match = ( '^(> )*(%s|%s)' ):format( skill.heal_finish_msg or default.heal_finish_msg, skill.heal_unfinish_msg or default.heal_unfinish_msg )
+  --print( 'heal_end: ' .. match )
+  trigger.update{ name = 'heal_end', match = match }
+end
+
 -- initialize based on player's current skills
 function kungfu.initialize()
-  player.skill_set = kungfu.get_best_skill_set( player.skill )
+  player.best_skill_set = kungfu.get_best_skill_set( player.skill )
+  setup_force_trigger( player.enable )
 end
 
 local function get_possible_skill_set( tbl )
@@ -183,12 +200,13 @@ function kungfu.get_min_dazuo_value()
   return player.qi_max > 1000 and math.floor( player.qi_max / 5 ) or 10
 end
 
-function kungfu.get_best_dazuo_value( target )
+function kungfu.get_best_dazuo_value( target, lower_only )
   local gap = target - player.neili
   assert( gap > 0, 'kungfu.get_best_dazuo_value - dazuo neili target must be greater than current neili' )
   local min = kungfu.get_min_dazuo_value()
   local tick, best_val = kungfu.get_dazuo_rate()
-  for i = 1, math.ceil( gap / tick ) do
+  local count = math.ceil( gap / tick ) - ( lower_only and 1 or 0 )
+  for i = 1, count do
     local val = tick * i
     if val >= min and val <= player.qi then best_val = val end
   end
@@ -209,11 +227,12 @@ function kungfu.is_tuna_value_safe_for_subsequent_dazuo( val )
   return total_jing - val >= player.jing_max * 0.7
 end
 
-function kungfu.get_best_tuna_value( target )
-  local gap = target - player.jing
+function kungfu.get_best_tuna_value( target, lower_only )
+  local gap = target - player.jingli
   assert( gap > 0, 'kungfu.get_best_tuna_value - tuna jingli target must be greater than current jingli' )
   local tick, best_val = kungfu.get_tuna_rate()
-  for i = 1, math.ceil( gap / tick ) do
+  local count = math.ceil( gap / tick ) - ( lower_only and 1 or 0 )
+  for i = 1, count do
     local val = tick * i
     if val >= 10 and val <= player.jing then best_val = val end
   end

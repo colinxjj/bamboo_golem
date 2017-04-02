@@ -39,7 +39,7 @@ function task:_resume()
   -- complete the task if have enough item
   if has_item then self.result = has_item; self:complete() return end
   -- otherwise, try the best source available
-  local source = item.get_best_source{ item = self.item, item_filter = self.item_filter, source_evaluator = self.source_evaluator, is_distance_ignored = self.is_distance_ignored, is_weight_ignored = self.is_weight_ignored, is_price_ignored = self.is_price_ignored, is_quality_ignored = self.is_quality_ignored }
+  local source = item.get_best_source{ item = self.item, item_filter = self.item_filter, source_evaluator = self.source_evaluator, is_distance_ignored = self.is_distance_ignored, is_weight_ignored = self.is_weight_ignored, is_price_ignored = self.is_price_ignored, is_quality_ignored = ( self.item == 'sharp_weapon' and true or self.is_quality_ignored ) }
   -- if no available item source, task failed
   if not source then self:fail() return end
   -- handle the best source

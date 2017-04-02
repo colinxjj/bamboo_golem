@@ -126,10 +126,10 @@ end
 
 -- ÏÂ´¬¡£¶É´¬¡¢ÖñÂ¨¡¢ÌÙ¿ğµÈ
 function handler:disembark()
-	self:listen{ event = 'ferry_arrived', func = handler.getout, id = 'disembark' }
+	self:listen{ event = 'ferry_arrived', func = handler.get_out, id = 'disembark' }
 	self:newweaksub{ class = 'kill_time', complete_func = handler.disembark }
 end
-function handler:getout()
+function handler:get_out()
 	self:send{ 'out' }
 end
 

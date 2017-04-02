@@ -696,22 +696,22 @@ local npc = {
   catalogue = { '长剑#SZ', '钢剑', '菜刀#SZ', '钢刀#SZ', '铁锤#SZ', '匕首#SZ' }
 },
 
-['刀疤张'] = {
-  name = '刀疤张',
+['铸剑师'] = {
+  name = '铸剑师',
   id = 'zhujian shi',
   alternate_id = { 'shi' },
   location = '中原神州兵器铺',
   label = { shop = true, },
-  catalogue = { '长剑#SWORD', '钢刀', '流星锤', '铁棍', '钢杖', '长鞭', '单钩', '竹棒#STICK', '钢斧' }
+  catalogue = { '长剑#SWORD', '钢刀', '流星锤', '铁棍', '钢杖', '长鞭', '单钩', '竹棒#STICK', '钢斧', '暗杀匕首' }
 },
 
-['铸剑师'] = {
-  name = '铸剑师',
+['刀疤张'] = {
+  name = '刀疤张',
   id = 'daoba zhang',
   alternate_id = { 'daoba', 'zhang' },
-  location = '中原神州兵器铺',
+  location = '长安城兵器铺',
   label = { shop = true, },
-  catalogue = { '长剑#SWORD', '钢刀', '流星锤', '铁棍', '钢杖', '长鞭', '单钩', '竹棒#STICK', '钢斧', '暗杀匕首' }
+  catalogue = { '长剑#SWORD', '钢刀', '流星锤', '铁棍', '钢杖', '长鞭', '单钩', '竹棒#STICK', '钢斧' }
 },
 
 ['木匠#XY'] = {

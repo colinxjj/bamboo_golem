@@ -35,6 +35,12 @@ local function is_tuna_ok( self )
   return true
 end
 
+local function is_heal_ok( self )
+  -- don't heal if can't
+  if player.qi_perc >= 100 or player.neili < 50 or player.neili_max < 200 or player.qi_perc <= 33 or not player.enable.force or player.enable.force.level < 50 or not player.skill[ '本草术理' ] or player.skill[ '本草术理' ].level < 30 then return false end
+  return true
+end
+
 function task:_resume()
   self.duration = self.duration or 10 -- default to 10 seconds
 
@@ -59,6 +65,8 @@ function task:_resume()
     self:dazuo()
   elseif is_tuna_ok( self ) then
     self:tuna()
+  elseif is_heal_ok( self ) then
+    self:heal()
   else
     self:idle()
   end
@@ -85,16 +93,25 @@ function task:dazuo()
   local target = player.neili + kungfu.get_dazuo_rate() * self.remaining * 0.5
   target = self.no_raise and target >= player.neili_max * 2 and ( player.neili_max * 2 - 1 ) or target
   local val = kungfu.get_best_dazuo_value( target )
-  self:send{ 'dazuo ' .. val }
   self:listen{ event = 'dazuo_end', func = self.resume, id = 'task.kill_time' }
+  self.has_updated_hp = false
+  self:send{ 'dazuo ' .. val }
 end
 
 function task:tuna()
   local target = player.jingli + kungfu.get_tuna_rate() * self.remaining * 0.5
   target = self.no_raise and target >= player.jingli_max * 2 and ( player.jingli_max * 2 - 1 ) or target
   local val = kungfu.get_best_tuna_value( target )
-  self:send{ 'tuna ' .. val }
   self:listen{ event = 'tuna_end', func = self.resume, id = 'task.kill_time' }
+  self.has_updated_hp = false
+  self:send{ 'tuna ' .. val }
+end
+
+function task:heal()
+  self:listen{ event = 'heal_end', func = self.resume, id = 'task.recover' }
+  self.has_updated_hp = false
+  if player.lasting_action ~= 'heal' then self:send{ 'yun heal' } end
+  self:timer{ id = 'kill_time', duration = self.remaining + 0.1, func = self.resume } -- a timer to complete the task no matter if heal has ended or not
 end
 
 --------------------------------------------------------------------------------
