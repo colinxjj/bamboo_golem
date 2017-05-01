@@ -2214,7 +2214,7 @@ local map = {
   exit = {
     s = { to = '蝴蝶谷空地', },
     nd = { to = '蝴蝶谷草径', cond = 'player.master == "张无忌"', },
-    hidden = { to = '蝴蝶谷花圃#M', cmd = 'nd', cond = 'player.master ~= "张无忌" and player.jing_max >= 500 and player.neili_max >= 500', jing_cost = 400, neili_cost = 1000, },
+    hidden = { to = '蝴蝶谷花圃#M', cmd = 'nd', cond = 'player.master ~= "张无忌" and player.jing_max >= 400 and player.neili_max >= 500', jing_cost = 400, neili_cost = 1000, },
   },
 },
 
@@ -2243,7 +2243,7 @@ local map = {
     w = { to = '蝴蝶谷茅棚', },
     n = { to = '蝴蝶谷茅屋', },
     s = { to = '蝴蝶谷牛棚', cond = 'player.master == "张无忌"', },
-    hidden = { to = '蝴蝶谷花圃#M', cmd = 's', cond = 'player.master ~= "张无忌" and player.jing_max >= 500 and player.neili_max >= 500', jing_cost = 400, neili_cost = 1000, },
+    hidden = { to = '蝴蝶谷花圃#M', cmd = 's', cond = 'player.master ~= "张无忌" and player.jing_max >= 400 and player.neili_max >= 100', jing_cost = 400, neili_cost = 1000, },
   },
 },
 
@@ -28124,6 +28124,17 @@ local map = {
     s = { to = '扬州城广场南', },
     w = { to = '扬州城广场西', },
     n = { to = '扬州城广场北', },
+    hidden = { to = '扬州城树上', handler = 'yz_tree', no_wander = true, },
+  },
+},
+
+['扬州城树上'] = {
+  id = '扬州城树上',
+  area = '扬州城',
+  name = '树上',
+  desc = [[这里是大树的树顶。往周围看，四面都是树，往下看，枝叶繁盛，透过树叶的空隙，你能约略看到树下(down)的情景。]],
+  exit = {
+    hidden = { to = '扬州城中央广场', cmd = 'climb down', },
   },
 },
 
@@ -32656,6 +32667,17 @@ local map = {
   desc = [[你一走到这里，忽然间一股寒气直扑而来，你不由得打了一个寒颤。你仔细的一看，原来你已置身于一个水面结满厚冰的寒潭上面，望下去是碧沉沉的，深不见底。厚冰彼为结实，但见滑如镜，滑不溜脚，这时你不由得产生一股想上去走走(walk)的念头。远处有一处很薄的地方，好象可以跳(jump)下去。]],
   exit = {
     w = { to = '明教山间小路#2', },
+    hidden = { to = '明教潭底', cmd = 'jump down', cond = 'player.skill["基本内功"] and player.skill["基本内功"].level >= 30', no_wander = true, },
+  },
+},
+
+['明教潭底'] = {
+  id = '明教潭底',
+  area = '明教',
+  name = '潭底',
+  desc = [[你身处碧水寒潭的潭底，忽然间一股寒气直扑而来，你不由得连打了一个寒颤。往上看，寒冰盖顶，只透入丝丝阳光，偶有游鱼从你身连滑过。但深潭中确实太冷，看来不能久留。]],
+  exit = {
+    u = { to = '明教碧水寒潭', },
   },
 },
 

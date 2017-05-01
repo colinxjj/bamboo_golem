@@ -49,6 +49,30 @@ function task:newweaksub( subtask )
   return subtask
 end
 
+function task:resume()
+  taskmaster.operate{ task = self, action = 'resume' }
+end
+
+function task:suspend()
+  taskmaster.operate{ task = self, action = 'suspend' }
+end
+
+function task:complete()
+  taskmaster.operate{ task = self, action = 'complete' }
+end
+
+function task:fail()
+  taskmaster.operate{ task = self, action = 'fail' }
+end
+
+function task:kill()
+  taskmaster.operate{ task = self, action = 'kill' }
+end
+
+function task:takeover()
+  taskmaster.operate{ task = self, action = 'takeover' }
+end
+
 -- generate an id string of a task. default is task's class string, for tasks like go, it should be something like 'go from 扬州城中央广场 to 归云庄前厅'
 function task:get_id()
   return self.class
@@ -89,26 +113,6 @@ function task:disable_trigger_group( s )
   if not s then return end
   trigger.update_group{ group = s, task = false }
   trigger.disable_group( s )
-end
-
-function task:resume()
-  taskmaster.operate{ task = self, action = 'resume' }
-end
-
-function task:suspend()
-  taskmaster.operate{ task = self, action = 'suspend' }
-end
-
-function task:complete()
-  taskmaster.operate{ task = self, action = 'complete' }
-end
-
-function task:fail()
-  taskmaster.operate{ task = self, action = 'fail' }
-end
-
-function task:kill()
-  taskmaster.operate{ task = self, action = 'kill' }
 end
 
 --------------------------------------------------------------------------------

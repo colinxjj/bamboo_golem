@@ -142,6 +142,33 @@ trigger.new{ name = 'room_no_exit_brief', match = ( '^()(%s)$' ):format( table.c
 
 --------------------------------------------------------------------------------
 
+local function parse_person_came( _, t )
+  local room, name = room.get(), t[ 2 ]
+  if not room then return end
+  if room.object[ name ] then
+    room.object[ name ].count = room.object[ name ].count + 1
+  else
+    room.object[ name ] = { name = name, count = 1 }
+  end
+end
+
+local function parse_person_left( _, t )
+  local room, name = room.get(), t[ 2 ]
+  if not room then return end
+  if room.object[ name ] then
+    if room.object[ name ].count <= 1 then
+      room.object[ name ] = nil
+    else
+      room.object[ name ].count = room.object[ name ].count - 1
+    end
+  end
+end
+
+trigger.new{ name = 'room_person_came', match = '^(> )*(\\S+)从\\S+走了过来。$', func = parse_person_came, enabled = true }
+trigger.new{ name = 'room_person_left', match = '^(> )*(\\S+)往\\S+离开。$', func = parse_person_left, enabled = true }
+
+--------------------------------------------------------------------------------
+
 local function parse_ferry_came()
   local room = room.get()
   if room then room.exit.enter = true end

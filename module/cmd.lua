@@ -53,7 +53,7 @@ local has_sep = ( 1 - nsep )^0 * nsep
 
 -- a list of commands that can penetrate busy / lasting action
 local penetrate_cmd_tbl = {
-  chat = true, cond = true, enable = true, group = true, hp = true, id = true, i = true, inventory = true, l = true, look = true, party = true, rumor = true, score = true, set = true, skills = true, time = true, title = true, uptime = true, ['#wa'] = true, ['#wb'] = true
+  chat = true, cond = true, enable = true, group = true, hp = true, id = true, i = true, inventory = true, l = true, look = true, party = true, rumor = true, score = true, set = true, skills = true, time = true, title = true, uptime = true, verify = true, ['#wa'] = true, ['#wb'] = true
 }
 
 -- pattern used to extract all command cores from a '|' seperated string

@@ -70,7 +70,7 @@ local function refresh_grid()
 end
 
 -- handover from the previous running task to the new one
-local function takeover( task_to_run )
+local function takeover( task_to_run, skip_func )
 	if current_task and current_task ~= task_to_run then
 		local is_suc = current_task.is_successful
 		--print( 'task handover: ' .. current_task.id .. ' ( ' .. current_task.status .. ', ' .. tostring( is_suc ) .. ' ) > ' ..  task_to_run.id )
@@ -80,18 +80,18 @@ local function takeover( task_to_run )
 			task_to_run.status = ( func or is_suc ~= false ) and 'running' or 'dead'
 			func = func or task_to_run[ is_suc ~= false and '_resume' or '_fail' ]
 			current_task = task_to_run
-			if func then func( task_to_run, result ) end
+			if func and not skip_func then func( task_to_run, result ) end
 			if task_to_run.status == 'dead' then task_to_run.is_successful = false end
 			return task_to_run.status ~= 'dead'
 		elseif current_task.status == 'dead' then
-			if func then func( current_task.parent or current_task, result ) end
+			if func and not skip_func then func( current_task.parent or current_task, result ) end
 		elseif task_to_run.parent ~= current_task then
 			current_task.status = 'suspended'
 			if current_task._suspend then current_task:_suspend() end
 		end
 	end
 	current_task, task_to_run.status = task_to_run, 'running'
-	if task_to_run._resume then task_to_run:_resume() end
+	if task_to_run._resume and not skip_func then task_to_run:_resume() end
 	return true
 end
 
@@ -118,7 +118,7 @@ dispatch = function()
 			task.is_successful = action == 'complete'
 		end
 
-		if action ~= 'resume' and task[ '_' .. action ] then task[ '_' .. action ]( task ) end
+		if ( action == 'complete' or action == 'fail' or action == 'suspend' ) and task[ '_' .. action ] then task[ '_' .. action ]( task ) end
 
 		task.status = ( action == 'suspend' and 'suspended' )
 						 	 or ( ( action == 'complete' or action == 'fail' or action == 'kill' ) and 'dead' )
@@ -126,7 +126,7 @@ dispatch = function()
 
 		repeat -- until we have a valid task to run
 			local task_to_run = refresh_grid()
-		until takeover( task_to_run )
+		until takeover( task_to_run, action == 'takeover' )
 	end
 
 	is_dispatching = false

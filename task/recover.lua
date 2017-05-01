@@ -214,7 +214,7 @@ function task:consume( name )
   end
 end
 
-function is_self_heal_best_choice()
+local function is_self_heal_best_choice()
   -- if can't self heal, return false
   if player.neili_max < 200 or player.qi_perc <= 33 or not player.enable.force or player.enable.force.level < 50 or not player.skill[ '本草术理' ] or player.skill[ '本草术理' ].level < 30 then return false end
   -- if qi percentage is lower than config threshold, return false

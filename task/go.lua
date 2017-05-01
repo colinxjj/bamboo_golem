@@ -6,7 +6,7 @@ local task = {}
 --[[----------------------------------------------------------------------------
 Params:
 to = '扬州城北大街#1': id of the destination or a table representing it (required)
-through =
+range = 2: the range to traverse (optional)
 ----------------------------------------------------------------------------]]--
 
 task.class = 'go'

@@ -17,6 +17,7 @@ local function parse_end()
   end
 
   player.cash = item.get_cash_by_money( cache )
+  --tprint( cache )
   player.inventory, cache = cache, false -- move cache data to player.inventory and clear cache
   player.inventory_update_time = os.time()
   trigger.disable 'inventory2'

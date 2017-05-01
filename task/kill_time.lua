@@ -44,6 +44,8 @@ end
 function task:_resume()
   self.duration = self.duration or 10 -- default to 10 seconds
 
+  if not self.start_time then message.debug( 'kill_time 任务：开始度过 ' .. self.duration .. ' 秒时间' ) end
+
   self.start_time = self.start_time or os.time()
   self.end_time = self.end_time or os.time() + self.duration
   self.remaining = self.end_time - os.time()

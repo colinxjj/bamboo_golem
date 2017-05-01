@@ -447,9 +447,10 @@ function handler:ty_shusheng_update( _, t )
 													or t[ 1 ] == '好好，果然不错' and 4
 													or t[ 1 ] == '我还有一联' and 5
 													or t[ 1 ] == '在下拜服' and 6
+													or t[ 1 ] == '我师傅就在前面' and 6
 	handler.ty_shusheng( self )
 end
-trigger.new{ name = 'ty_shusheng_update', group = 'step_handler.ty_shusheng', match = '^书生.*说道：「(我出三道题目|这里有一首诗|好好，果然不错|我还有一联|在下拜服)', func = handler.ty_shusheng_update }
+trigger.new{ name = 'ty_shusheng_update', group = 'step_handler.ty_shusheng', match = '^书生.*说道：「\\S*(我出三道题目|这里有一首诗|好好，果然不错|我还有一联|在下拜服|我师傅就在前面)', func = handler.ty_shusheng_update }
 
 -- 铁掌山大石室
 function handler:tz_treasure_room ()
@@ -509,6 +510,28 @@ end
 function handler:pass_check( t )
 	if room.has_object '边防官兵' then self:send{ '#wa 2000' } end
 	self:send{ t.cmd }
+end
+
+-- 扬州城树上
+function handler:yz_tree()
+	if room.has_object '张巡捕' then
+		self:newsub{ class = 'kill_time', complete_func = handler.yz_tree }
+	else
+		self:send{ 'climb up' }
+	end
+end
+
+-- 大雪山岩石
+function handler:xs_leave_rock()
+	if player.shen < 0 then
+		-- clear negative shen first TODO
+	else
+		if room.has_object '狄云' then
+			self:send{ 'ask di yun about 离开;jump up' }
+		else
+			self:fail()
+		end
+	end
 end
 
 --------------------------------------------------------------------------------

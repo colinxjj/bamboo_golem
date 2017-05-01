@@ -1,6 +1,204 @@
 local kungfu = {
 
 --------------------------------------------------------------------------
+-- basic
+
+['基本轻功'] = {
+	name = '基本轻功',
+	type = 'basic',
+	id = 'dodge',
+	source = {
+		{ min = 0, max = 31, location = '曼佗罗山庄闺房', jing_cost = 15, cmd = 'ta sign' },
+		{ min = 20, max = 59, location = '归云庄练武场', jingli_cost = 55, cmd = 'jump zhuang;jump down' },
+		{ min = 50, max = 99, location = '桃花岛练武场', jingli_cost = 50, cmd = 'jump zhuang;jump down' },
+		{ min = 20, max = 100, location = '曼佗罗山庄树上', jingli_cost = 25, cmd = 'yue tree' },
+		{ min = 30, max = 100, location = '明教碧水寒潭', jing_cost = 25, cmd = 'walk' },
+		{ min = 0, max = 100, location = '峨嵋山八十四盘#1', jingli_cost = 20, cmd = 'sw;ne' },
+		{ min = 0, max = 100, location = '峨嵋山十二盘#3', jingli_cost = 20, cmd = 'sw;ne' },
+	}
+},
+
+['基本内功'] = {
+	name = '基本内功',
+	type = 'basic',
+	id = 'force',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本招架'] = {
+	name = '基本招架',
+	type = 'basic',
+	id = 'parry',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本掌法'] = {
+	name = '基本掌法',
+	type = 'basic',
+	id = 'strike',
+	source = {
+		{ min = 30, max = 101, location = '扬州城中央广场', jingli_cost = 50, handler = 'yz_tree' },
+	}
+},
+
+['基本腿法'] = {
+	name = '基本腿法',
+	type = 'basic',
+	id = 'leg',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本手法'] = {
+	name = '基本手法',
+	type = 'basic',
+	id = 'hand',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本爪法'] = {
+	name = '基本爪法',
+	type = 'basic',
+	id = 'claw',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本拳法'] = {
+	name = '基本拳法',
+	type = 'basic',
+	id = 'cuff',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本指法'] = {
+	name = '基本指法',
+	type = 'basic',
+	id = 'finger',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本剑法'] = {
+	name = '基本剑法',
+	type = 'basic',
+	id = 'sword',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本刀法'] = {
+	name = '基本刀法',
+	type = 'basic',
+	id = 'blade',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本棒法'] = {
+	name = '基本棒法',
+	type = 'basic',
+	id = 'stick',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本钩法'] = {
+	name = '基本钩法',
+	type = 'basic',
+	id = 'hook',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本杖法'] = {
+	name = '基本杖法',
+	type = 'basic',
+	id = 'staff',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本笔法'] = {
+	name = '基本笔法',
+	type = 'basic',
+	id = 'brush',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本斧法'] = {
+	name = '基本斧法',
+	type = 'basic',
+	id = 'axe',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本鞭法'] = {
+	name = '基本鞭法',
+	type = 'basic',
+	id = 'whip',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本棍法'] = {
+	name = '基本棍法',
+	type = 'basic',
+	id = 'club',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本暗器'] = {
+	name = '基本暗器',
+	type = 'basic',
+	id = 'throwing',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本匕法'] = {
+	name = '基本匕法',
+	type = 'basic',
+	id = 'dagger',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+['基本锤法'] = {
+	name = '基本锤法',
+	type = 'basic',
+	id = 'hammer',
+	source = {
+		{ min = 30, max = 101, location = '', jingli_cost = 50, cmd = '' },
+	}
+},
+
+--------------------------------------------------------------------------
 -- force
 
 default_force = {
@@ -233,6 +431,7 @@ default_force = {
 },
 
 
+--------------------------------------------------------------------------
 -- quest skills
 
 ['五虎断门刀'] = {

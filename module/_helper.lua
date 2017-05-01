@@ -93,7 +93,7 @@ function extract_name_count( text )
 	local count = num:match( text )
 	local name = count and string.sub( text, #count + 3, -1 ) or text
 	count = count and cntonumber( count ) or 1
-	if #name % 2 ~= 0 then message.warning( 'extract_name_count: extracting name from "' .. s .. '" results in: ' .. name ) end
+	if #name % 2 ~= 0 and name ~= '£Í£¦£Í\'£ó' then message.warning( 'extract_name_count: extracting name from "' .. text .. '" results in: ' .. name ) end
 	return name, count
 end
 
@@ -117,10 +117,7 @@ end
 function translate_errorcode( e )
 	assert( type( e ) == 'number', 'translate_errorcode - parameter must be a number' )
 	for k, v in pairs( error_code ) do
-		if v == e then
-			e = k
-			break
-		end
+		if v == e then e = k break end
 	end
 	return e
 end
@@ -138,6 +135,7 @@ local patt = lpeg.Ct( num * unit )^0 + 1
 
 function cn_timelen_to_sec( text )
 	assert( type( text ) == 'string', 'cn_timelen_to_sec - parameter must be a string' )
+	if string.find( text, '¸º' ) then return 0 end
 	local t, result = { patt:match( text ) }, 0
 	for _, v in pairs ( t ) do
 		result = result + cntonumber( v[ 1 ] ) * unit_to_sec[ v[ 2 ] ]

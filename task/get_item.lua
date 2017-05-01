@@ -71,9 +71,9 @@ function task:handle_source( source )
       end
     end
     -- go to source location
-    self:newsub{ class = 'go' , to = source.location }
+    self:newsub{ class = 'go', to = source.location }
   elseif source.npc and not room.has_object( source.npc ) then
-    message.debug( '未能从来源“' .. current_source.location .. '”取得物品“' .. current_source.item .. '”' )
+    message.debug( ( '未能从来源“%s@%s”取得物品“%s”' ):format( source.npc, source.location, source.item ) )
     item.mark_invalid_source( source )
     self:resume()
   elseif source.type == 'get' then
