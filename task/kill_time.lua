@@ -24,13 +24,17 @@ local function is_exert_needed( self )
 end
 
 local function is_dazuo_ok( self )
+  -- don't dazuo if can't even finish a 10 point dazuo in 10 seconds
+  if kungfu.get_dazuo_rate() < 2 then return false end
   if not player.enable.force or not map.is_at_dazuo_tuna_loc() or player.neili >= player.neili_max * 2 or player.jing / player.jing_max < 0.7 or player.qi < kungfu.get_min_dazuo_value() then return false end
   if self.no_raise and player.neili + kungfu.get_min_dazuo_value() >= player.neili_max * 2 then return false end
   return true
 end
 
 local function is_tuna_ok( self )
-  if not player.enable.force or not map.is_at_dazuo_tuna_loc() or player.jingli >= player.jingli_max * 2 or player.qi < player.qi_max * 0.7 or player.jing < 10 then return end
+  -- don't tuna if can't even finish a 10 point tuna in 10 seconds
+  if kungfu.get_tuna_rate() < 2 then return false end
+  if not player.enable.force or not map.is_at_dazuo_tuna_loc() or player.jingli >= player.jingli_max * 2 or player.qi < player.qi_max * 0.7 or player.jing < 10 then return false end
   if self.no_raise and player.jingli + 10 >= player.jingli_max * 2 then return end
   return true
 end

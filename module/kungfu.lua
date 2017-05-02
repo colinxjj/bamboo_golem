@@ -1,11 +1,14 @@
 
 local kungfu = {}
 
---------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- This module handles kungfu related stuff
---------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 local index = require 'data.kungfu'
+
+
+--------------------------------------------------------------------------------
 
 local force_trigger_list = { 'dazuo_start', 'dazuo_end', 'dazuo_halt', 'heal_start', 'heal_halt' }
 
@@ -180,7 +183,10 @@ function kungfu.is_compatible( a, b )
   return true
 end
 
+--------------------------------------------------------------------------------
+
 function kungfu.get_dazuo_rate()
+  if not player.enable.force then return 0 end
   local f, fl = player.enable.force.level, math.floor
   local rate = fl( 1 + fl( f / 15 ) * ( 1 + fl( f / 60 ) ) )
   rate = player.age < 20 and fl( rate + rate * ( 20 - player.age ) / 10 ) or rate
@@ -189,6 +195,7 @@ function kungfu.get_dazuo_rate()
 end
 
 function kungfu.get_tuna_rate()
+  if not player.enable.force then return 0 end
   local f, f2, fl = player.enable.force.level, ( player.skill['基本内功'] and player.skill['基本内功'].level or 0 ), math.floor
   local rate = fl( 1 + fl( f2 / 10 ) * ( 1 + fl( f / 100 ) ) )
   rate = player.age < 20 and fl( rate + rate * ( 20 - player.age ) / 10 ) or rate
@@ -241,6 +248,7 @@ function kungfu.get_best_tuna_value( target, lower_only )
   -- if there won't be enough jing to dazuo after tuna, then adjust tuna value
   if not kungfu.is_tuna_value_safe_for_subsequent_dazuo( best_val or alt_val ) then
     best_val = math.floor( kungfu.get_current_total_converted_jing() - player.jing_max * 0.7 )
+    best_val = best_val >= 10 and best_val or 10
   end
   return best_val or alt_val
 end
@@ -251,6 +259,62 @@ function kungfu.has_enough_qi_for_dazuo()
   else
     return player.qi >= 10
   end
+end
+
+--------------------------------------------------------------------------------
+
+local function calculate_source_score( source )
+	local score = 0
+  --print( source.location )
+
+  -- attribute score
+  if source.attr then score = score + player[ source.attr ] * 2 end
+  --print( 'attribute score: ' .. player[ source.attr ] * 2 )
+
+  -- distance score
+  if source.location then
+    local loc = map.get_current_location()[ 1 ]
+    local path_cost = map.get_cost( loc, source.location )
+    -- give inaccessible sources a very low score
+  	if not path_cost then return -1000000 end
+    score = score - path_cost * 0.01
+    --print( 'distance score: -' .. path_cost * 0.01 )
+  end
+
+  -- cost score
+  local min_count, max, count = math.huge
+  for attr, cost in pairs( source.cost ) do
+    max = player[ attr .. '_max' ]
+    max = max > 0 and max or 1
+    count = max / cost
+    min_count = count < min_count and count or min_count
+  end
+  score = score + min_count * 0.1
+  --print( 'cost score: ' .. min_count * 0.1 )
+
+  return score
+end
+
+local function sort_by_score( a, b )
+	return a.score > b.score
+end
+
+function kungfu.get_best_source( skill )
+  -- filtering sources by skill level
+  local lvl = player.skill[ skill ] and player.skill[ skill ].level or 0
+  local slist = {}
+  for _, source in pairs( index [ skill ].source ) do
+    if source.min <= lvl and lvl <= source.max then
+      source.score = calculate_source_score( source ) -- calculate source scores
+      slist[ #slist + 1 ] = source
+    end
+  end
+
+  -- sorting sources by scores
+  table.sort( slist, sort_by_score )
+
+  --tprint( slist )
+  return slist[ 1 ]
 end
 
 --------------------------------------------------------------------------

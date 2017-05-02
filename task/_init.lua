@@ -21,6 +21,7 @@ local task_class = {
   'get_flag', -- 取得标记
   'get_item', -- 取得物品
   'recover', -- 恢复HP
+  'improve', -- 提升技能、精力或内力
 
   'job.wuguan', -- 襄阳武馆
 }

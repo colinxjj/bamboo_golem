@@ -8,13 +8,13 @@ local kungfu = {
 	type = 'basic',
 	id = 'dodge',
 	source = {
-		{ min = 0, max = 31, location = '曼佗罗山庄闺房', jing_cost = 15, cmd = 'ta sign' },
-		{ min = 20, max = 59, location = '归云庄练武场', jingli_cost = 55, cmd = 'jump zhuang;jump down' },
-		{ min = 50, max = 99, location = '桃花岛练武场', jingli_cost = 50, cmd = 'jump zhuang;jump down' },
-		{ min = 20, max = 100, location = '曼佗罗山庄树上', jingli_cost = 25, cmd = 'yue tree' },
-		{ min = 30, max = 100, location = '明教碧水寒潭', jing_cost = 25, cmd = 'walk' },
-		{ min = 0, max = 100, location = '峨嵋山八十四盘#1', jingli_cost = 20, cmd = 'sw;ne' },
-		{ min = 0, max = 100, location = '峨嵋山十二盘#3', jingli_cost = 20, cmd = 'sw;ne' },
+		{ min = 0, max = 31, location = '曼佗罗山庄闺房', attr = 'int', cmd = 'ta sign', cost = { jing = 15 } },
+		{ min = 20, max = 59, location = '归云庄练武场', attr = 'int', cmd = 'jump zhuang;jump down', cost = { jingli = 55 } },
+		{ min = 50, max = 99, location = '桃花岛练武场', attr = 'int', cmd = 'jump zhuang;jump down', cost = { jingli = 50 } },
+		{ min = 20, max = 100, location = '曼佗罗山庄树上', attr = 'int', cmd = 'yue tree', cost = { jingli = 25 } },
+		{ min = 30, max = 100, location = '明教碧水寒潭', attr = 'int', cmd = 'walk', cost = { jing = 25 } },
+		{ min = 0, max = 100, location = '峨嵋山八十四盘#1', attr = 'dex', cmd = 'sw;ne', cost = { jingli = 20 } },
+		{ min = 0, max = 100, location = '峨嵋山十二盘#3', attr = 'dex', cmd = 'sw;ne', cost = { jingli = 20 } },
 	}
 },
 

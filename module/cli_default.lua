@@ -267,7 +267,7 @@ cli.register{ cmd = 't', desc = '≤‚ ‘', func = parse_t, no_prefix = true }
 
 local function parse_tt()
   local manual = taskmaster.current_manual_task
-  manual:newweaksub{ class = 'kill_time' }
+  manual:newweaksub{ class = 'improve', skill = 'ª˘±æ«·π¶', skill_target = 100, fail_func = manual.fail_catcher }
 end
 
 cli.register{ cmd = 'tt', desc = '≤‚ ‘', func = parse_tt, no_prefix = true }

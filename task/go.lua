@@ -154,7 +154,7 @@ function task:next_step()
     -- already have 15 commands?
     if i - self.step_num >= 15 then break end -- up to 15 commands per batch
     -- total attr cost exceeds player's attr value upper limits?
-    if total_jingli_cost >= player.jingli_max * 2 or total_neili_cost >= player.neili_max * 2 or total_jing_cost >= player.jing_max or total_qi_cost >= player.qi_max then -- remove last step from list and move on
+    if i - self.step_num > 1 and ( total_jingli_cost > player.jingli_max * 2 or total_neili_cost > player.neili_max * 2 or total_jing_cost > player.jing_max or total_qi_cost > player.qi_max ) then -- remove last step from list and move on
       table.remove( cmd_list )
       if door then table.remove( cmd_list ) end
       i = i - 1

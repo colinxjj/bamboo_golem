@@ -5,7 +5,7 @@ local task = {}
 -- Recover
 --[[----------------------------------------------------------------------------
 Params:
-all, neili, jingli, jing, qi = 'double', 'full', 'half', 'a_little', 900 -- one or more of these params set to one of the valid recover levels or a exact number. 'all' covers all four attributes, but its value will be overridden by individual values if any is set. Only neili and jingli support the 'double' recover level (required)
+all, neili, jingli, jing, qi = 'double', 'full', 'half', 'a_little', 'best_effort' (neili only), 900 -- one or more of these params set to one of the valid recover levels or a exact number. 'all' covers all four attributes, but its value will be overridden by individual values if any is set. Only neili and jingli support the 'double' recover level (required)
 food = 'full', 'half', 'a_little', -- 'all' doesn't cover this and it needs to be set explicitly (optional)
 water = 'double', 'full', 'half', 'a_little', 'all' doesn't cover this and it needs to be set explicitly (optional)
 stay_here = true -- should player stay where he/she is during the recover process? (optional, default: false)
@@ -36,8 +36,12 @@ local function validate_recover_param( self )
     local tgt, max = self[ attr ], player[ attr .. '_max' ] or 100
     -- convert 'all' param to individual params
     if self.all and not tgt and attr ~= 'food' and attr ~= 'water' then self[ attr ] = self.all end
+    -- incompatible best_effort option?
+    if tgt == 'best_effort' and attr ~= 'neili' then
+      message.warning( '属性 ' .. attr .. ' 不支持 ' .. tgt .. ' 恢复目标' )
+      self:fail()
     -- task fails if targets exceed what is achievable
-    if ( ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and tgt == 'double' ) or ( type( tgt ) == 'number' and ( tgt > max * 2 or ( ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and tgt > max ) ) ) then
+    elseif ( ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and tgt == 'double' ) or ( type( tgt ) == 'number' and ( tgt > max * 2 or ( ( attr == 'qi' or attr == 'jing' or attr == 'food' ) and tgt > max ) ) ) then
       message.warning( '恢复任务失败：' .. attr .. ' 恢复目标 ' .. tgt .. ' 超出了能达到的上限' )
       self:fail()
     end
@@ -46,9 +50,11 @@ end
 
 local function has_reached_target( self, attr )
   local tgt, val, max = self[ attr ], player[ attr ], player[ attr .. '_max' ] or 100
+  if max == 0 then return true end
   local pct = val / max
   return not tgt
-      or ( tgt == 'double' and pct >= 1.8 )
+      or ( tgt == 'best_effort' and player.qi < kungfu.get_min_dazuo_value() )
+      or ( ( tgt == 'double' or tgt == 'best_effort' ) and pct >= 1.8 )
       or ( tgt == 'full' and pct >= 0.9 )
       or ( tgt == 'half' and pct >= 0.4 )
       or ( tgt == 'a_little' and pct >= 0.1 )
@@ -197,6 +203,8 @@ function task:eat_drink()
     local curr_loc = map.get_current_location()[ 1 ].id
     local best_food_source = item.get_best_source{ item = 'food', source_evaluator = food_source_evaluator, is_quality_ignored = true }
     local best_drink_source = item.get_best_source{ item = 'drink', source_evaluator = drink_source_evaluator, is_quality_ignored = true }
+    -- if no source available, task fails
+    if not best_food_source or not best_drink_source then self:fail() end
     choice = ( best_food_source.location == curr_loc and 'food' )
           or ( best_drink_source.location == curr_loc and 'drink' )
           or ( best_food_source.score > best_drink_source.score and 'food' )
@@ -226,7 +234,7 @@ local function convert_tgt_to_num( self, attr )
   local tgt, max = self[ attr ], player[ attr .. '_max' ]
   return ( not tgt and 0 )
       or ( type( tgt ) == 'number' and tgt )
-      or ( tgt == 'double' and max * 2 )
+      or ( ( tgt == 'double' or tgt == 'best_effort' ) and max * 2 )
       or ( tgt == 'full' and max )
       or ( tgt == 'half' and max * 0.5 )
       or ( tgt == 'a_little' and max * 0.1 )

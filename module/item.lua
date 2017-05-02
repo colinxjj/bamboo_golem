@@ -399,7 +399,7 @@ function item.add_temp_item_source ( loc, name, id )
 	end
 	-- add the new temp source
 	it.source[ #it.source + 1 ] = { item = it.iname, type = 'get', location = loc, is_temp = true, add_time = os.time() }
-	message.debug( '添加临时物品来源：' .. it.iname .. ' - ' .. loc )
+	--message.debug( '添加临时物品来源：' .. it.iname .. ' - ' .. loc )
 end
 
 function item.remove_temp_item_source( loc, name )

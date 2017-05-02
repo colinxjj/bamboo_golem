@@ -80,6 +80,7 @@ trigger.new{ name = 'skills2', match = '^│(.+)$', func = parse_content }
 trigger.new{ name = 'skills0', match = '^(> )*你目前并没有学会任何技能。', func = parse_empty, enabled = true }
 
 trigger.new{ name = 'skillsu', match = '^(> )*你的「(\\S+)」进步了！', func = parse_levelup, enabled = true }
+-- TODO 你放弃了基本轻功。
 
 --------------------------------------------------------------------------------
 -- End of module
