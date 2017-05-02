@@ -103,6 +103,10 @@ function get_npc( name )
 	end
 end
 
+function has_recently_slept()
+	return os.time() - 180 < ( player.last_sleep_time or 0 )
+end
+
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------

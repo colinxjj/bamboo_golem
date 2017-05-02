@@ -317,6 +317,11 @@ function kungfu.get_best_source( skill )
   return slist[ 1 ]
 end
 
+function kungfu.is_valid_source( skill, source )
+  local lvl = player.skill[ skill ] and player.skill[ skill ].level or 0
+  return source.min <= lvl and lvl <= source.max
+end
+
 --------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------

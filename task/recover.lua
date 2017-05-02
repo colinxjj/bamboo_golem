@@ -9,6 +9,7 @@ all, neili, jingli, jing, qi = 'double', 'full', 'half', 'a_little', 'best_effor
 food = 'full', 'half', 'a_little', -- 'all' doesn't cover this and it needs to be set explicitly (optional)
 water = 'double', 'full', 'half', 'a_little', 'all' doesn't cover this and it needs to be set explicitly (optional)
 stay_here = true -- should player stay where he/she is during the recover process? (optional, default: false)
+maximize_organic_recovery = true -- keep attributes from being full whenever possbile, to maximize organic recovery (optional, default: false)
 ----------------------------------------------------------------------------]]--
 
 task.class = 'recover'
@@ -91,9 +92,10 @@ local function is_heal_needed( self )
 end
 
 local function is_sleep_needed( self )
-  local has_recently_slept = os.time() - 180 < ( player.last_sleep_time or 0 )
+  -- sleep if pending_sleep is set (to avoid aborted sleep attempt after arriving at the sleep room because of updated hp info in the process of going to the sleep room)
+  if self.pending_sleep then return true end
   -- don't sleep if last sleep is less than 3 minutes ago
-  if has_recently_slept then return false end
+  if has_recently_slept() then return false end
   -- don't sleep if stay_here is set and we can't sleep at the current room
   local is_in_sleep_room = room.get().label and room.get().label.sleep
   if self.stay_here and player.party ~= 'Ø¤°ï' and not is_in_sleep_room then return false end
@@ -108,8 +110,13 @@ local function is_exert_needed( self )
   for _, attr in pairs( convertable_attr ) do
     if not has_reached_target( self, attr ) and not is_full( attr ) then return true end
     if attr == 'qi' and not is_full 'qi' and player.enable.force.level >= 150 and not has_reached_target( self, 'neili' ) then return true end
-    if attr == 'jing' and not is_full 'jing' and not has_reached_target( self, 'jingli' ) and ( is_full 'jingli' or player.enable.force.level < 100 ) then return true end
-    if attr == 'jing' and player.jing < player.jing_max * 0.7 and not has_reached_target( self, 'neili' ) then return true end
+    if attr == 'jing' then
+      if not has_reached_target( self, 'jingli' ) then
+        if not is_full 'jing' and is_full 'jingli' then return true end
+        if player.jing < player.jing_max * 0.7 and player.qi >= kungfu.get_min_dazuo_value() then return true end
+      end
+      if not has_reached_target( self, 'neili' ) and player.jing < player.jing_max * 0.7 then return true end
+    end
   end
 end
 
@@ -118,6 +125,8 @@ local function is_tuna_needed( self )
   if player.qi / player.qi_max < 0.7 or player.jing < 10 then return false end
   -- if there won't be enough jing to dazuo even after yun jing, don't tuna
   if not kungfu.is_tuna_value_safe_for_subsequent_dazuo( 10 ) then return false end
+  -- tuna when maxmized recovery is needed and there's enough jing
+  if self.maximize_organic_recovery and player.jing - kungfu.get_tuna_rate() >= player.jing_max * 0.7 then return true end
   -- tuna only if jingli is full or force level is so low that yun jingli is inefficient (otherwise yun jingli with neili is more efficient)
   if not has_reached_target( self, 'jingli' ) and ( is_full 'jingli' or player.enable.force.level < 100 ) then return true end
 end
@@ -260,8 +269,9 @@ function task:exert()
   for _, attr in pairs( convertable_attr ) do
     if ( self[ attr ] and not has_reached_target( self, attr ) and not is_full( attr ) )
     or ( attr == 'qi' and not is_full 'qi' and player.enable.force.level >= 150 and not has_reached_target( self, 'neili' ) )
-    or ( attr == 'jing' and not is_full 'jing' and not has_reached_target( self, 'jingli' ) and ( is_full 'jingli' or player.enable.force.level < 100 ) )
-    or ( attr == 'jing' and player.jing < player.jing_max * 0.7 and not has_reached_target( self, 'neili' ) ) then
+    or ( attr == 'jing' and not has_reached_target( self, 'jingli' ) and not is_full 'jing' and is_full 'jingli' )
+    or ( attr == 'jing' and not has_reached_target( self, 'jingli' ) and player.jing < player.jing_max * 0.7 and player.qi >= kungfu.get_min_dazuo_value() )
+    or ( attr == 'jing' and not has_reached_target( self, 'neili' ) and player.jing < player.jing_max * 0.7 ) then
       c[ #c + 1 ] = 'yun ' .. attr
     end
   end
@@ -279,9 +289,10 @@ end
 function task:go_to_sleep()
   if map.is_at_sleep_loc() then
     self:listen{ event = 'sleep_end', func = self.resume, id = 'task.recover' }
-    self.has_updated_hp = false
+    self.has_updated_hp, self.pending_sleep = false, false
     self:send{ 'sleep' }
   else
+    self.pending_sleep = true
     local loc = map.get_current_location()[ 1 ]
     local dest = map.find_nearest( loc, is_valid_sleep_room )
     self:newsub{ class = 'go', to = dest }
@@ -313,8 +324,14 @@ end
 
 function task:tuna()
   if map.is_at_dazuo_tuna_loc() then
-    local tgt = convert_tgt_to_num( self, 'jingli' )
-    local val = kungfu.get_best_tuna_value( tgt )
+    local tgt, lower_only
+    if self.maximize_organic_recovery and has_reached_target( self, 'jingli' ) then
+      tgt = player.jingli + player.jing - player.jing_max * 0.7
+      lower_only = true
+    else
+      tgt = convert_tgt_to_num( self, 'jingli' )
+    end
+    local val = kungfu.get_best_tuna_value( tgt, lower_only )
     self:listen{ event = 'tuna_end', func = self.resume, id = 'task.recover' }
     self.has_updated_hp = false
     if tgt > player.jingli_max * 1.8 and not player.set[ '»ýÐî' ] then self:send{ 'set »ýÐî' } end

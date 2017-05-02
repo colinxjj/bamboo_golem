@@ -45,8 +45,11 @@ function task:_resume()
     return
   end
   if not has_reached_target( self, 'skill' ) then -- improve skill
-    local source = kungfu.get_best_source( self.skill )
-    if not source then self:fail() return end
+    -- get skill source
+    if not self.current_source or not kungfu.is_valid_source( self.skill, self.current_source ) then self.current_source = kungfu.get_best_source( self.skill ) end
+    -- task fails if no available source
+    if not self.current_source then self:fail() return end
+    -- handle the source
     self:handle_skill_source( source )
   elseif not has_reached_target( self, 'neili' ) or not has_reached_target( self, 'jingli' ) then -- raise neili and/or jingli
     self:raise_neili_jingli()
@@ -81,7 +84,7 @@ function task:handle_skill_source( source )
     count = min_count > 10 and 10 or math.floor( min_count )
 
     if count < 2 then -- recover
-      self:newsub{ class = 'recover', jing = source.cost.jing and 'half', jingli = source.cost.jingli and 'half', qi = source.cost.qi and 'half', neili = source.cost.neili and 'half' or 'best_effort' }
+      self:newsub{ class = 'recover', maximize_organic_recovery = true, jing = source.cost.jing and 'half', jingli = source.cost.jingli and 'half', qi = ( source.cost.qi or has_recently_slept() ) and 'half', neili = source.cost.neili and 'half' or 'best_effort' }
     else -- send cmds
       local c = { complete_func = self.resume }
       for i = 1, count do c[ i ] = source.cmd end
