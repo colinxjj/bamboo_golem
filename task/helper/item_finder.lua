@@ -204,6 +204,22 @@ trigger.new{ name = 'tlbb_book_got_book', group = 'item_finder.tlbb_book', match
 trigger.new{ name = 'tlbb_book_no_book', group = 'item_finder.tlbb_book', match = '^(> )*你翻了半天，结果什么也没找到。$', func = finder.tlbb_book }
 trigger.new{ name = 'tlbb_book_no_more_book', group = 'item_finder.tlbb_book', match = '^(> )*你已经拿过书了，怎么还想拿？$', func = finder.tlbb_book_no_more_book }
 
+-- 科金镜赋集解
+function finder:mbook_kejin()
+  -- get 烤鸭
+  if not inventory.has_item '烤鸭' then
+    self:newsub{ class = 'get_item', item = '烤鸭' }
+  -- ask laoban about 医书
+  elseif not player.temp_flag.mbook_kejin_ask_laoban then
+    self:newsub{ class = 'get_flag', flag = 'mbook_kejin_ask_laoban' }
+  -- ask kong kong about 医书
+  elseif not player.temp_flag.mbook_kejin_ask_kong then
+    self:newsub{ class = 'get_flag', flag = 'mbook_kejin_ask_kong' }
+  else
+    self:newsub{ class = 'find', object = '空空儿', action = 'give kao ya to %id', complete_func = self.check_inventory }
+    player.temp_flag.mbook_kejin_ask_yaopu, player.temp_flag.mbook_kejin_ask_kong = nil
+  end
+end
 
 --------------------------------------------------------------------------------
 -- End of module

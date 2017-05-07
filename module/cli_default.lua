@@ -212,52 +212,8 @@ cli.register{ cmd = 'pct', desc = '列出当前所有触发器。', func = parse_pct, no_p
 --------------------------------------------------------------------------------
 -- test
 
-local function food_source_evaluator( source )
-  local it = item.get( source.item )
-  local food_supply = ( it.consume_count or 1 ) * it.food_supply * 0.5
-  local gap = 100 - player.food
-    -- demote food with excessive supply
-  if food_supply > gap then
-    if source.type == 'shop' then
-      return ( gap - food_supply ) * 0.5
-    else
-      return ( gap - food_supply ) * 0.3
-    end
-  end
-end
-
-local function drink_source_evaluator( source )
-  if source.item == '乳酪' then
-    -- if food and water levels are both low, 乳酪 is a more attractive choice
-    if player.food < 50 and player.water < 50 then return 20 end
-    -- if food or water level is above 100, then completely ignore 乳酪
-    if player.food >= 100 or player.water >= 100 then return -1000000 end
-  end
-end
-
 local function parse_t( _, input )
-  local time = os.clock() * 1000
-  local t = item.get_sorted_source{ item = 'food', source_evaluator = food_source_evaluator, is_quality_ignored = true }
-  print( '食物计算过程耗时 ' .. os.clock() * 1000 - time .. ' 毫秒' )
-  for i = 1, 5 do
-    print( i )
-    print( '  item:', t[ i ].item )
-    print( '  location:', t[ i ].location )
-    if t[ i ].npc then print( '  npc:', t[ i ].npc ) end
-    print( '  type:', t[ i ].type )
-    print( '  score:', t[ i ].score )
-  end
-  time = os.clock() * 1000
-  t = item.get_sorted_source{ item = 'drink', source_evaluator = drink_source_evaluator, is_quality_ignored = true }
-  print( '饮水计算过程耗时 ' .. os.clock() * 1000 - time .. ' 毫秒' )
-  for i = 1, 5 do
-    print( i )
-    print( '  item:', t[ i ].item )
-    print( '  location:', t[ i ].location )
-    if t[ i ].npc then print( '  npc:', t[ i ].npc ) end
-    print( '  type:', t[ i ].type )
-    print( '  score:', t[ i ].score )
-  end
+  print( kungfu.get_dazuo_rate() )
 end
 
 cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }
@@ -267,7 +223,7 @@ cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }
 
 local function parse_tt()
   local manual = taskmaster.current_manual_task
-  manual:newweaksub{ class = 'improve', skill = '基本轻功', skill_target = 100, fail_func = manual.fail_catcher }
+  manual:newweaksub{ class = 'improve', skill = '本草术理', skill_target = 100, fail_func = manual.fail_catcher }
 end
 
 cli.register{ cmd = 'tt', desc = '测试', func = parse_tt, no_prefix = true }

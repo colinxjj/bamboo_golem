@@ -27,20 +27,23 @@ function task:_resume()
   self.object = self.object or self.person or self.item
 
   if not self.at then
-    local object = npc[ self.object ] or item.get( self.object )
+    local object = get_npc( self.object ) or item.get( self.object )
     if not object then
       message.warning( '未找到“' .. self.object '”对应的 NPC 或物品' )
       self:fail()
       return
     end
-    self.at, self.range, self.is_not_unique = object.location, object.range, object.is_not_unique
+    self.index_object, self.at, self.range, self.is_not_unique = object, object.location, object.range, object.is_not_unique
   end
 
   message.verbose( '开始寻找' .. self.object )
 
-  self:listen{ event = 'room_object', id = 'task.find', func = task.check, persistent = true }
-
-  self:newweaksub{ class = 'go', to = self.at, range = self.range, complete_func = self.last_check }
+  if room.has_object( self.object ) then
+    self:check_for_action( room.get_object( self.object ) )
+  else
+    self:listen{ event = 'room_object', id = 'task.find', func = task.check, persistent = true }
+    self:newweaksub{ class = 'go', to = self.at, range = self.range, complete_func = self.fail }
+  end
 end
 
 function task:_complete()
@@ -51,31 +54,27 @@ function task:_fail()
   message.verbose( '未能找到' .. self.object )
 end
 
-function task:check( obj )
-  if obj.name ~= self.object then return end
-  if not self.is_not_unique then self:check_for_action( obj.object ); return end
+function task:check( evt )
+  local target_name = self.index_object and self.index_object.name or self.object
+  if evt.name ~= target_name then return end
+  if not self.is_not_unique then self:check_for_action( evt.object ); return end
 
   for _, loc in pairs( map.get_current_location() ) do
-    if string.find( loc.id, self.at ) then self:check_for_action( obj.object ); return end
+    if string.find( loc.id, self.at ) then self:check_for_action( evt.object ); return end
   end
 end
 
 function task:check_for_action( obj )
   if self.is_found then return end
   self.is_found = true
+
+  self:takeover() -- take over control from subtask
+
   if self.action then
     local action = string.gsub( self.action, '%%id', obj.id )
     self:send{ action; complete_func = self.complete }
   else
     self:complete()
-  end
-end
-
-function task:last_check()
-  if room.has_object( self.object ) then
-    self:check_for_action( room.get_object( self.object) )
-  else
-    self:fail()
   end
 end
 

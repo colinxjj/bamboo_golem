@@ -1,5 +1,14 @@
 local kungfu = {
 
+	--------------------------------------------------------------------------
+	-- knowledge
+
+	['本草术理'] = {
+		name = '本草术理',
+		type = 'knowledge',
+		id = 'medicine',
+	},
+
 --------------------------------------------------------------------------
 -- basic
 
@@ -254,7 +263,7 @@ default_force = {
 ['圣火神功'] = {
 	name = '圣火神功',
 	type = 'force',
-	id = 'shenhuo-shengong',
+	id = 'shenghuo-shengong',
 	dazuo_start_msg = '你盘膝而坐，双手垂于胸前成火焰状，深吸口气，让经络中的真气化做一股灼流缓缓涌入丹田。',
 	dazuo_end_msg = '你将周身内息贯通经脉，缓缓睁开眼睛，站了起来。',
 	dazuo_halt_msg = '你周身微微颤动，长出口气，站了起来。',
@@ -375,7 +384,7 @@ default_force = {
 ['冷泉神功'] = {
 	name = '冷泉神功',
 	type = 'force',
-	id = 'jiuyin-zhengong',
+	id = 'lengquan-shengong',
 	dazuo_start_msg = '你手捏剑诀，将寒冰真气提起在体内慢慢转动。',
 	dazuo_end_msg = '你将寒冰真气按周天之势搬运了一周，感觉精神充沛多了。',
 	dazuo_halt_msg = '你双眼一睁，极速压下内息站了起来。',
@@ -385,10 +394,10 @@ default_force = {
 	heal_halt_msg = '你急急把内息一压，也不顾身上的伤势立即站了起来。',
 },
 
-['紫霞神功'] = {
-	name = '紫霞神功',
+['紫霞功'] = {
+	name = '紫霞功',
 	type = 'force',
-	id = 'jiuyin-zhengong',
+	id = 'zixia-gong',
 	dazuo_start_msg = '你屏息静气，坐了下来，左手搭在右手之上，在胸前捏了个剑诀，引导内息游走各处经脉。',
 	dazuo_end_msg = '你将内息走满一个周天，只感到全身通泰，丹田中暖烘烘的，双手一分，缓缓站了起来。',
 	dazuo_halt_msg = '你心神一动，将内息压回丹田，双臂一振站了起来。',
@@ -397,7 +406,7 @@ default_force = {
 ['神元功'] = {
 	name = '神元功',
 	type = 'force',
-	id = 'jiuyin-zhengong',
+	id = 'shenyuan-gong',
 	dazuo_start_msg = '你随意一站，双手缓缓抬起，深吸一口气，真气开始在体内运转。',
 	dazuo_end_msg = '你将真气在体内沿脉络运行了一圈，缓缓纳入丹田，放下手，长吐了一口气。',
 	dazuo_halt_msg = '你眉头一皱，急速运气，把手放了下来。',
@@ -406,7 +415,7 @@ default_force = {
 ['枯荣禅功'] = {
 	name = '枯荣禅功',
 	type = 'force',
-	id = 'jiuyin-zhengong',
+	id = 'kurong-changong',
 	dazuo_start_msg = '你盘膝坐下，垂目合什，默运枯荣禅功，只觉冷热两股真气开始在体内缓缓游动。',
 	dazuo_end_msg = '你真气在体内运行了一个周天，冷热真气收于丹田，慢慢抬起了眼睛。',
 	dazuo_halt_msg = '你双掌一分，屈掌握拳，两股真气迅速交汇消融。',
@@ -415,7 +424,7 @@ default_force = {
 ['乾天一阳功'] = {
 	name = '乾天一阳功',
 	type = 'force',
-	id = 'jiuyin-zhengong',
+	id = 'qiantian-yiyang',
 	dazuo_start_msg = '你盘膝坐下，闭目合什，运起乾天一阳神功，一股纯阳真气开始在体内运转。',
 	dazuo_end_msg = '你真气在体内运行了一个周天，缓缓收气于丹田，慢慢睁开了眼睛。',
 	dazuo_halt_msg = '你双掌一分，平摊在胸，迅速收气，停止真气的流动。',
@@ -424,7 +433,7 @@ default_force = {
 ['化功大法'] = {
 	name = '化功大法',
 	type = 'force',
-	id = 'jiuyin-zhengong',
+	id = 'huagong-dafa',
 	dazuo_start_msg = '你气运丹田，将体内毒素慢慢逼出，控制着它环绕你缓缓飘动。你感觉到内劲开始有所加强了。',
 	dazuo_end_msg = '你感觉毒素越转越快，就快要脱离你的控制了！你连忙收回毒素和内息，冷笑一声站了起来。',
 	dazuo_halt_msg = '你双眼一睁，眼中射出一道精光，接着阴阴一笑，站了起来。',

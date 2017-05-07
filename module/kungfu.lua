@@ -7,6 +7,23 @@ local kungfu = {}
 
 local index = require 'data.kungfu'
 
+-- add skill sources based on item data (books only)
+do
+  local cond_checker = {} -- for memoization
+  local list = item.get_by_type 'book'
+  for _, it in pairs( list ) do
+    if it.skill then
+      local cond = ( 'return %splayer.exp >= %d and player.int >= %d' ):format( it.cond and ( it.cond .. ' and ' ) or '', it.read.exp_required or 0, it.read.difficulty or 0 )
+      local f = cond_checker[ cond ] or loadstring( cond )
+      if not f then error( 'error compiling function for skill source cond: ' .. cond ) end
+      cond_checker[ cond ] = f
+      local source = { item = it.iname, min = it.skill.min, max = it.skill.max, cost = it.read.cost, cmd = it.read.cmd, cond = f }
+      local skill = index[ it.skill.name ]
+      skill.source = skill.source or {}
+      table.insert( skill.source, source )
+    end
+  end
+end
 
 --------------------------------------------------------------------------------
 
@@ -207,18 +224,31 @@ function kungfu.get_min_dazuo_value()
   return player.qi_max > 1000 and math.floor( player.qi_max / 5 ) or 10
 end
 
+local function get_best_multiple( base, lower, upper )
+  lower, upper = lower or -math.huge, upper or math.huge
+  local multiple
+  for i = 1, math.huge do
+    multiple = base * i
+    if multiple >= lower and multiple <= upper then return multiple end
+  end
+end
+
 function kungfu.get_best_dazuo_value( target, lower_only )
-  local gap = target - player.neili
+  local gap, max = target - player.neili, player.qi - 10 -- always leave at least 10 qi to avoid death by illness
   assert( gap > 0, 'kungfu.get_best_dazuo_value - dazuo neili target must be greater than current neili' )
   local min = kungfu.get_min_dazuo_value()
   local tick, best_val = kungfu.get_dazuo_rate()
+  -- calculate best value
   local count = math.ceil( gap / tick ) - ( lower_only and 1 or 0 )
   for i = 1, count do
     local val = tick * i
-    if val >= min and val <= player.qi then best_val = val end
+    if val >= min and val <= max then best_val = val end
   end
-  local alt_val = gap <= player.qi - 10 and gap or player.qi - 10
-  alt_val = alt_val >= min and alt_val or min
+  -- calculate alt value
+  local alt_val = get_best_multiple( tick, gap )
+  alt_val = alt_val <= max and alt_val or max
+  alt_val = alt_val >= min and alt_val or get_best_multiple( tick, min, max ) or min
+
   return best_val or alt_val
 end
 
@@ -235,21 +265,26 @@ function kungfu.is_tuna_value_safe_for_subsequent_dazuo( val )
 end
 
 function kungfu.get_best_tuna_value( target, lower_only )
-  local gap = target - player.jingli
+  local gap, min, max = target - player.jingli, 10, player.jing - 10 -- always leave at least 10 jing to avoid death by illness
   assert( gap > 0, 'kungfu.get_best_tuna_value - tuna jingli target must be greater than current jingli' )
   local tick, best_val = kungfu.get_tuna_rate()
+  -- calculate best value
   local count = math.ceil( gap / tick ) - ( lower_only and 1 or 0 )
   for i = 1, count do
     local val = tick * i
-    if val >= 10 and val <= player.jing then best_val = val end
+    if val >= min and val <= max then best_val = val end
   end
-  local alt_val = gap <= player.jing - 10 and gap or player.jing - 10
-  alt_val = alt_val >= 10 and alt_val or 10
+  -- calculate alt value
+  local alt_val = get_best_multiple( tick, gap )
+  alt_val = alt_val <= max and alt_val or max
+  alt_val = alt_val >= min and alt_val or get_best_multiple( tick, min, max ) or min
+
   -- if there won't be enough jing to dazuo after tuna, then adjust tuna value
   if not kungfu.is_tuna_value_safe_for_subsequent_dazuo( best_val or alt_val ) then
     best_val = math.floor( kungfu.get_current_total_converted_jing() - player.jing_max * 0.7 )
-    best_val = best_val >= 10 and best_val or 10
+    if best_val < min or best_val > max then best_val, alt_val = nil end
   end
+
   return best_val or alt_val
 end
 
@@ -261,7 +296,15 @@ function kungfu.has_enough_qi_for_dazuo()
   end
 end
 
+function kungfu.is_dazuo_positive_loop()
+  return player.enable.force and player.enable.force.level >= 150
+end
+
 --------------------------------------------------------------------------------
+
+function kungfu.get_all_source( skill )
+  return index[ skill ] and index[ skill ].source
+end
 
 local function calculate_source_score( source )
 	local score = 0
@@ -303,10 +346,10 @@ function kungfu.get_best_source( skill )
   -- filtering sources by skill level
   local lvl = player.skill[ skill ] and player.skill[ skill ].level or 0
   local slist = {}
-  for _, source in pairs( index [ skill ].source ) do
+  for _, source in pairs( index[ skill ].source ) do
     if source.min <= lvl and lvl <= source.max then
       source.score = calculate_source_score( source ) -- calculate source scores
-      slist[ #slist + 1 ] = source
+      if source.score > -1000 and ( not source.cond or source.cond() ) then slist[ #slist + 1 ] = source end
     end
   end
 

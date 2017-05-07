@@ -729,8 +729,8 @@ local item = {
   consume_count = 5,
   food_supply = 40,
   source = {
-    { type = 'local_handler', handler = 'sit_and_wait', location = '桃花岛饭厅#1', cond = '( time.get_current_hour() >= 6 and time.get_current_hour() <= 8 ) or ( time.get_current_hour() >= 11 and time.get_current_hour() <= 13 ) or ( time.get_current_hour() >= 17 and time.get_current_hour() <= 20 )', },
-    { type = 'local_handler', handler = 'sit_and_wait', location = '归云庄饭厅', cond = '( time.get_current_hour() >= 6 and time.get_current_hour() <= 8 ) or ( time.get_current_hour() >= 11 and time.get_current_hour() <= 13 ) or ( time.get_current_hour() >= 17 and time.get_current_hour() <= 20 )', },
+    { type = 'handler', handler = 'sit_and_wait', location = '桃花岛饭厅#1', cond = '( time.get_current_hour() >= 6 and time.get_current_hour() <= 8 ) or ( time.get_current_hour() >= 11 and time.get_current_hour() <= 13 ) or ( time.get_current_hour() >= 17 and time.get_current_hour() <= 20 )', },
+    { type = 'handler', handler = 'sit_and_wait', location = '归云庄饭厅', cond = '( time.get_current_hour() >= 6 and time.get_current_hour() <= 8 ) or ( time.get_current_hour() >= 11 and time.get_current_hour() <= 13 ) or ( time.get_current_hour() >= 17 and time.get_current_hour() <= 20 )', },
   },
 },
 
@@ -1109,39 +1109,39 @@ local item = {
   type = 'drink',
   water_supply = 200,
   source = {
-    { type = 'local_handler', handler = 'drink', location = '星宿海月牙泉', },
-    { type = 'local_handler', handler = 'drink', location = '福州城茶楼', },
-    { type = 'local_handler', handler = 'drink', location = '福州城茶楼二楼', },
-    { type = 'local_handler', handler = 'drink', location = '襄阳城天香楼', },
-    { type = 'local_handler', handler = 'drink', location = '武当山茶亭', },
-    { type = 'local_handler', handler = 'drink', location = '天龙寺天龙寺斋堂#E', },
-    { type = 'local_handler', handler = 'drink', location = '天龙寺无心井', },
-    { type = 'local_handler', handler = 'drink', location = '天龙寺点苍十九峰#3', },
-    { type = 'local_handler', handler = 'drink', location = '天龙寺点苍十九峰#2', },
-    { type = 'local_handler', handler = 'drink', location = '天龙寺点苍十九峰#1', },
-    { type = 'local_handler', handler = 'drink', location = '桃花岛饭厅#2', },
-    { type = 'local_handler', handler = 'drink', location = '泰山白鹤泉', },
-    { type = 'local_handler', handler = 'drink', location = '苏州城憨憨泉', },
-    { type = 'local_handler', handler = 'drink', location = '苏州城茶馆', },
-    { type = 'local_handler', handler = 'drink', location = '嵩山少林佛心井', },
-    { type = 'local_handler', handler = 'drink', location = '燕子坞厨房', },
-    { type = 'local_handler', handler = 'drink', location = '曼佗罗山庄后花园', },
-    { type = 'local_handler', handler = 'drink', location = '姑苏慕容厨房#D', },
-    { type = 'local_handler', handler = 'drink', location = '兰州城营盘水', },
-    { type = 'local_handler', handler = 'drink', location = '华山玉女祠', },
-    { type = 'local_handler', handler = 'drink', location = '华山瀑布', },
-    { type = 'local_handler', handler = 'drink', location = '黑木崖百丈泉', },
-    { type = 'local_handler', handler = 'drink', location = '回疆马棚', },
-    { type = 'local_handler', handler = 'drink', location = '回疆黑石围子', },
-    { type = 'local_handler', handler = 'drink', location = '恒山苦甜井', },
-    { type = 'local_handler', handler = 'drink', location = '昆仑山瀑布', },
-    { type = 'local_handler', handler = 'drink', location = '大理城茶馆', },
-    { type = 'local_handler', handler = 'drink', location = '扬州城小墓室', },
-    { type = 'local_handler', handler = 'drink', location = '扬州城茶馆', },
-    { type = 'local_handler', handler = 'drink', location = '成都城后院', },
-    { type = 'local_handler', handler = 'drink', location = '长安城茶馆', },
-    { type = 'local_handler', handler = 'drink', location = '沧州城厅堂', },
-    { type = 'local_handler', handler = 'drink', location = '白驼山空地', },
+    { type = 'handler', handler = 'drink', location = '星宿海月牙泉', },
+    { type = 'handler', handler = 'drink', location = '福州城茶楼', },
+    { type = 'handler', handler = 'drink', location = '福州城茶楼二楼', },
+    { type = 'handler', handler = 'drink', location = '襄阳城天香楼', },
+    { type = 'handler', handler = 'drink', location = '武当山茶亭', },
+    { type = 'handler', handler = 'drink', location = '天龙寺天龙寺斋堂#E', },
+    { type = 'handler', handler = 'drink', location = '天龙寺无心井', },
+    { type = 'handler', handler = 'drink', location = '天龙寺点苍十九峰#3', },
+    { type = 'handler', handler = 'drink', location = '天龙寺点苍十九峰#2', },
+    { type = 'handler', handler = 'drink', location = '天龙寺点苍十九峰#1', },
+    { type = 'handler', handler = 'drink', location = '桃花岛饭厅#2', },
+    { type = 'handler', handler = 'drink', location = '泰山白鹤泉', },
+    { type = 'handler', handler = 'drink', location = '苏州城憨憨泉', },
+    { type = 'handler', handler = 'drink', location = '苏州城茶馆', },
+    { type = 'handler', handler = 'drink', location = '嵩山少林佛心井', },
+    { type = 'handler', handler = 'drink', location = '燕子坞厨房', },
+    { type = 'handler', handler = 'drink', location = '曼佗罗山庄后花园', },
+    { type = 'handler', handler = 'drink', location = '姑苏慕容厨房#D', },
+    { type = 'handler', handler = 'drink', location = '兰州城营盘水', },
+    { type = 'handler', handler = 'drink', location = '华山玉女祠', },
+    { type = 'handler', handler = 'drink', location = '华山瀑布', },
+    { type = 'handler', handler = 'drink', location = '黑木崖百丈泉', },
+    { type = 'handler', handler = 'drink', location = '回疆马棚', },
+    { type = 'handler', handler = 'drink', location = '回疆黑石围子', },
+    { type = 'handler', handler = 'drink', location = '恒山苦甜井', },
+    { type = 'handler', handler = 'drink', location = '昆仑山瀑布', },
+    { type = 'handler', handler = 'drink', location = '大理城茶馆', },
+    { type = 'handler', handler = 'drink', location = '扬州城小墓室', },
+    { type = 'handler', handler = 'drink', location = '扬州城茶馆', },
+    { type = 'handler', handler = 'drink', location = '成都城后院', },
+    { type = 'handler', handler = 'drink', location = '长安城茶馆', },
+    { type = 'handler', handler = 'drink', location = '沧州城厅堂', },
+    { type = 'handler', handler = 'drink', location = '白驼山空地', },
   },
 },
 
@@ -1152,15 +1152,15 @@ local item = {
   type = 'drink',
   water_supply = 400,
   source = {
-    { type = 'local_handler', handler = 'drink', location = '伊犁城客栈', },
-    { type = 'local_handler', handler = 'drink', location = '明教沙漠绿洲', },
-    { type = 'local_handler', handler = 'drink', location = '回疆坎儿井', },
-    { type = 'local_handler', handler = 'drink', location = '终南山果园', },
-    { type = 'local_handler', handler = 'drink', location = '无量山东湖边', },
-    { type = 'local_handler', handler = 'drink', location = '无量山北湖边', },
-    { type = 'local_handler', handler = 'drink', location = '无量山南湖边', },
-    { type = 'local_handler', handler = 'drink', location = '无量山西湖边', },
-    { type = 'local_handler', handler = 'drink', location = '无量山山中小溪', },
+    { type = 'handler', handler = 'drink', location = '伊犁城客栈', },
+    { type = 'handler', handler = 'drink', location = '明教沙漠绿洲', },
+    { type = 'handler', handler = 'drink', location = '回疆坎儿井', },
+    { type = 'handler', handler = 'drink', location = '终南山果园', },
+    { type = 'handler', handler = 'drink', location = '无量山东湖边', },
+    { type = 'handler', handler = 'drink', location = '无量山北湖边', },
+    { type = 'handler', handler = 'drink', location = '无量山南湖边', },
+    { type = 'handler', handler = 'drink', location = '无量山西湖边', },
+    { type = 'handler', handler = 'drink', location = '无量山山中小溪', },
   },
 },
 
@@ -1239,8 +1239,8 @@ local item = {
   consume_count = 5,
   water_supply = 30,
   source = {
-    { type = 'local_handler', handler = 'sit_and_wait', location = '桃花岛茶房', },
-    { type = 'local_handler', handler = 'sit_and_wait', location = '归云庄茶房', },
+    { type = 'handler', handler = 'sit_and_wait', location = '桃花岛茶房', },
+    { type = 'handler', handler = 'sit_and_wait', location = '归云庄茶房', },
   },
 },
 
@@ -2097,7 +2097,7 @@ local item = {
   vanish_on_drop = true,
   cond = 'player.neili_max >= 1500 and player.str >= 30',
   source = {
-    { type = 'local_handler', handler = 'ty_jia', location = '桃源县练功房', is_once_per_session = true, },
+    { type = 'handler', handler = 'ty_jia', location = '桃源县练功房', is_once_per_session = true, },
   },
 },
 
@@ -2115,7 +2115,7 @@ local item = {
   vanish_on_drop = true,
   cond = 'player.neili_max >= 1000 and player.str >= 30',
   source = {
-    { type = 'local_handler', handler = 'ty_jia', location = '桃源县练功房', is_once_per_session = true, },
+    { type = 'handler', handler = 'ty_jia', location = '桃源县练功房', is_once_per_session = true, },
   },
 },
 
@@ -2211,7 +2211,7 @@ local item = {
   type = 'book',
   weight = 500,
   value = 2500,
-  read = { exp_required = 5000, jing_cost = 20, difficulty = 22, },
+  read = { exp_required = 5000, cost = { jing = 20 }, difficulty = 22, },
   skill = { name = '本草术理', min = 0, max = 31 },
 },
 
@@ -2223,7 +2223,7 @@ local item = {
   type = 'book',
   weight = 500,
   value = 5000,
-  read = { exp_required = 6000, jing_cost = 25, difficulty = 23, },
+  read = { exp_required = 6000, cost = { jing = 25 }, difficulty = 23, },
   skill = { name = '本草术理', min = 30, max = 41 },
 },
 
@@ -2235,8 +2235,71 @@ local item = {
   type = 'book',
   weight = 500,
   value = 6000,
-  read = { exp_required = 10000, jing_cost = 30, difficulty = 24, },
+  read = { exp_required = 10000, cost = { jing = 30 }, difficulty = 24, },
   skill = { name = '本草术理', min = 40, max = 51 },
+},
+
+['科金镜赋集解'] = {
+  iname = '科金镜赋集解',
+	name = '科金镜赋集解',
+  id = 'kejin jijie',
+  alternate_id = { 'medicine book' },
+  type = 'book',
+  weight = 500,
+  value = 2500,
+  read = { exp_required = 150000, cost = { jing = 35 }, difficulty = 25, },
+  skill = { name = '本草术理', min = 50, max = 61 },
+  source = {
+    { type = 'handler', handler = 'mbook_kejin', },
+  },
+},
+
+['痘疹定论'] = {
+  iname = '痘疹定论',
+	name = '痘疹定论',
+  id = 'douzhen dinglun',
+  alternate_id = { 'medicine book' },
+  type = 'book',
+  weight = 500,
+  value = 3000,
+  read = { exp_required = 200000, cost = { jing = 40 }, difficulty = 26, },
+  skill = { name = '本草术理', min = 60, max = 71 },
+},
+
+['博集稀痘方'] = {
+  iname = '博集稀痘方',
+	name = '博集稀痘方',
+  id = 'boji xidoufang',
+  alternate_id = { 'medicine book' },
+  type = 'book',
+  weight = 500,
+  value = 8000,
+  read = { exp_required = 200000, cost = { jing = 45 }, difficulty = 27, },
+  skill = { name = '本草术理', min = 70, max = 81 },
+},
+
+['本草纲目'] = {
+  iname = '本草纲目',
+	name = '本草纲目',
+  id = 'bencao gangmu',
+  alternate_id = { 'medicine book' },
+  type = 'book',
+  weight = 500,
+  value = 300000,
+  read = { exp_required = 100000, cost = { jing = 50 }, difficulty = 29, },
+  skill = { name = '本草术理', min = 80, max = 101 },
+},
+
+['本草经集注'] = {
+  iname = '本草经集注',
+	name = '本草经集注',
+  id = 'bencao jizhu',
+  alternate_id = { 'medicine book' },
+  type = 'book',
+  weight = 500,
+  value = 200000,
+  read = { exp_required = 150000, cost = { jing = 60 }, difficulty = 30, },
+  skill = { name = '本草术理', min = 100, max = 121 },
 },
 
 --------------------------------------------------------------------------------
@@ -2333,7 +2396,7 @@ local item = {
   weight = 20,
   source = {
     { type = 'cmd', cmd = 'ask lu gaoxuan about 通行令牌', location = '神龙岛陆府正厅', npc = '陆高轩', cond = 'player.party == "神龙教"', },
-    { type = 'local_handler', handler = 'sld_lingpai', location = '神龙岛陆府正厅', npc = '陆高轩', cond = 'player.party ~= "神龙教"', },
+    { type = 'handler', handler = 'sld_lingpai', location = '神龙岛陆府正厅', npc = '陆高轩', cond = 'player.party ~= "神龙教"', },
   },
   vanish_on_drop = true,
 },
@@ -2345,7 +2408,7 @@ local item = {
   alternate_id = { 'jin', 'wawa', 'yu' },
   weight = 3000,
   source = {
-    { type = 'local_handler', handler = 'ty_fish', location = '桃源县瀑布中', },
+    { type = 'handler', handler = 'ty_fish', location = '桃源县瀑布中', },
   },
 },
 
@@ -2356,7 +2419,7 @@ local item = {
   alternate_id = { 'zhou', 'boat' },
   weight = 10000,
   source = {
-    { type = 'local_handler', handler = 'ty_boat', location = '桃源县山谷瀑布', },
+    { type = 'handler', handler = 'ty_boat', location = '桃源县山谷瀑布', },
   },
 },
 
@@ -2367,7 +2430,7 @@ local item = {
   alternate_id = { 'shuteng' },
   weight = 1000,
   source = {
-    { type = 'local_handler', handler = 'hs_shuteng', location = '华山壁顶', },
+    { type = 'handler', handler = 'hs_shuteng', location = '华山壁顶', },
   },
 },
 
@@ -2378,7 +2441,7 @@ local item = {
   alternate_id = { 'kuang', 'tengkuang' },
   weight = 500,
   source = {
-    { type = 'local_handler', handler = 'hs_kuang', location = '华山壁顶', },
+    { type = 'handler', handler = 'hs_kuang', location = '华山壁顶', },
   },
 },
 
@@ -2389,7 +2452,7 @@ local item = {
   alternate_id = { 'yaoshi', 'key' },
   weight = 1000,
   source = {
-    { type = 'local_handler', handler = 'hmy_key', location = '黑木崖书房', },
+    { type = 'handler', handler = 'hmy_key', location = '黑木崖书房', },
   },
 },
 
@@ -2427,7 +2490,7 @@ local item = {
   alternate_id = { 'shu', 'book' },
   weight = 80,
   source = {
-    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+    { type = 'handler', handler = 'tlbb_book', location = '大理皇宫书房', },
   },
 },
 
@@ -2438,7 +2501,7 @@ local item = {
   alternate_id = { 'shu', 'book' },
   weight = 80,
   source = {
-    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+    { type = 'handler', handler = 'tlbb_book', location = '大理皇宫书房', },
   },
 },
 
@@ -2449,7 +2512,7 @@ local item = {
   alternate_id = { 'shu', 'book' },
   weight = 80,
   source = {
-    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+    { type = 'handler', handler = 'tlbb_book', location = '大理皇宫书房', },
   },
 },
 
@@ -2460,7 +2523,7 @@ local item = {
   alternate_id = { 'shu', 'book' },
   weight = 80,
   source = {
-    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+    { type = 'handler', handler = 'tlbb_book', location = '大理皇宫书房', },
   },
 },
 
@@ -2471,7 +2534,7 @@ local item = {
   alternate_id = { 'shu', 'book' },
   weight = 80,
   source = {
-    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+    { type = 'handler', handler = 'tlbb_book', location = '大理皇宫书房', },
   },
 },
 
@@ -2482,7 +2545,7 @@ local item = {
   alternate_id = { 'shu', 'book' },
   weight = 80,
   source = {
-    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+    { type = 'handler', handler = 'tlbb_book', location = '大理皇宫书房', },
   },
 },
 
@@ -2493,7 +2556,7 @@ local item = {
   alternate_id = { 'shu', 'book' },
   weight = 80,
   source = {
-    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+    { type = 'handler', handler = 'tlbb_book', location = '大理皇宫书房', },
   },
 },
 
@@ -2504,7 +2567,7 @@ local item = {
   alternate_id = { 'shu', 'book' },
   weight = 80,
   source = {
-    { type = 'local_handler', handler = 'tlbb_book', location = '大理皇宫书房', },
+    { type = 'handler', handler = 'tlbb_book', location = '大理皇宫书房', },
   },
 },
 

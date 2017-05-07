@@ -66,7 +66,7 @@ local function is_penetratable( type, unit )
   if type ~= 'batch' then
     return penetrate_cmd_tbl[ type ]
   else
-    local core_tbl = batch_core_patt:match( unit )
+    local core_tbl = batch_core_patt:match( unit ) or {}
     for _, core in pairs( core_tbl ) do
       if not penetrate_cmd_tbl[ core ] then return false end
     end

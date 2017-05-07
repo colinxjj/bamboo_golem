@@ -24,22 +24,22 @@ for person_id, person in pairs( npc ) do
 			slist[ #slist + 1 ] = source
 		end
 	end
-	-- add banks as local_handler sources
+	-- add banks as handler sources
 	if person.label and person.label.bank then
 		for _, money in pairs( money_list ) do
 			index[ money ].source = index[ money ].source or {}
 			slist = index[ money ].source
-			source = { type = 'local_handler', handler = 'withdraw', cond = 'player.bank_gold_balance > 0', location = person.location, npc = person_id }
+			source = { type = 'handler', handler = 'withdraw', cond = 'player.bank_gold_balance > 0', location = person.location, npc = person_id }
 			slist[ #slist + 1 ] = source
 		end
 	end
-	-- add npc cmd or local_handler sources
+	-- add npc cmd or handler sources
 	if person.provide then
 		for _, it in pairs( person.provide ) do
 			if not index[ it.item ] then error( 'no data found for item ' .. it.item ) end
 			index[ it.item ].source  = index[ it.item ].source or {}
 			slist = index[ it.item ].source
-			source = { type = it.handler and 'local_handler' or 'cmd', location = person.location, npc = person_id, handler = it.handler, cmd = it.cmd, cond = it.cond }
+			source = { type = it.handler and 'handler' or 'cmd', location = person.location, npc = person_id, handler = it.handler, cmd = it.cmd, cond = it.cond }
 			slist[ #slist + 1 ] = source
 		end
 	end
@@ -47,14 +47,14 @@ end
 
 -- add iname to each item source and compile source conditions to functions
 do
-	local cond_checker = {}
+	local cond_checker = {} -- for memoization
 	for iname, it in pairs( index ) do
 		if it.source then
 			for _, source in pairs( it.source ) do
 				source.item = iname
 				if source.cond then
 					local f = cond_checker[ source.cond ] or loadstring( 'return ' .. source.cond )
-	        if not f then error( 'error compiling function for source.cond: ' .. source.cond ) end
+	        if not f then error( 'error compiling function for item source cond: ' .. source.cond ) end
 	        cond_checker[ source.cond ], source.cond = f, f
 				end
 			end
@@ -306,7 +306,7 @@ local function calculate_source_score( source, t )
 	--print( source.item, source.location )
 	local score = 0
 	-- distance score
-	if not t.is_distance_ignored then
+	if not t.is_distance_ignored and source.location then
 		local loc = map.get_current_location()[ 1 ]
 		local path_cost = map.get_cost( loc, source.location )
 		if not path_cost then return -1000000 end -- no path cost means that we can't get to this source
@@ -314,21 +314,20 @@ local function calculate_source_score( source, t )
 		--print( 'distance score: -' .. path_cost * 0.8 )
 	end
 	-- weight score
-	local weight = item.get( source.item ).weight
-	if not t.is_weight_ignored and weight then
-		local encumbrance = weight / player.encumbrance_max * 100
+	local it = item.get( source.item )
+	if not t.is_weight_ignored and it.weight then
+		local encumbrance = it.weight / player.encumbrance_max * 100
 		score = score - math.ceil( encumbrance * 50 ) / 10
 		--print( 'weight score: -' .. math.ceil( encumbrance * 50 ) / 10 )
 	end
 	-- price score
-	local value = item.get( source.item ).value
-	if not t.is_price_ignored and value and source.type == 'shop' then
-		local silver = value / 100
+	if not t.is_price_ignored and it.value and source.type == 'shop' then
+		local silver = it.value / 100
 		score = score - silver
 		--print( 'price score: -' .. silver )
 	end
 	-- quality score
-	local quality = calculate_item_quality_score( item.get( source.item ) )
+	local quality = calculate_item_quality_score( it )
 	if not t.is_quality_ignored and quality then
 		score = score + quality
 		--print( 'quality score: +' .. quality )

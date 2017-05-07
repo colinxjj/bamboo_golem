@@ -133,6 +133,20 @@ function handler:get_out()
 	self:send{ 'out' }
 end
 
+-- 客栈
+local hotel_waiter_tbl = {
+	default = { name = '店小二', id = 'xiao er' },
+	['大雪山招财大车店'] = { name = '李招财', id = 'li zhaocai' },
+}
+function handler:hotel( t )
+	local obj = hotel_waiter_tbl[ t.from.id ] or hotel_waiter_tbl.default
+	if room.has_object( obj ) then
+		self:send{ ( 'give 5 silver to %s;%s' ):format( obj.id, t.cmd ) }
+	else
+		self:fail()
+	end
+end
+
 -- 峨嵋山后山小路
 function handler:emei_move_stone()
 	if room.get().exit.nd then

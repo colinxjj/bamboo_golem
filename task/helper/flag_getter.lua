@@ -87,6 +87,18 @@ function getter:dlhg_access_give()
 end
 trigger.new{ name = 'dlhg_access_succeed', group = 'flag_getter.dlhg_access', match = '^段正明说道：「很好，你可以进后宫了。」$', func = getter.succeed }
 
+-- 科金镜赋集解: ask laoban about 医书
+function getter:mbook_kejin_ask_laoban()
+	self:newweaksub{ class = 'find', object = '药铺老板#YZ', action = 'ask %id about 医书' }
+end
+trigger.new{ name = 'mbook_kejin_ask_laoban_succeed', group = 'flag_getter.mbook_kejin_ask_laoban', match = '^药铺老板说道：「你是说那本\\[科金镜赋集解\\]吧，前几天还在这里卖的，不知道给哪个家伙$', func = getter.succeed }
+
+-- 科金镜赋集解: ask kong kong about 医书
+function getter:mbook_kejin_ask_kong()
+	self:newweaksub{ class = 'find', object = '空空儿', action = 'ask %id about 医书' }
+end
+trigger.new{ name = 'mbook_kejin_ask_kong_succeed', group = 'flag_getter.mbook_kejin_ask_kong', match = '^空空儿说道：「嘻嘻，你说那本书啊，是在我手里，不过。。我好象不记得放哪了\\?$', func = getter.succeed }
+
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------

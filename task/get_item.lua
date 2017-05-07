@@ -60,7 +60,7 @@ function task:handle_source( source )
   current_source = source
   -- first go to the source location if we're not already there
   local loc = map.get_current_location()[ 1 ]
-  if loc.id ~= source.location then
+  if source.location and loc.id ~= source.location then
     -- prepare money first for shop sources
     if source.type == 'shop' then
       local value = item.get_value( source.item )
@@ -80,7 +80,7 @@ function task:handle_source( source )
     self:get( source )
   elseif source.type == 'cmd' then
     self:send{ source.cmd; complete_func = self.check_inventory }
-  elseif source.type == 'local_handler' then
+  elseif source.type == 'handler' then
     self:enable_trigger_group( 'item_finder.' .. source.handler )
     item_finder[ source.handler ]( self, source )
   elseif source.type == 'shop' then
@@ -123,7 +123,7 @@ function task:check_source_result()
     -- complete the task
     self:complete()
   else
-    message.debug( '未能从来源“' .. current_source.location .. '”取得物品“' .. current_source.item .. '”' )
+    message.debug( ( '未能从来源“%s”取得物品“%s”' ):format( current_source.location or current_source.npc or current_source.handler, current_source.item ) )
     item.mark_invalid_source( current_source )
     self:resume()
   end

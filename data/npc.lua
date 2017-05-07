@@ -71,6 +71,21 @@ local npc = {
   location = '扬州城偏厅',
 },
 
+['药铺老板#YZ'] = {
+  name = '药铺老板',
+  id = 'yaopu laoban',
+  alternate_id = { 'laoban', 'boss' },
+  location = '扬州城药铺',
+},
+
+['空空儿'] = {
+  name = '空空儿',
+  id = 'kong kong',
+  alternate_id = { 'beggar', 'qi gai', 'kong' },
+  location = '扬州城东大街#2',
+  range = 3,
+},
+
 --------------------------------------------------------------------------------
 -- 大理
 
