@@ -216,8 +216,7 @@ cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }
 -- test2
 
 local function parse_tt()
-  --newsub_manual{ class = 'improve', skill = '基本轻功', skill_target = 101 }
-  newsub_manual{ class = 'manage_inventory', action = 'wield', item = 'weapon' }
+  newsub_manual{ class = 'improve', skill = '基本掌法', skill_target = 101 }
 end
 
 cli.register{ cmd = 'tt', desc = '测试', func = parse_tt, no_prefix = true }

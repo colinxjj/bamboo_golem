@@ -325,7 +325,7 @@ end
 
 local function calculate_source_score( source )
 	local score = 0
-  print( '\n' .. source.location )
+  --print( '\n' .. source.location )
 
   -- efficiency score, based on attr, gain, and cost
   local efficiency = ( source.attr and player[ source.attr ] or 20 ) * 10
@@ -333,7 +333,7 @@ local function calculate_source_score( source )
   for attr, cost in pairs( source.cost ) do total_cost = total_cost + cost end
   efficiency = efficiency / total_cost * ( source.gain or 1 )
   score = score + efficiency
-  print( 'efficiency score: ' .. efficiency )
+  --print( 'efficiency score: ' .. efficiency )
 
   -- distance score
   if source.location then
@@ -342,7 +342,7 @@ local function calculate_source_score( source )
     -- give inaccessible sources a very low score
   	if not path_cost then return -1000000 end
     score = score - path_cost * 0.01
-    print( 'distance score: -' .. path_cost * 0.01 )
+    --print( 'distance score: -' .. path_cost * 0.01 )
   end
 
   -- capacity score, i.e. the ratio of cost / attribute_max
@@ -354,9 +354,9 @@ local function calculate_source_score( source )
     capacity = count < capacity and count or capacity
   end
   score = score + capacity * 0.01
-  print( 'capacity score: ' .. capacity * 0.01 )
+  --print( 'capacity score: ' .. capacity * 0.01 )
 
-  print( 'total score: ', score )
+  --print( 'total score: ', score )
   return score
 end
 

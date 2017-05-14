@@ -568,6 +568,18 @@ function handler:xs_leave_rock( t )
 	end
 end
 
+-- 嵩山少林广场
+function handler:sl_entrance()
+	self:send{ room.get().exit.n and 'n' or 'knock gate;n' }
+end
+function handler:sl_entrance_fail()
+	map.block_exit( self.step.from, self.step.to, math.huge ) -- block the exit infinitely
+	self:fail()
+end
+trigger.new{ name = 'sl_entrance_fail', group = 'step_handler.sl_entrance', match = '^壮年僧人说道：这位施主请回罢，本寺不接待俗人。$', func = handler.sl_entrance_fail }
+
+-- 嵩山少林断崖坪
+
 --------------------------------------------------------------------------------
 -- Maze handlers
 

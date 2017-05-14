@@ -3300,7 +3300,7 @@ local map = {
     e = { to = '嵩山少林寺前广场#E', },
     s = { to = '嵩山少林石坊', },
     w = { to = '嵩山少林寺前广场#W', },
-    n = { to = '嵩山少林山门殿', door = 'knock gate', },
+    n = { to = '嵩山少林山门殿', handler = 'sl_entrance', },
   },
 },
 
