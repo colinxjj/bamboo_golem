@@ -27,7 +27,7 @@ function task:_resume()
   self.object = self.object or self.person or self.item
 
   if not self.at then
-    local object = get_npc( self.object ) or item.get( self.object )
+    local object = npc.get( self.object ) or item.get( self.object )
     if not object then
       message.warning( '未找到“' .. self.object '”对应的 NPC 或物品' )
       self:fail()

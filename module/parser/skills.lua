@@ -63,15 +63,31 @@ local function parse_empty()
   event.new 'skills'
 end
 
-local function parse_levelup( _, t )
-  local sk = player.skill[ t[ 2 ] ]
-  if not sk then
-    sk = {}
-    sk.name, sk.level = t[ 2 ], 0
-    player.skill[ t[ 2 ] ] = sk
+local attr_tbl = { [ '基本内功' ] = 'con', [ '基本轻功' ] = 'dex', [ '读书写字' ] = 'int' }
+local str_tbl = { [ '基本掌法' ] = true, [ '基本腿法' ] = true, [ '基本手法' ] = true, [ '基本爪法' ] = true, [ '基本拳法' ] = true, [ '基本指法' ] = true }
+
+local function update_attr ( skill )
+  if attr_tbl[ skill ] then
+    local attr = attr_tbl[ skill ]
+    player[ attr ] = player[ attr ] + 1
+  elseif str_tbl[ skill ] then
+    local highest = 0
+    for sk_name in pairs( str_tbl ) do
+      local level = player.skill[ sk_name ] and player.skill[ sk_name ].level or 0
+      if level > highest then highest = level end
+    end
+    player.str = player.str_innate + math.floor( highest / 10 )
   end
-  sk.level = sk.level + 1
-  sk.exp  = 0
+end
+
+local function parse_levelup( _, t )
+  local name = t[ 2 ]
+  player.skill[ name ] = player.skill[ name ] or { name = name, level = 0 }
+  local skill = player.skill[ name ]
+  skill.level = skill.level + 1
+  skill.exp  = 0
+  -- update player attributes when certain skills reach ??0 level
+  if skill.level % 10 == 0 then update_attr( name ) end
 end
 
 trigger.new{ name = 'skills1', match = '^(> )*【你的技能表】：总共(\\S+)项技能', func = parse_header, enabled = true }

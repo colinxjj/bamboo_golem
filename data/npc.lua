@@ -1575,15 +1575,4 @@ local npc = {
 
 }
 
---------------------------------------------------------------------------------
--- generate special npc list
-
-npc.bank_list, npc.shop_list, npc.pawnshop_list, npc.grocery_list  = {}, {}, {}, {}
-for name, person in pairs( npc ) do
-  if person.label and person.label.bank then npc.bank_list[ name ] = person end
-  if person.label and person.label.shop then npc.shop_list[ name ] = person end
-  if person.label and person.label.pawnshop then npc.pawnshop_list[ name ] = person end
-  if person.label and person.label.grocery then npc.grocery_list[ name ] = person end
-end
-
 return npc

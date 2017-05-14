@@ -12,7 +12,7 @@ local money_list = { '»Æ½ð', '°×Òø', 'Í­Ç®' }
 
 -- add item sources based on npc data
 local stype, slist, source
-for person_id, person in pairs( npc ) do
+for person_id, person in pairs( npc.get_index() ) do
 	-- add shop or loot sources
 	if person.catalogue or person.loot then
 		stype = person.catalogue and 'shop' or 'loot'
@@ -45,10 +45,11 @@ for person_id, person in pairs( npc ) do
 	end
 end
 
--- add iname to each item source and compile source conditions to functions
+-- add iname to each item and item source and compile source conditions to functions
 do
 	local cond_checker = {} -- for memoization
 	for iname, it in pairs( index ) do
+		it.iname = iname
 		if it.source then
 			for _, source in pairs( it.source ) do
 				source.item = iname
@@ -62,28 +63,24 @@ do
 	end
 end
 
-local weapon_type = {
-	blade = 'µ¶', sword = '½£', dagger = 'Ø°Ê×', flute = 'óï', hook = '¹³', axe = '¸«', brush = '±Ê', staff = 'ÕÈ', club = '¹÷', stick = '°ô', hammer = '´¸', whip = '±Þ', throwing = '°µÆ÷' }
+local subtype_index = {
+	weapon = { blade = 'µ¶', sword = '½£', dagger = 'Ø°Ê×', flute = 'óï', hook = '¹³', axe = '¸«', brush = '±Ê', staff = 'ÕÈ', club = '¹÷', stick = '°ô', hammer = '´¸', whip = '±Þ', throwing = '°µÆ÷' },
 
-local armor_type = { cloth = 'ÒÂ·þ', armor = '»¤¼×', shoes = 'Ð¬×Ó', helm = 'Í·¿ø', mantle = 'Åû·ç', waist = 'Ñü´ø', wrist = '»¤Íó', neck = 'ÏîÁ´', glove = 'ÊÖÌ×' }
+	armor = { cloth = 'ÒÂ·þ', armor = '»¤¼×', shoes = 'Ð¬×Ó', helm = 'Í·¿ø', mantle = 'Åû·ç', waist = 'Ñü´ø', wrist = '»¤Íó', neck = 'ÏîÁ´', glove = 'ÊÖÌ×' },
 
-local sharp_weapon_type = { blade = true, sword = true, dagger = true, hook = true, axe = true, }
+	sharp_weapon = { blade = true, sword = true, dagger = true, hook = true, axe = true, },
+
+	drink = { drink = true, drink_container = true },
+}
 
 local valid_type = { food = 'Ê³Îï', drink = 'ÒûË®', drink_container = 'Ê¢Ë®ÈÝÆ÷', drug = 'Ò©Îï', weapon = 'ÎäÆ÷', armor = '·À¾ß', sharp_weapon = '·æÀûÎäÆ÷',
 	blade = 'µ¶', sword = '½£', dagger = 'Ø°Ê×', flute = 'óï', hook = '¹³', axe = '¸«', brush = '±Ê', staff = 'ÕÈ', club = '¹÷', stick = '°ô', hammer = '´¸', whip = '±Þ', throwing = '°µÆ÷',
 	cloth = 'ÒÂ·þ', armor = '»¤¼×', shoes = 'Ð¬×Ó', helm = 'Í·¿ø', mantle = 'Åû·ç', waist = 'Ñü´ø', wrist = '»¤Íó', neck = 'ÏîÁ´', glove = 'ÊÖÌ×'
 }
 
-local stackable_item = {
-  ['»Æ½ð'] = true,
-  ['°×Òø'] = true,
-  ['Í­Ç®'] = true,
-  ['Ê¯×Ó'] = true,
-  ['ÉñÁúïÚ'] = true,
-  ['Ë¦¼ý'] = true,
-}
+local stackable_item = { ['»Æ½ð'] = true, ['°×Òø'] = true, ['Í­Ç®'] = true, ['Ê¯×Ó'] = true, ['ÉñÁúïÚ'] = true, ['Ë¦¼ý'] = true, }
 
-local item_type_name_patt = {
+local type_patt = {
 	blade = lpeg.P 'µ¶',
 	sword = lpeg.P '½£' + 'ÈÐ',
 	dagger = lpeg.P 'Ø°Ê×' + 'Ø°',
@@ -106,25 +103,8 @@ local item_type_name_patt = {
 	glove = lpeg.P 'ÊÖÌ×',
 }
 
--- generate actual patterns
-for type, patt in pairs( item_type_name_patt ) do
-  item_type_name_patt[ type ] = any_but( patt )^0 * patt * -1
-end
-
--- generate type indices
-local type_index = { weapon = {}, sharp_weapon = {}, armor = {}, drink = {} }
-for iname, it in pairs( index ) do
-	if it.type then
-		-- add to type indeces
-		type_index[ it.type ] = type_index[ it.type ] or {}
-		type_index[ it.type ][ iname ] = it
-		-- add to special type indices
-		if it.type == 'drink_container' then type_index.drink[ iname ] = it end
-		if weapon_type[ it.type ] then type_index.weapon[ iname ] = it end
-		if sharp_weapon_type[ it.type ] then type_index.sharp_weapon[ iname ] = it end
-		if armor_type[ it.type ] then type_index.armor[ iname ] = it end
-	end
-end
+-- generate actual item type patterns
+for itype, patt in pairs( type_patt ) do type_patt[ itype ] = any_but( patt )^0 * patt * -1 end
 
 --------------------------------------------------------------------------------
 
@@ -137,61 +117,76 @@ local function is_name_match( name, index_name )
 	end
 end
 
-function item.get( name, id )
-	assert( type( name ) == 'string', 'item.get - param must be a string' )
-	assert( not id or type( id ) == 'string', 'item.get - the optional id param must be a string' )
-	if index[ name ] and ( not id or index[ name ].id == id ) then return index[ name ] end
-  for iname, it in pairs( index ) do
-    if ( is_name_match( name, it.name ) or name == iname ) and ( not id or id == it.id ) then return it end
-  end
-end
-
-function item.get_by_id ( id )
-	assert( type( id ) == 'string', 'item.get_by_id - param must be a string' )
-	for _, it in pairs( index ) do
-    if it.id == id then return it end -- only returns the first item matching the id
-		if it.alternate_id then
-			for _, alt_id in pairs( it.alternate_id ) do
-				if alt_id == id then return it end
+-- get an item whose name or id matches the clue
+function item.get( clue )
+	assert( type( clue ) == 'string', 'item.get - param must be a string' )
+	if index[ clue ] then
+		return index[ clue ]
+	else
+	  for iname, it in pairs( index ) do
+	    if clue == iname or is_name_match( clue, it.name ) or clue == it.id then
+				return it
+			elseif it.alternate_id then
+				for _, id in pairs( it.alternate_id ) do
+					if id == clue then return it end
+				end
 			end
-		end
+	  end
+	end
+end
+
+-- get a list of all items whoes name, id, or type matches the clue
+function item.get_all( clue )
+	assert( type( clue ) == 'string', 'item.get_all - param must be a string' )
+  local list = {}
+  for iname, it in pairs( index ) do
+		if clue == iname or is_name_match( clue, it.name ) or clue == it.id or item.is_type( iname, clue ) then
+      list[ #list + 1 ] = it
+    elseif it.alternate_id then
+      for _, id in pairs( it.alternate_id ) do
+        if id == clue then list[ #list + 1 ] = it; break end
+      end
+    end
   end
+  return list
 end
 
-function item.get_by_type( name )
-	assert( type( name ) == 'string', 'item.get_by_type - param must be a string' )
-	return type_index[ name ]
-end
-
-function item.get_id( name )
-	assert( type( name ) == 'string', 'item.get_id - param must be a string' )
-	local it = item.get( name )
+-- get the id of an item
+function item.get_id( clue )
+	assert( type( clue ) == 'string', 'item.get_id - param must be a string' )
+	local it = item.get( clue )
 	return it and it.id
 end
 
-function item.get_type( name )
-	assert( type( name ) == 'string', 'item.get_type - param must be a string' )
-	local it, type = item.get( name )
-	for type_name, patt in pairs( item_type_name_patt ) do
-    if patt:match( name ) then type = type_name; break end
+-- check if an id is a valid id for an item
+function item.has_id( name, id )
+	assert( type( name ) == 'string', 'item.has_id - the name param must be a string' )
+	assert( type( id ) == 'string', 'item.has_id - the id param must be a string' )
+	local it = item.get( name )
+	if not it then return end
+	if it.id == id then return true end
+	if it.alternate_id then
+		for _, alt_id in pairs( it.alternate_id ) do
+			if alt_id == id then return true end
+		end
+	end
+end
+
+-- get the type of an item
+function item.get_type( clue )
+	assert( type( clue ) == 'string', 'item.get_type - param must be a string' )
+	local it = item.get( clue )
+	if it and it.type then return it.type end
+	for itype, patt in pairs( type_patt ) do
+    if patt:match( clue ) then return itype end
   end
-  type = it and it.type or type
-	return type
 end
 
 function item.is_type( name, stype )
 	assert( type( name ) == 'string', 'item.is_type - the name param must be a string' )
 	assert( type( stype ) == 'string', 'item.is_type - the type param must be a string' )
-	local itype = item.get_type( name ) or ''
-	if stype == 'sharp_weapon' then
-		return sharp_weapon_type[ itype ] and true or false
-	elseif stype == 'weapon' then
-		return weapon_type[ itype ] and true or false
-	elseif stype == 'armor' then
-		return armor_type[ itype ] and true or false
-	else
-		return stype == itype
-	end
+	local itype = item.get_type( name ) or true
+	return stype == itype or ( subtype_index[ stype ] and subtype_index[ stype ][ itype ] and true )
 end
 
 function item.is_stackable( name )
@@ -264,26 +259,21 @@ local function cleanup_temp_source( slist )
 	end
 end
 
-function item.get_all_source( name, item_filter )
-	assert( type( name ) == 'string', 'item.get_all_source - param must be a string' )
-	if not item.is_valid_type( name ) then -- get sources for a specific item
-		local it = item.get( name )
-		cleanup_temp_source( it.source or {} )
-		return it.source
-	else -- get sources for a type of items
-		local item_list = item.get_by_type( name )
-		if not item_list then return end
-		local slist = {}
-		for iname, it in pairs( item_list ) do
-			if it.source and not it.source.is_invalid and ( not item_filter or item_filter( iname ) ) then
-				cleanup_temp_source( it.source )
-				for _, source in pairs( it.source ) do
-					slist[ #slist + 1 ] = source
-				end
+function item.get_all_source( clue, item_filter )
+	assert( type( clue ) == 'string', 'item.get_all_source - param must be a string' )
+	local it = item.get( clue ) -- if there's an exact match, then only get this match
+	local item_list = it and { it } or item.get_all( clue )
+	if #item_list == 0 then return end
+	local slist = {}
+	for iname, it in pairs( item_list ) do
+		if it.source and ( not item_filter or item_filter( iname ) ) then
+			cleanup_temp_source( it.source )
+			for _, source in pairs( it.source ) do
+				if not source.is_invalid then slist[ #slist + 1 ] = source end
 			end
 		end
-		return slist
 	end
+	return slist
 end
 
 local function calculate_item_quality_score( it )

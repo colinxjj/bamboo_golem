@@ -111,10 +111,11 @@ function task:purchase( source )
 end
 
 function task:check_inventory()
-  self:newsub{ class = 'get_info', inventory = 'forced', complete_func = task.check_source_result }
+  self:newsub{ class = 'get_info', inventory = true, complete_func = task.check_source_result }
 end
 
 function task:check_source_result()
+  -- disable triggers for the source
   if current_source.handler then self:disable_trigger_group( 'item_finder.' .. current_source.handler ) end
   if inventory.has_item( self.item, self.count_min or self.count ) then
     self.result = current_source.item

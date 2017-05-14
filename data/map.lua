@@ -8016,7 +8016,7 @@ local map = {
     enter = { to = '桃花岛箫房', no_wander = true, },
     n = { to = '桃花岛绿竹林#2', cond = 'player.party == "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 80 ) or ( player.party ~= "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 150 ) )', },
     s = { to = '桃花岛绿竹林#3', cond = 'player.party == "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 80 ) or ( player.party ~= "桃花岛" and ( not player.skill["奇门八卦"] or player.skill["奇门八卦"].level <= 150 ) )', handler = 'simple_path_set_pos', },
-    hidden1 = { to = '桃花岛海滨', cmd = 'ask huang about 离岛', },
+    hidden1 = { to = '桃花岛海滨', handler = 'thd_leave' },
     hidden2 = { to = '桃花岛河塘', cmd = 'n', cond = 'player.party == "桃花岛" and player.skill["奇门八卦"] and player.skill["奇门八卦"].level > 80 or ( player.skill["奇门八卦"] and player.skill["奇门八卦"].level > 150 )', },
     hidden3 = { to = '桃花岛草地', cmd = 's', cond = 'player.party == "桃花岛" and player.skill["奇门八卦"] and player.skill["奇门八卦"].level > 80 or ( player.skill["奇门八卦"] and player.skill["奇门八卦"].level > 150 )', },
   },

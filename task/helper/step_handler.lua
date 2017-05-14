@@ -11,8 +11,18 @@ handler.data = {}
 --------------------------------------------------------------------------------
 -- Special step handlers
 
--- 等待
-function handler:wait()
+-- just idle
+function handler:idle() end
+
+-- look again
+function handler:look_again()
+	self:send{ 'l' }
+end
+
+-- wait for a period of time and then look again
+function handler:wait_and_look( from, to, duration )
+	map.block_exit( from, to, duration )
+	self:newsub{ class = 'kill_time', duration = duration, can_move = true, complete_func = handler.look_again }
 end
 
 -- check if the player can fly across rivers
@@ -143,6 +153,7 @@ function handler:hotel( t )
 	if room.has_object( obj ) then
 		self:send{ ( 'give 5 silver to %s;%s' ):format( obj.id, t.cmd ) }
 	else
+		map.block_exit( t.from, t.to, 60 )
 		self:fail()
 	end
 end
@@ -203,8 +214,7 @@ function handler:gyz_river( t )
 	if room.has_object{ name = '老者', id = 'lao zhe' } then
 		self:send{ t.cmd }
 	else -- leave and reenter to reset the room
-		local room = room.get()
-		self:send{ room.exit.w and 'w' or 'e' }
+		self:send{ room.get().exit.w and 'w' or 'e' }
 	end
 end
 
@@ -229,6 +239,19 @@ function handler:thd_sail_progress( _, tbl )
 end
 trigger.new{ name = 'thd_sail_progress', group = 'step_handler.thd_sail', match = '^(> )*小船正向着(\\S+)方前进。$', func = handler.thd_sail_progress }
 
+-- 离开桃花岛
+function handler:thd_leave( t )
+	if room.has_object '黄药师' then
+		self:send{ 'ask huang yaoshi about 离岛' }
+	else
+		handler.wait_and_look( self, t.from, t.to, 60 )
+	end
+end
+function handler:thd_leave_wait()
+	self:newsub{ class = 'kill_time', complete_func = handler.thd_leave }
+end
+trigger.new{ name = 'thd_leave_wait', group = 'step_handler.thd_leave', match = '^黄药师说道：「小船已经送别的客人了', func = handler.thd_leave_wait }
+
 -- 绝情谷小溪
 function handler:jqg_river( t )
 	t = self.step
@@ -245,9 +268,6 @@ function handler:jqg_river( t )
 	else
 		self:send{ t.cmd }
 	end
-end
-function handler:look_again()
-	self:send{ 'l' }
 end
 
 -- 绝情谷鳄鱼潭
@@ -331,12 +351,12 @@ end
 -- 武当后山茅屋
 
 -- 武当后山古道
-function handler:wdhs_gudao()
+function handler:wdhs_gudao( t )
 	if room.has_object '采药道长' then
 		self:send{ 'give yao chu to caiyao daozhang' }
 		inventory.add_item '绳子'
 	else
-		self:newsub{ class = 'kill_time', duration = 60, can_move = true, complete_func = handler.look_again }
+		handler.wait_and_look( self, t.from, t.to, 60 )
 	end
 end
 
@@ -377,11 +397,11 @@ function handler:unwield_weapon()
 end
 
 -- from 桃源县山谷瀑布 to 桃源县瀑布中
-function handler:ty_enter_waterfall()
+function handler:ty_enter_waterfall( t )
 	if room.has_object '渔人' then
 		self:send{ 'ask yu ren about 一灯大师;l pubu' }
 	else
-		self:fail()
+		handler.wait_and_look( self, t.from, t.to, 60 )
 	end
 end
 function handler:ty_waterfall_look_result( _, t )
@@ -447,12 +467,12 @@ local ty_shusheng_tbl = {
 	'answer 魑魅魍魉，四小鬼各自肚肠',
 	'n'
 }
-function handler:ty_shusheng()
+function handler:ty_shusheng( t )
 	if room.has_object '书生' then
 		local i = handler.data.ty_shusheng
 		self:send{ ty_shusheng_tbl[ i or 1 ] }
 	else
-		self:fail()
+		handler.wait_and_look( self, t.from, t.to, 60 )
 	end
 end
 function handler:ty_shusheng_update( _, t )
@@ -536,14 +556,14 @@ function handler:yz_tree()
 end
 
 -- 大雪山岩石
-function handler:xs_leave_rock()
+function handler:xs_leave_rock( t )
 	if player.shen < 0 then
 		-- clear negative shen first TODO
 	else
 		if room.has_object '狄云' then
 			self:send{ 'ask di yun about 离开;jump up' }
 		else
-			self:fail()
+			handler.wait_and_look( self, t.from, t.to, 60 )
 		end
 	end
 end

@@ -79,7 +79,7 @@ local function genpath( from, is_dest )
       to = index[ exit.to ]
       new_cost = cost[ from ] + ( exit.cost or 1 )
       if to and from ~= to and not exit.ignore and
-      ( not exit.blocked_by_task or not map.is_block_valid( exit ) ) and
+      ( not exit.blocked or not map.is_block_valid( exit ) ) and
       ( not exit.cond or exit.cond() ) and
       ( not max_cost or new_cost < max_cost ) and
       ( not cost[ to ] or new_cost < cost[ to ] ) then -- add new node
@@ -162,7 +162,7 @@ function map.expand_loc( loc, range )
         to = index[ exit.to ]
         new_distance = distance[ from ] + 1
         if to and not exit.no_wander and not exit.ignore
-        and ( not exit.blocked_by_task or not map.is_block_valid( exit ) )
+        and ( not exit.blocked or not map.is_block_valid( exit ) )
         and ( not exit.cond or exit.cond() )
         and new_distance <= range and not distance[ to ] then -- add new node
           distance[ to ] = new_distance
@@ -196,7 +196,7 @@ local function find_room( from, is_dest, prefer_furthest )
       to = index[ exit.to ]
       new_cost = cost[ from ] + ( exit.cost or 1 )
       if to and from ~= to and not exit.ignore and
-      ( not exit.blocked_by_task or not map.is_block_valid( exit ) ) and
+      ( not exit.blocked or not map.is_block_valid( exit ) ) and
       ( not exit.cond or exit.cond() ) and
       ( prefer_furthest or cost_ok( new_cost, max_cost ) ) and
       ( not cost[ to ] or new_cost < cost[ to ] ) then -- add new node
@@ -257,7 +257,7 @@ local function calculate_cost( from )
       to = index[ exit.to ]
       new_cost = cost[ from ] + ( exit.cost or 1 )
       if to and from ~= to and not exit.ignore and
-      ( not exit.blocked_by_task or not map.is_block_valid( exit ) ) and -- this can cause problems when block status is updated but memoized results are used
+      ( not exit.blocked or not map.is_block_valid( exit ) ) and -- this can cause problems when block status is updated but memoized results are used
       ( not exit.cond or exit.cond() ) and
       ( not cost[ to ] or new_cost < cost[ to ] ) then -- add new node
         cost[ to ] =  new_cost
@@ -303,35 +303,34 @@ function map.get_cost( from, to )
 end
 
 --------------------------------------------------------------------------------
--- path requirements and blocking exits
+-- path requirements and exit blocking
 
--- block the exit from a room to another with a task, the exit will be ignored until the task is dead
+-- temporarily block an exit. It will be ignored until a task is dead or a timeout is reached
 -- the two room params are the id/table of a room
-function map.block_exit( from, to, task )
+function map.block_exit( from, to, blocker )
   from = type( from ) == 'string' and index[ from ] or from
   to = type( to ) == 'string' and index[ to ] or to
   assert( from and from.id, 'map.block_exit - invalid "from" param' )
   assert( to and to.id, 'map.block_exit - invalid "to" param' )
-  assert( type( task ) == 'table' and task.status, 'map.block_exit - invalid "task" param' )
+  assert( type( blocker ) == 'number' or ( type( blocker ) == 'table' and blocker.status ), 'map.block_exit - invalid "blocker" param' )
+
+  if type( blocker ) == 'number' then blocker = os.time() + blocker end
 
   for _, exit in pairs( from.exit ) do
     if exit.to == to.id and not exit.ignore and
     -- exit cond will be checked so only exits that the player can use otherwise are blocked
     ( not exit.cond or exit.cond() ) then
-      exit.blocked_by_task = task
+      exit.blocked = blocker
     end
   end
 end
 
 -- checks if a block is still valid or not, if not, the block will be lifted
 function map.is_block_valid( exit )
-  local task = exit.blocked_by_task
-  if task.status == 'dead' then
-    exit.blocked_by_task = nil
-    return false
-  else
-    return true
-  end
+  local blocker = exit.blocked
+  local is_valid = ( type( blocker ) == 'table' and blocker.status ~= 'dead' ) or ( type( blocker ) == 'number' and os.time() < blocker )
+  if not is_valid then exit.blocked = nil end
+  return is_valid
 end
 
 -- generate the list of items / flags needed to complete the path

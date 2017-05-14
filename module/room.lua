@@ -18,7 +18,7 @@ end
 
 -- check if a person / an object is present in the current room
 function room.has_object( object )
-	object = type( object ) == 'table' and object or get_npc( object ) or item.get( object ) or { name = object }
+	object = type( object ) == 'table' and object or npc.get( object ) or item.get( object ) or { name = object }
   if type( object.name ) == 'table' then -- for object with multiple names
     local room_object
     for _, name in pairs( object.name ) do
@@ -48,7 +48,7 @@ end
 
 function room.get_object( name )
   assert( type( name ) == 'string', 'room.get_object - param must be a string' )
-  local it = get_npc( name ) or item.get( name )
+  local it = npc.get( name ) or item.get( name )
   if not it then -- for object without index data
     return current_room.object[ name ]
   elseif type( it.name ) == 'string' then -- for object with a single name

@@ -4,21 +4,18 @@ local item = {
 -- money
 
 ['Í­Ç®'] = {
-  iname = 'Í­Ç®',
 	name = 'Í­Ç®',
   id = 'coin',
   type = 'money',
 },
 
 ['°×Òø'] = {
-  iname = '°×Òø',
 	name = '°×Òø',
   id = 'silver',
   type = 'money',
 },
 
 ['»Æ½ğ'] = {
-  iname = '»Æ½ğ',
 	name = '»Æ½ğ',
   id = 'gold',
   type = 'money',
@@ -28,7 +25,6 @@ local item = {
 -- food
 
 ['ÃæÌÀ'] = {
-  iname = 'ÃæÌÀ',
 	name = 'ÃæÌÀ',
   id = 'miantang',
   type = 'food',
@@ -42,7 +38,6 @@ local item = {
 },
 
 ['ÂøÍ·'] = {
-  iname = 'ÂøÍ·',
 	name = 'ÂøÍ·',
   id = 'man tou',
   alternate_id = { 'mantou', 'tou' },
@@ -59,7 +54,6 @@ local item = {
 },
 
 ['ÔÂ±ı'] = {
-  iname = 'ÔÂ±ı',
 	name = 'ÔÂ±ı',
   id = 'yue bing',
   alternate_id = { 'yuebing', 'bing' },
@@ -71,7 +65,6 @@ local item = {
 },
 
 ['ÎåÏã»¨Éú'] = {
-  iname = 'ÎåÏã»¨Éú',
 	name = 'ÎåÏã»¨Éú',
   id = 'huasheng',
   alternate_id = { 'peanut' },
@@ -83,7 +76,6 @@ local item = {
 },
 
 ['ÎåÏã»¨Éú#YZ'] = {
-  iname = 'ÎåÏã»¨Éú#YZ',
 	name = 'ÎåÏã»¨Éú',
   id = 'huasheng',
   alternate_id = { 'peanut' },
@@ -95,7 +87,6 @@ local item = {
 },
 
 ['ôä´ä¶¹¸¯'] = {
-  iname = 'ôä´ä¶¹¸¯',
 	name = 'ôä´ä¶¹¸¯',
   id = 'doufu',
   alternate_id = { 'tofu' },
@@ -107,7 +98,6 @@ local item = {
 },
 
 ['ôä´ä¶¹¸¯#DL'] = {
-  iname = 'ôä´ä¶¹¸¯#DL',
 	name = 'ôä´ä¶¹¸¯',
   id = 'feicui doufu',
   alternate_id = { 'doufu' },
@@ -119,7 +109,6 @@ local item = {
 },
 
 ['°å¶¹¸¯'] = {
-  iname = '°å¶¹¸¯',
 	name = '°å¶¹¸¯',
   id = 'ban doufu',
   alternate_id = { 'doufu' },
@@ -131,7 +120,6 @@ local item = {
 },
 
 ['¶¹¸¯¸É'] = {
-  iname = '¶¹¸¯¸É',
 	name = '¶¹¸¯¸É',
   id = 'doufu gan',
   alternate_id = { 'doufu' },
@@ -143,7 +131,6 @@ local item = {
 },
 
 ['¿¾¼¦ÍÈ'] = {
-  iname = '¿¾¼¦ÍÈ',
 	name = '¿¾¼¦ÍÈ',
   id = 'ji tui',
   alternate_id = { 'jitui', 'tui' },
@@ -155,7 +142,6 @@ local item = {
 },
 
 ['¿¾Ñ¼'] = {
-  iname = '¿¾Ñ¼',
 	name = '¿¾Ñ¼',
   id = 'kao ya',
   alternate_id = { 'kaoya', 'ya' },
@@ -170,7 +156,6 @@ local item = {
 },
 
 ['¿¾Ñ¼#DL'] = {
-  iname = '¿¾Ñ¼#DL',
 	name = '¿¾Ñ¼',
   id = 'kaoya',
   alternate_id = { 'ya' },
@@ -182,7 +167,6 @@ local item = {
 },
 
 ['°ü×Ó'] = {
-  iname = '°ü×Ó',
 	name = '°ü×Ó',
   id = 'bao zi',
   alternate_id = { 'baozi', 'dumpling' },
@@ -197,7 +181,6 @@ local item = {
 },
 
 ['°ü×Ó#HZ'] = {
-  iname = '°ü×Ó#HZ',
 	name = '°ü×Ó',
   id = 'baozi',
   alternate_id = { 'dumpling' },
@@ -209,7 +192,6 @@ local item = {
 },
 
 ['ôÕ×Ó'] = {
-  iname = 'ôÕ×Ó',
 	name = 'ôÕ×Ó',
   id = 'zong zi',
   alternate_id = { 'zongzi', 'zong' },
@@ -225,7 +207,6 @@ local item = {
 },
 
 ['ôÕ×Ó#FZ'] = {
-  iname = 'ôÕ×Ó#FZ',
 	name = 'ôÕ×Ó',
   id = 'zongzi',
   type = 'food',
@@ -236,7 +217,6 @@ local item = {
 },
 
 ['¹·²»Àí°ü×Ó'] = {
-  iname = '¹·²»Àí°ü×Ó',
 	name = '¹·²»Àí°ü×Ó',
   id = 'goubuli baozi',
   alternate_id = { 'baozi' },
@@ -248,7 +228,6 @@ local item = {
 },
 
 ['¶«É½Ñò'] = {
-  iname = '¶«É½Ñò',
 	name = '¶«É½Ñò',
   id = 'dong shanyang',
   alternate_id = { 'dong', 'shanyang' },
@@ -260,7 +239,6 @@ local item = {
 },
 
 ['Áú³­ÊÖ'] = {
-  iname = 'Áú³­ÊÖ',
 	name = 'Áú³­ÊÖ',
   id = 'long chaoshou',
   alternate_id = { 'chaoshou' },
@@ -272,7 +250,6 @@ local item = {
 },
 
 ['ÑòÈâÅİâÉ'] = {
-  iname = 'ÑòÈâÅİâÉ',
 	name = 'ÑòÈâÅİâÉ',
   id = 'yangrou paomo',
   alternate_id = { 'paomo' },
@@ -284,7 +261,6 @@ local item = {
 },
 
 ['É½¼¦Èâ'] = {
-  iname = 'É½¼¦Èâ',
 	name = 'É½¼¦Èâ',
   id = 'shanji rou',
   alternate_id = { 'rou' },
@@ -296,7 +272,6 @@ local item = {
 },
 
 ['ËÖÓÍ²è'] = {
-  iname = 'ËÖÓÍ²è',
 	name = 'ËÖÓÍ²è',
   id = 'suyou cha',
   alternate_id = { 'tea', 'cha' },
@@ -309,7 +284,6 @@ local item = {
 },
 
 ['Ë®ÃÛÌÒ'] = {
-  iname = 'Ë®ÃÛÌÒ',
 	name = 'Ë®ÃÛÌÒ',
   id = 'mi tao',
   alternate_id = { 'mitao', 'tao' },
@@ -324,7 +298,6 @@ local item = {
 },
 
 ['Ë®ÃÛÌÒ#1'] = {
-  iname = 'Ë®ÃÛÌÒ#1',
 	name = 'Ë®ÃÛÌÒ',
   id = 'tao',
   alternate_id = { 'mi tao' },
@@ -339,7 +312,6 @@ local item = {
 },
 
 ['Ë®ÃÛÌÒ#F'] = {
-  iname = 'Ë®ÃÛÌÒ#F',
 	name = 'Ë®ÃÛÌÒ',
   id = 'shuimi tao',
   alternate_id = { 'shuimitao', 'tao' },
@@ -351,7 +323,6 @@ local item = {
 },
 
 ['Áâ°×ÏºÈÊ'] = {
-  iname = 'Áâ°×ÏºÈÊ',
 	name = 'Áâ°×ÏºÈÊ',
   id = 'lingbai xiaren',
   alternate_id = { 'xiaren' },
@@ -366,7 +337,6 @@ local item = {
 },
 
 ['Ó£ÌÒ»ğÍÈ'] = {
-  iname = 'Ó£ÌÒ»ğÍÈ',
 	name = 'Ó£ÌÒ»ğÍÈ',
   id = 'yingtao huotui',
   alternate_id = { 'huotui' },
@@ -381,7 +351,6 @@ local item = {
 },
 
 ['ºÊÒ¶¶¬ËñÌÀ'] = {
-  iname = 'ºÊÒ¶¶¬ËñÌÀ',
 	name = 'ºÊÒ¶¶¬ËñÌÀ',
   id = 'dongsun-tang',
   alternate_id = { 'tang' },
@@ -396,7 +365,6 @@ local item = {
 },
 
 ['ÉÕ±ı'] = {
-  iname = 'ÉÕ±ı',
 	name = 'ÉÕ±ı',
   id = 'shao bing',
   alternate_id = { 'bing' },
@@ -408,7 +376,6 @@ local item = {
 },
 
 ['ÓÍÌõ'] = {
-  iname = 'ÓÍÌõ',
 	name = 'ÓÍÌõ',
   id = 'you tiao',
   alternate_id = { 'youtiao' },
@@ -420,7 +387,6 @@ local item = {
 },
 
 ['Âé»¨±è×Ó'] = {
-  iname = 'Âé»¨±è×Ó',
 	name = 'Âé»¨±è×Ó',
   id = 'mahua bianzi',
   alternate_id = { 'mahua', 'bianzi' },
@@ -432,7 +398,6 @@ local item = {
 },
 
 ['ËØ¼å½È'] = {
-  iname = 'ËØ¼å½È',
 	name = 'ËØ¼å½È',
   id = 'jian jiao',
   alternate_id = { 'jiao', 'dumpling' },
@@ -444,7 +409,6 @@ local item = {
 },
 
 ['³ôÑ¼µ°'] = {
-  iname = '³ôÑ¼µ°',
 	name = '³ôÑ¼µ°',
   id = 'chou yadan',
   alternate_id = { 'yadan', 'egg' },
@@ -456,7 +420,6 @@ local item = {
 },
 
 ['´óÍõÈâ±ı'] = {
-  iname = '´óÍõÈâ±ı',
 	name = '´óÍõÈâ±ı',
   id = 'rou bing',
   alternate_id = { 'roubing' },
@@ -468,7 +431,6 @@ local item = {
 },
 
 ['Æ»¹û'] = {
-  iname = 'Æ»¹û',
 	name = 'Æ»¹û',
   id = 'ping guo',
   alternate_id = { 'pingguo', 'guo' },
@@ -480,7 +442,6 @@ local item = {
 },
 
 ['°×Àæ'] = {
-  iname = '°×Àæ',
 	name = '°×Àæ',
   id = 'bai li',
   alternate_id = { 'baili', 'li' },
@@ -492,7 +453,6 @@ local item = {
 },
 
 ['Ã¢¹û'] = {
-  iname = 'Ã¢¹û',
 	name = 'Ã¢¹û',
   id = 'mang guo',
   alternate_id = { 'mangguo', 'guo' },
@@ -504,7 +464,6 @@ local item = {
 },
 
 ['ÀóÖ¦'] = {
-  iname = 'ÀóÖ¦',
 	name = 'ÀóÖ¦',
   id = 'li zhi',
   alternate_id = { 'lizhi' },
@@ -516,7 +475,6 @@ local item = {
 },
 
 ['¹şÃÛ¹Ï'] = {
-  iname = '¹şÃÛ¹Ï',
 	name = '¹şÃÛ¹Ï',
   id = 'hami gua',
   alternate_id = { 'hamigua', 'gua' },
@@ -528,7 +486,6 @@ local item = {
 },
 
 ['½Û×Ó'] = {
-  iname = '½Û×Ó',
 	name = '½Û×Ó',
   id = 'ju zi',
   alternate_id = { 'juzi' },
@@ -540,7 +497,6 @@ local item = {
 },
 
 ['ÑòÈâ´®'] = {
-  iname = 'ÑòÈâ´®',
 	name = 'ÑòÈâ´®',
   id = 'yangrou chuan',
   alternate_id = { 'yangrou', 'chuan' },
@@ -552,7 +508,6 @@ local item = {
 },
 
 ['âÎ'] = {
-  iname = 'âÎ',
 	name = 'âÎ',
   id = 'nang',
   alternate_id = { 'cake' },
@@ -564,7 +519,6 @@ local item = {
 },
 
 ['¹şÃÜ¹Ï'] = {
-  iname = '¹şÃÜ¹Ï',
 	name = '¹şÃÜ¹Ï',
   id = 'hami gua',
   alternate_id = { 'hamigua', 'gua' },
@@ -579,7 +533,6 @@ local item = {
 },
 
 ['¹şÃÜ¹Ï#XX'] = {
-  iname = '¹şÃÜ¹Ï#XX',
 	name = '¹şÃÜ¹Ï',
   id = 'hamigua',
   alternate_id = { 'gua', 'melon' },
@@ -591,7 +544,6 @@ local item = {
 },
 
 ['Ã×·¹'] = {
-  iname = 'Ã×·¹',
 	name = 'Ã×·¹',
   id = 'mi fan',
   alternate_id = { 'rice', 'fan' },
@@ -614,7 +566,6 @@ local item = {
 },
 
 ['Ã×·¹#TLS'] = {
-  iname = 'Ã×·¹#TLS',
 	name = 'Ã×·¹',
   id = 'rice',
   alternate_id = { 'mi fan', 'fan' },
@@ -631,7 +582,6 @@ local item = {
 },
 
 ['Çà²Ë'] = {
-  iname = 'Çà²Ë',
 	name = 'Çà²Ë',
   id = 'qingcai',
   type = 'food',
@@ -645,7 +595,6 @@ local item = {
 },
 
 ['Çà²Ë#TLS'] = {
-  iname = 'Çà²Ë#TLS',
 	name = 'Çà²Ë',
   id = 'qing cai',
   alternate_id = { 'cai' },
@@ -661,7 +610,6 @@ local item = {
 },
 
 ['¸÷Àà²ËëÈ'] = {
-  iname = '¸÷Àà²ËëÈ',
 	name = { 'ÂéÀ±¶ÇË¿', 'ËÉÈÊÓñÃ×', 'Ã·²Ë¿ÛÈâ', 'ÎåÏãÀ°³¦', 'ÓãÏãÈâË¿', 'ºìÓÍ¼¦Æ¬', 'Çå³´ÏºÈÊ', 'Îå»¨ìËÈâ', 'ÇàË¿Ñ¬Óã', 'ÌÇ´×ÅÅ¹Ç', '¾©½´ÈâË¿', 'ÓÍìÁ´óÏº', '´àÆ¤¿¾Ñ¼', 'ºìÉÕËØ¶ì', '¹¬±£¼¦¶¡', 'ºìÓÍ·ÎÆ¬', 'ÄÛÙàÖí¸Î', '×ßÓÍ´à³¦', '±¬³´Ñü»¨', '÷êÏã¶¬Ëñ', 'ôä´ä¶¹¸¯', 'ÂéÆÅ¶¹¸¯', 'ÈıÏÊ¸¯Öñ', '·¬ÇÑÑüÁø', '×¥³´Àï¼¹', 'Æ¬Æ¤ÈéÖí', '¹ø°ÍÈâÆ¬', 'ÁºÏª´à÷­', '¸ÉìÔÓÈÓã', 'ÖØÇì»ğ¹ø', '±ÌÂİ´º¾í', },
   id = 'cai yao',
   alternate_id = { 'cai' },
@@ -676,7 +624,6 @@ local item = {
 },
 
 ['ÂéÆÅ¶¹¸¯'] = {
-  iname = 'ÂéÆÅ¶¹¸¯',
 	name = 'ÂéÆÅ¶¹¸¯',
   id = 'doufu',
   type = 'food',
@@ -690,7 +637,6 @@ local item = {
 },
 
 ['Õ¨É½¼¦#DL'] = {
-  iname = 'Õ¨É½¼¦#DL',
 	name = 'Õ¨É½¼¦',
   id = 'zha shanji',
   alternate_id = { 'shanji', 'ji' },
@@ -705,7 +651,6 @@ local item = {
 },
 
 ['´óÃ×·¹#TZ'] = {
-  iname = '´óÃ×·¹#TZ',
 	name = '´óÃ×·¹',
   id = 'mi fan',
   alternate_id = { 'fan' },
@@ -720,7 +665,6 @@ local item = {
 },
 
 ['´óÃ×·¹#THD'] = {
-  iname = '´óÃ×·¹#THD',
 	name = '´óÃ×·¹',
   id = 'dami fan',
   alternate_id = { 'mifan', 'fan' },
@@ -735,7 +679,6 @@ local item = {
 },
 
 ['Æ¬Æ¤ÈéÖí#TZ'] = {
-  iname = 'Æ¬Æ¤ÈéÖí#TZ',
 	name = 'Æ¬Æ¤ÈéÖí',
   id = 'ruzhu',
   type = 'food',
@@ -746,7 +689,6 @@ local item = {
 },
 
 ['ºìÉÕÅ£Èâ#TZ'] = {
-  iname = 'ºìÉÕÅ£Èâ#TZ',
 	name = 'ºìÉÕÅ£Èâ',
   id = 'hongshao niurou',
   alternate_id = { 'niurou' },
@@ -758,7 +700,6 @@ local item = {
 },
 
 ['Áú¾®²ËÒ¶¼¦'] = {
-  iname = 'Áú¾®²ËÒ¶¼¦',
 	name = 'Áú¾®²ËÒ¶¼¦',
   id = 'longjing caiyeji',
   alternate_id = { 'ji' },
@@ -775,7 +716,6 @@ local item = {
 },
 
 ['ôä´äÓãÔ²'] = {
-  iname = 'ôä´äÓãÔ²',
 	name = 'ôä´äÓãÔ²',
   id = 'feicui yuyuan',
   alternate_id = { 'yuyuan' },
@@ -792,7 +732,6 @@ local item = {
 },
 
 ['Ã·»¨ÔãÑ¼'] = {
-  iname = 'Ã·»¨ÔãÑ¼',
 	name = 'Ã·»¨ÔãÑ¼',
   id = 'meihua zaoya',
   alternate_id = { 'ya' },
@@ -809,7 +748,6 @@ local item = {
 },
 
 ['ÆÏÌÑ'] = {
-  iname = 'ÆÏÌÑ',
 	name = 'ÆÏÌÑ',
   id = 'pu tao',
   alternate_id = { 'putao' },
@@ -824,7 +762,6 @@ local item = {
 },
 
 ['¹ğÔ²'] = {
-  iname = '¹ğÔ²',
 	name = '¹ğÔ²',
   id = 'gui yuan',
   alternate_id = { 'guiyuan' },
@@ -839,7 +776,6 @@ local item = {
 },
 
 ['ÀóÖ¦'] = {
-  iname = 'ÀóÖ¦',
 	name = 'ÀóÖ¦',
   id = 'li zhi',
   alternate_id = { 'lizhi' },
@@ -854,7 +790,6 @@ local item = {
 },
 
 ['Ğ¡Áı°ü#GYZ'] = {
-  iname = 'Ğ¡Áı°ü#GYZ',
 	name = 'Ğ¡Áı°ü',
   id = 'baozi',
   type = 'food',
@@ -868,7 +803,6 @@ local item = {
 },
 
 ['ÖíÈâ#GYZ'] = {
-  iname = 'ÖíÈâ#GYZ',
 	name = 'ÖíÈâ',
   id = 'rou',
   alternate_id = { 'meat' },
@@ -882,7 +816,6 @@ local item = {
 },
 
 ['ÖíÈâ#THD'] = {
-  iname = 'ÖíÈâ#THD',
 	name = 'ÖíÈâ',
   id = 'rou',
   alternate_id = { 'meat' },
@@ -898,7 +831,6 @@ local item = {
 },
 
 ['×¥³´Àï¼¹'] = {
-  iname = '×¥³´Àï¼¹',
 	name = '×¥³´Àï¼¹',
   id = 'zhuachao liji',
   alternate_id = { 'liji' },
@@ -910,7 +842,6 @@ local item = {
 },
 
 ['ÁºÏª´à÷­'] = {
-  iname = 'ÁºÏª´à÷­',
 	name = 'ÁºÏª´à÷­',
   id = 'liangxi cuishan',
   alternate_id = { 'cuishan' },
@@ -922,7 +853,6 @@ local item = {
 },
 
 ['¼¦¶¹»¨'] = {
-  iname = '¼¦¶¹»¨',
 	name = '¼¦¶¹»¨',
   id = 'douhua',
   type = 'food',
@@ -933,7 +863,6 @@ local item = {
 },
 
 ['¹ø°ÍÈâÆ¬'] = {
-  iname = '¹ø°ÍÈâÆ¬',
 	name = '¹ø°ÍÈâÆ¬',
   id = 'rou pian',
   alternate_id = { 'rou' },
@@ -945,7 +874,6 @@ local item = {
 },
 
 ['ÌÇ´×ÀğÓã'] = {
-  iname = 'ÌÇ´×ÀğÓã',
 	name = 'ÌÇ´×ÀğÓã',
   id = 'tangcu liyu',
   alternate_id = { 'liyu' },
@@ -960,7 +888,6 @@ local item = {
 },
 
 ['Ô­Áı·ÛÕôÅ£Èâ'] = {
-  iname = 'Ô­Áı·ÛÕôÅ£Èâ',
 	name = 'Ô­Áı·ÛÕôÅ£Èâ',
   id = 'niurou',
   type = 'food',
@@ -974,7 +901,6 @@ local item = {
 },
 
 ['¿ÛÈıË¿'] = {
-  iname = '¿ÛÈıË¿',
 	name = '¿ÛÈıË¿',
   id = 'kousansi',
   type = 'food',
@@ -988,7 +914,6 @@ local item = {
 },
 
 ['·¬ÇÑÑüÁø'] = {
-  iname = '·¬ÇÑÑüÁø',
 	name = '·¬ÇÑÑüÁø',
   id = 'fanqie yaoliu',
   alternate_id = { 'yaoliu' },
@@ -1000,7 +925,6 @@ local item = {
 },
 
 ['ÂéÀ±¶¹¸¯#SL'] = {
-  iname = 'ÂéÀ±¶¹¸¯#SL',
 	name = 'ÂéÀ±¶¹¸¯',
   id = 'mala doufu',
   alternate_id = { 'doufu' },
@@ -1016,7 +940,6 @@ local item = {
 },
 
 ['ÔªÏü#SL'] = {
-  iname = 'ÔªÏü#SL',
 	name = 'ÔªÏü',
   id = 'yuanxiao',
   alternate_id = { 'yuan', 'xiao' },
@@ -1027,7 +950,6 @@ local item = {
 },
 
 ['Ü½ÈØ»¨¹½#SL'] = {
-  iname = 'Ü½ÈØ»¨¹½#SL',
 	name = 'Ü½ÈØ»¨¹½',
   id = 'furong huagu',
   alternate_id = { 'huagu' },
@@ -1039,7 +961,6 @@ local item = {
 },
 
 ['ÃÜÖ­ÌğÅº#SL'] = {
-  iname = 'ÃÜÖ­ÌğÅº#SL',
 	name = 'ÃÜÖ­ÌğÅº',
   id = 'mizhi tianou',
   alternate_id = { 'tianou' },
@@ -1055,7 +976,6 @@ local item = {
 },
 
 ['ÁğÁ§ÇÑ×Ó#EM'] = {
-  iname = 'ÁğÁ§ÇÑ×Ó#EM',
 	name = 'ÁğÁ§ÇÑ×Ó',
   id = 'liuli qiezi',
   alternate_id = { 'qiezi' },
@@ -1071,7 +991,6 @@ local item = {
 },
 
 ['¹ıÇÅÃ×Ïß#DL'] = {
-  iname = '¹ıÇÅÃ×Ïß#DL',
 	name = '¹ıÇÅÃ×Ïß',
   id = 'guoqiao mixian',
   alternate_id = { 'mixian' },
@@ -1086,7 +1005,6 @@ local item = {
 },
 
 ['Ò°¹û#GM'] = {
-  iname = 'Ò°¹û#GM',
 	name = { 'Ò°¹û', 'ÑîÃ·' },
   id = 'ye guo',
   alternate_id = { 'guo' },
@@ -1103,7 +1021,6 @@ local item = {
 -- drinks
 
 ['ÇåË®'] = {
-  iname = 'ÇåË®',
 	name = 'ÇåË®',
   id = 'water',
   type = 'drink',
@@ -1146,7 +1063,6 @@ local item = {
 },
 
 ['Ë«±¶ÇåË®'] = {
-  iname = 'Ë«±¶ÇåË®',
 	name = 'Ë«±¶ÇåË®',
   id = 'double_water',
   type = 'drink',
@@ -1165,7 +1081,6 @@ local item = {
 },
 
 ['ËáÃ·ÌÀ'] = {
-  iname = 'ËáÃ·ÌÀ',
 	name = 'ËáÃ·ÌÀ',
   id = 'suanmei tang',
   alternate_id = { 'tang' },
@@ -1182,7 +1097,6 @@ local item = {
 },
 
 ['Ïã²è'] = {
-  iname = 'Ïã²è',
 	name = 'Ïã²è',
   id = 'xiang cha',
   alternate_id = { 'tea', 'cha', 'xiangcha' },
@@ -1204,7 +1118,6 @@ local item = {
 },
 
 ['ÈéÀÒ'] = {
-  iname = 'ÈéÀÒ',
 	name = 'ÈéÀÒ',
   id = 'ru lao',
   alternate_id = { 'cheese' },
@@ -1217,7 +1130,6 @@ local item = {
 },
 
 ['ËÖÓÍ²è'] = {
-  iname = 'ËÖÓÍ²è',
 	name = 'ËÖÓÍ²è',
   id = 'suyou cha',
   alternate_id = { 'tea', 'cha' },
@@ -1230,7 +1142,6 @@ local item = {
 },
 
 ['ÜÔÀò»¨²è'] = {
-  iname = 'ÜÔÀò»¨²è',
 	name = 'ÜÔÀò»¨²è',
   id = 'moli huacha',
   alternate_id = { 'huacha', 'tea', 'cha' },
@@ -1245,7 +1156,6 @@ local item = {
 },
 
 ['Áú¾®²è#JQG'] = {
-  iname = 'Áú¾®²è#JQG',
 	name = 'Áú¾®²è',
   id = 'longjin cha',
   alternate_id = { 'lingjin', 'tea', 'cha' },
@@ -1260,7 +1170,6 @@ local item = {
 -- drink containers
 
 ['ÇåË®ºùÂ«'] = {
-  iname = 'ÇåË®ºùÂ«',
 	name = 'ÇåË®ºùÂ«',
   id = 'qingshui hulu',
   alternate_id = { 'hulu' },
@@ -1276,7 +1185,6 @@ local item = {
 },
 
 ['ÇåË®ºùÂ«#2'] = {
-  iname = 'ÇåË®ºùÂ«#2',
 	name = 'ÇåË®ºùÂ«',
   id = 'qingshui hulu',
   alternate_id = { 'hulu', 'bottle' },
@@ -1297,7 +1205,6 @@ local item = {
 },
 
 ['Å£Æ¤¾Æ´ü'] = {
-  iname = 'Å£Æ¤¾Æ´ü',
 	name = 'Å£Æ¤¾Æ´ü',
   id = 'jiu dai',
   alternate_id = { 'jiudai', 'wineskin', 'dai' },
@@ -1316,7 +1223,6 @@ local item = {
 },
 
 ['»¨µñ¾Æ´ü'] = {
-  iname = '»¨µñ¾Æ´ü',
 	name = '»¨µñ¾Æ´ü',
   id = 'huadiao jiudai',
   alternate_id = { 'jiu dai', 'huadiao', 'dai' },
@@ -1332,7 +1238,6 @@ local item = {
 },
 
 ['»¨µñ¾Æ´ü#DL'] = {
-  iname = '»¨µñ¾Æ´ü#DL',
 	name = '»¨µñ¾Æ´ü',
   id = 'jiudai',
   alternate_id = { 'skin', 'huadiao' },
@@ -1348,7 +1253,6 @@ local item = {
 },
 
 ['´É²èÍë'] = {
-  iname = '´É²èÍë',
 	name = '´É²èÍë',
   id = 'ci chawan',
   alternate_id = { 'chawan', 'ci' },
@@ -1364,7 +1268,6 @@ local item = {
 },
 
 ['Ë®ºø#HS'] = {
-  iname = 'Ë®ºø#HS',
 	name = 'Ë®ºø',
   id = 'water bottle',
   alternate_id = { 'bottle' },
@@ -1380,7 +1283,6 @@ local item = {
 },
 
 ['ÉÕ¾Æ'] = {
-  iname = 'ÉÕ¾Æ',
 	name = 'ÉÕ¾Æ',
   id = 'shao jiu',
   alternate_id = { 'shaojiu' },
@@ -1396,7 +1298,6 @@ local item = {
 },
 
 ['²èºø'] = {
-  iname = '²èºø',
 	name = '²èºø',
   id = 'cha hu',
   alternate_id = { 'hu' },
@@ -1412,7 +1313,6 @@ local item = {
 },
 
 ['ÇàºùÂ«'] = {
-  iname = 'ÇàºùÂ«',
 	name = 'ÇàºùÂ«',
   id = 'qing hulu',
   alternate_id = { 'hulu' },
@@ -1432,7 +1332,6 @@ local item = {
 },
 
 ['´ó¾ÆÄÒ'] = {
-  iname = '´ó¾ÆÄÒ',
 	name = '´ó¾ÆÄÒ',
   id = 'jiunang',
   alternate_id = { 'wineskin', 'skin' },
@@ -1448,7 +1347,6 @@ local item = {
 },
 
 ['Ë®ÄÒ'] = {
-  iname = 'Ë®ÄÒ',
 	name = 'Ë®ÄÒ',
   id = 'shuinang',
   alternate_id = { 'wineskin', 'skin' },
@@ -1464,7 +1362,6 @@ local item = {
 },
 
 ['Öñºø'] = {
-  iname = 'Öñºø',
 	name = 'Öñºø',
   id = 'zhuhu',
   alternate_id = { 'hu' },
@@ -1480,7 +1377,6 @@ local item = {
 },
 
 ['´óÍë#TLS'] = {
-  iname = '´óÍë#TLS',
 	name = '´óÍë',
   id = 'da wan',
   alternate_id = { 'wan', 'bowl' },
@@ -1501,7 +1397,6 @@ local item = {
 },
 
 ['Ï¸´Å¾ÆÆ¿#DL'] = {
-  iname = 'Ï¸´Å¾ÆÆ¿#DL',
 	name = 'Ï¸´Å¾ÆÆ¿',
   id = 'jiu ping',
   alternate_id = { 'jiu', 'ping' },
@@ -1520,7 +1415,6 @@ local item = {
 },
 
 ['´óÍë²è'] = {
-  iname = '´óÍë²è',
 	name = '´óÍë²è',
   id = 'dawan cha',
   alternate_id = { 'tea', 'cha' },
@@ -1542,7 +1436,6 @@ local item = {
 -- drugs
 
 ['½ğ´´Ò©'] = {
-  iname = '½ğ´´Ò©',
 	name = '½ğ´´Ò©',
   id = 'jinchuang yao',
   alternate_id = { 'jin', 'jinchuang', 'yao' },
@@ -1553,7 +1446,6 @@ local item = {
 },
 
 ['Ñø¾«µ¤'] = {
-  iname = 'Ñø¾«µ¤',
 	name = 'Ñø¾«µ¤',
   id = 'yangjing dan',
   alternate_id = { 'dan' },
@@ -1564,7 +1456,6 @@ local item = {
 },
 
 ['°Ù²İµ¤'] = {
-  iname = '°Ù²İµ¤',
 	name = '°Ù²İµ¤',
   id = 'baicao dan',
   alternate_id = { 'baicao', 'dan' },
@@ -1575,7 +1466,6 @@ local item = {
 },
 
 ['Á«×ÓÍè'] = {
-  iname = 'Á«×ÓÍè',
 	name = 'Á«×ÓÍè',
   id = 'lianzi wan',
   alternate_id = { 'lianzi', 'wan' },
@@ -1586,7 +1476,6 @@ local item = {
 },
 
 ['ÕıÆøµ¤'] = {
-  iname = 'ÕıÆøµ¤',
 	name = 'ÕıÆøµ¤',
   id = 'zhengqi dan',
   alternate_id = { 'dan' },
@@ -1598,7 +1487,6 @@ local item = {
 },
 
 ['½ğÔªÉ¢'] = {
-  iname = '½ğÔªÉ¢',
 	name = '½ğÔªÉ¢',
   id = 'jinyuan san',
   alternate_id = { 'jinyuan', 'san' },
@@ -1609,7 +1497,6 @@ local item = {
 },
 
 ['»ØÑôÎåÁú¸à'] = {
-  iname = '»ØÑôÎåÁú¸à',
 	name = '»ØÑôÎåÁú¸à',
   id = 'wulong gao',
   alternate_id = { 'huiyang', 'wulong', 'gao' },
@@ -1620,7 +1507,6 @@ local item = {
 },
 
 ['Óñ¶´ºÚÊ¯µ¤'] = {
-  iname = 'Óñ¶´ºÚÊ¯µ¤',
 	name = 'Óñ¶´ºÚÊ¯µ¤',
   id = 'heishi dan',
   alternate_id = { 'heishi', 'dan' },
@@ -1630,7 +1516,6 @@ local item = {
 },
 
 ['Èı»Æ±¦À°Íè'] = {
-  iname = 'Èı»Æ±¦À°Íè',
 	name = 'Èı»Æ±¦À°Íè',
   id = 'baola wan',
   alternate_id = { 'sanhuang', 'baola', 'wan' },
@@ -1641,7 +1526,6 @@ local item = {
 },
 
 ['ÓñÕæÉ¢'] = {
-  iname = 'ÓñÕæÉ¢',
 	name = 'ÓñÕæÉ¢',
   id = 'yuzhen san',
   alternate_id = { 'yuzhen', 'san' },
@@ -1652,7 +1536,6 @@ local item = {
 },
 
 ['ÓñÂ¶ÇåĞÂÉ¢'] = {
-  iname = 'ÓñÂ¶ÇåĞÂÉ¢',
 	name = 'ÓñÂ¶ÇåĞÂÉ¢',
   id = 'qingxin san',
   alternate_id = { 'san' },
@@ -1663,7 +1546,6 @@ local item = {
 },
 
 ['ÓñÁéÉ¢'] = {
-  iname = 'ÓñÁéÉ¢',
 	name = 'ÓñÁéÉ¢',
   id = 'yuling san',
   alternate_id = { 'yuling', 'san' },
@@ -1677,7 +1559,6 @@ local item = {
 -- normal swords
 
 ['³¤½£'] = {
-  iname = '³¤½£',
 	name = '³¤½£',
   id = 'chang jian',
   alternate_id = { 'changjian', 'jian' },
@@ -1691,7 +1572,6 @@ local item = {
 },
 
 ['³¤½£#SWORD'] = {
-  iname = '³¤½£#SWORD',
 	name = '³¤½£',
   id = 'changjian',
   alternate_id = { 'jian' },
@@ -1705,7 +1585,6 @@ local item = {
 },
 
 ['³¤½£#SZ'] = {
-  iname = '³¤½£#SZ',
 	name = '³¤½£',
   id = 'changjian',
   alternate_id = { 'jian' },
@@ -1716,7 +1595,6 @@ local item = {
 },
 
 ['¸Ö½£'] = {
-  iname = '¸Ö½£',
 	name = '¸Ö½£',
   id = 'jian',
   alternate_id = { 'sword' },
@@ -1727,7 +1605,6 @@ local item = {
 },
 
 ['Ä¾½£'] = {
-  iname = 'Ä¾½£',
 	name = 'Ä¾½£',
   id = 'mu jian',
   alternate_id = { 'jian' },
@@ -1738,7 +1615,6 @@ local item = {
 },
 
 ['Öñ½£'] = {
-  iname = 'Öñ½£',
 	name = 'Öñ½£',
   id = 'zhu jian',
   alternate_id = { 'zhujian', 'jian', 'sword' },
@@ -1749,7 +1625,6 @@ local item = {
 },
 
 ['Öñ½£#SZ'] = {
-  iname = 'Öñ½£#SZ',
 	name = 'Öñ½£',
   id = 'zhu jian',
   alternate_id = { 'jian', 'sword' },
@@ -1760,7 +1635,6 @@ local item = {
 },
 
 ['Ğå»¨Õë'] = {
-  iname = 'Ğå»¨Õë',
 	name = 'Ğå»¨Õë',
   id = 'xiuhua zhen',
   alternate_id = { 'zhen', 'needle' },
@@ -1774,7 +1648,6 @@ local item = {
 -- normal blades
 
 ['¸Öµ¶'] = {
-  iname = '¸Öµ¶',
 	name = '¸Öµ¶',
   id = 'blade',
   alternate_id = { 'dao' },
@@ -1788,7 +1661,6 @@ local item = {
 },
 
 ['¸Öµ¶#SZ'] = {
-  iname = '¸Öµ¶#SZ',
 	name = '¸Öµ¶',
   id = 'blade',
   type = 'blade',
@@ -1798,7 +1670,6 @@ local item = {
 },
 
 ['²Ëµ¶#SZ'] = {
-  iname = '²Ëµ¶#SZ',
 	name = '²Ëµ¶',
   id = 'cai dao',
   alternate_id = { 'dao' },
@@ -1809,7 +1680,6 @@ local item = {
 },
 
 ['Ìêµ¶'] = {
-  iname = 'Ìêµ¶',
 	name = 'Ìêµ¶',
   id = 'ti dao',
   alternate_id = { 'dao', 'blade' },
@@ -1820,7 +1690,6 @@ local item = {
 },
 
 ['Âíµ¶'] = {
-  iname = 'Âíµ¶',
 	name = 'Âíµ¶',
   id = 'ma dao',
   alternate_id = { 'dao', 'blade', 'madao' },
@@ -1831,7 +1700,6 @@ local item = {
 },
 
 ['°¢À­²®Íäµ¶'] = {
-  iname = '°¢À­²®Íäµ¶',
 	name = '°¢À­²®Íäµ¶',
   id = 'wandao',
   type = 'blade',
@@ -1844,7 +1712,6 @@ local item = {
 -- normal hammers
 
 ['Ìú´¸#SZ'] = {
-  iname = 'Ìú´¸#SZ',
 	name = 'Ìú´¸',
   id = 'tie chui',
   alternate_id = { 'chui' },
@@ -1855,7 +1722,6 @@ local item = {
 },
 
 ['Á÷ĞÇ´¸'] = {
-  iname = 'Á÷ĞÇ´¸',
 	name = 'Á÷ĞÇ´¸',
   id = 'liuxing chui',
   alternate_id = { 'chui', 'hammer' },
@@ -1866,7 +1732,6 @@ local item = {
 },
 
 ['íàÊ¯´¸'] = {
-  iname = 'íàÊ¯´¸',
 	name = 'íàÊ¯´¸',
   id = 'qingshi chui',
   alternate_id = { 'chui', 'hammer' },
@@ -1880,7 +1745,6 @@ local item = {
 -- normal clubs
 
 ['Ìú¹÷'] = {
-  iname = 'Ìú¹÷',
 	name = 'Ìú¹÷',
   id = 'tiegun',
   alternate_id = { 'gun' },
@@ -1894,7 +1758,6 @@ local item = {
 -- normal daggers
 
 ['Ø°Ê×#SZ'] = {
-  iname = 'Ø°Ê×#SZ',
 	name = 'Ø°Ê×',
   id = 'bi shou',
   alternate_id = { 'shou' },
@@ -1905,7 +1768,6 @@ local item = {
 },
 
 ['µ¥ÈĞØ°'] = {
-  iname = 'µ¥ÈĞØ°',
 	name = 'µ¥ÈĞØ°',
   id = 'danren bi',
   alternate_id = { 'bi', 'dagger' },
@@ -1916,7 +1778,6 @@ local item = {
 },
 
 ['°µÉ±Ø°Ê×'] = {
-  iname = '°µÉ±Ø°Ê×',
 	name = '°µÉ±Ø°Ê×',
   id = 'ansha bishou',
   alternate_id = { 'bishou', 'dagger' },
@@ -1930,7 +1791,6 @@ local item = {
 -- normal flutes
 
 ['Óñóï'] = {
-  iname = 'Óñóï',
 	name = 'Óñóï',
   id = 'yu xiao',
   alternate_id = { 'xiao' },
@@ -1941,7 +1801,6 @@ local item = {
 },
 
 ['óï'] = {
-  iname = 'óï',
 	name = 'óï',
   id = 'xiao',
   type = 'flute',
@@ -1954,7 +1813,6 @@ local item = {
 -- normal sticks
 
 ['Öñ°ô'] = {
-  iname = 'Öñ°ô',
 	name = 'Öñ°ô',
   id = 'zhu bang',
   alternate_id = { 'zhubang', 'bang' },
@@ -1965,7 +1823,6 @@ local item = {
 },
 
 ['Öñ°ô#STICK'] = {
-  iname = 'Öñ°ô#STICK',
 	name = 'Öñ°ô',
   id = 'zhubang',
   type = 'stick',
@@ -1975,7 +1832,6 @@ local item = {
 },
 
 ['Öñ°ô#SZ'] = {
-  iname = 'Öñ°ô#SZ',
 	name = 'Öñ°ô',
   id = 'zhubang',
   type = 'stick',
@@ -1988,7 +1844,6 @@ local item = {
 -- normal whips
 
 ['°Ù½ÚÁ´'] = {
-  iname = '°Ù½ÚÁ´',
 	name = '°Ù½ÚÁ´',
   id = 'baijie lian',
   alternate_id = { 'lian', 'whip' },
@@ -1999,7 +1854,6 @@ local item = {
 },
 
 ['³¤±Ş'] = {
-  iname = '³¤±Ş',
 	name = '³¤±Ş',
   id = 'changbian',
   alternate_id = { 'bian' },
@@ -2010,7 +1864,6 @@ local item = {
 },
 
 ['Âí±Ş'] = {
-  iname = 'Âí±Ş',
 	name = 'Âí±Ş',
   id = 'mabian',
   alternate_id = { 'bian' },
@@ -2024,7 +1877,6 @@ local item = {
 -- normal hooks
 
 ['µ¥¹³'] = {
-  iname = 'µ¥¹³',
 	name = 'µ¥¹³',
   id = 'hook',
   alternate_id = { 'gou' },
@@ -2038,7 +1890,6 @@ local item = {
 -- normal staffs
 
 ['ËÄÃ÷²ù'] = {
-  iname = 'ËÄÃ÷²ù',
 	name = 'ËÄÃ÷²ù',
   id = 'siming chan',
   alternate_id = { 'chan', 'staff' },
@@ -2049,7 +1900,6 @@ local item = {
 },
 
 ['¸ÖÕÈ'] = {
-  iname = '¸ÖÕÈ',
 	name = '¸ÖÕÈ',
   id = 'gangzhang',
   type = 'staff',
@@ -2062,7 +1912,6 @@ local item = {
 -- normal axes
 
 ['Ó¥×ì¸«'] = {
-  iname = 'Ó¥×ì¸«',
 	name = 'Ó¥×ì¸«',
   id = 'yingzui fu',
   alternate_id = { 'fu', 'axe' },
@@ -2073,7 +1922,6 @@ local item = {
 },
 
 ['¸Ö¸«'] = {
-  iname = '¸Ö¸«',
 	name = '¸Ö¸«',
   id = 'gang fu',
   alternate_id = { 'fu', 'axe' },
@@ -2087,7 +1935,6 @@ local item = {
 -- treasure axes
 
 ['½ğÁú¶á'] = {
-  iname = '½ğÁú¶á',
 	name = '½ğÁú¶á',
   id = 'jinlong duo',
   alternate_id = { 'duo', 'axe' },
@@ -2105,7 +1952,6 @@ local item = {
 -- treasure brushes
 
 ['»ğÔÆ±Ê'] = {
-  iname = '»ğÔÆ±Ê',
 	name = '»ğÔÆ±Ê',
   id = 'huoyun bi',
   alternate_id = { 'bi', 'brush' },
@@ -2123,7 +1969,6 @@ local item = {
 -- normal armor
 
 ['Ìú¼×'] = {
-  iname = 'Ìú¼×',
 	name = 'Ìú¼×',
   id = 'tie jia',
   alternate_id = { 'tiejia', 'armor', 'jia' },
@@ -2134,7 +1979,6 @@ local item = {
 },
 
 ['ôä´ä»¤Íó'] = {
-  iname = 'ôä´ä»¤Íó',
 	name = 'ôä´ä»¤Íó',
   id = 'feicui huwan',
   alternate_id = { 'huwan' },
@@ -2144,7 +1988,6 @@ local item = {
 },
 
 ['Ì´Ä¾»¤ĞØ'] = {
-  iname = 'Ì´Ä¾»¤ĞØ',
 	name = 'Ì´Ä¾»¤ĞØ',
   id = 'tanmu huxiong',
   alternate_id = { 'huxiong' },
@@ -2154,7 +1997,6 @@ local item = {
 },
 
 ['µ¤·ï»¤Ñü'] = {
-  iname = 'µ¤·ï»¤Ñü',
 	name = 'µ¤·ï»¤Ñü',
   id = 'danfeng huyao',
   alternate_id = { 'huyao' },
@@ -2164,7 +2006,6 @@ local item = {
 },
 
 ['÷è÷ëÌ¤ÔÆËø'] = {
-  iname = '÷è÷ëÌ¤ÔÆËø',
 	name = '÷è÷ëÌ¤ÔÆËø',
   id = 'qilin suo',
   alternate_id = { 'suo' },
@@ -2175,7 +2016,6 @@ local item = {
 },
 
 ['½õ»¢Åû·ç'] = {
-  iname = '½õ»¢Åû·ç',
 	name = '½õ»¢Åû·ç',
   id = 'jinhu pifeng',
   alternate_id = { 'pifeng' },
@@ -2190,7 +2030,6 @@ local item = {
 -- treasure armor
 
 ['Ä¾ÃŞôÂôÄ'] = {
-  iname = 'Ä¾ÃŞôÂôÄ',
 	name = 'Ä¾ÃŞôÂôÄ',
   id = 'mumian jiasha',
   alternate_id = { 'mimian', 'jiasha' },
@@ -2204,7 +2043,6 @@ local item = {
 -- books
 
 ['Öâáá±¸¼±·½'] = {
-  iname = 'Öâáá±¸¼±·½',
 	name = 'Öâáá±¸¼±·½',
   id = 'ji fang',
   alternate_id = { 'medicine book' },
@@ -2216,7 +2054,6 @@ local item = {
 },
 
 ['Ô¢Òâ²İ'] = {
-  iname = 'Ô¢Òâ²İ',
 	name = 'Ô¢Òâ²İ',
   id = 'yuyi cao',
   alternate_id = { 'medicine book' },
@@ -2228,7 +2065,6 @@ local item = {
 },
 
 ['Èı¸ÔÊ¶ÂÔ'] = {
-  iname = 'Èı¸ÔÊ¶ÂÔ',
 	name = 'Èı¸ÔÊ¶ÂÔ',
   id = 'sangang shilue',
   alternate_id = { 'medicine book' },
@@ -2240,7 +2076,6 @@ local item = {
 },
 
 ['¿Æ½ğ¾µ¸³¼¯½â'] = {
-  iname = '¿Æ½ğ¾µ¸³¼¯½â',
 	name = '¿Æ½ğ¾µ¸³¼¯½â',
   id = 'kejin jijie',
   alternate_id = { 'medicine book' },
@@ -2255,7 +2090,6 @@ local item = {
 },
 
 ['¶»Õî¶¨ÂÛ'] = {
-  iname = '¶»Õî¶¨ÂÛ',
 	name = '¶»Õî¶¨ÂÛ',
   id = 'douzhen dinglun',
   alternate_id = { 'medicine book' },
@@ -2267,7 +2101,6 @@ local item = {
 },
 
 ['²©¼¯Ï¡¶»·½'] = {
-  iname = '²©¼¯Ï¡¶»·½',
 	name = '²©¼¯Ï¡¶»·½',
   id = 'boji xidoufang',
   alternate_id = { 'medicine book' },
@@ -2279,7 +2112,6 @@ local item = {
 },
 
 ['±¾²İ¸ÙÄ¿'] = {
-  iname = '±¾²İ¸ÙÄ¿',
 	name = '±¾²İ¸ÙÄ¿',
   id = 'bencao gangmu',
   alternate_id = { 'medicine book' },
@@ -2291,7 +2123,6 @@ local item = {
 },
 
 ['±¾²İ¾­¼¯×¢'] = {
-  iname = '±¾²İ¾­¼¯×¢',
 	name = '±¾²İ¾­¼¯×¢',
   id = 'bencao jizhu',
   alternate_id = { 'medicine book' },
@@ -2306,14 +2137,12 @@ local item = {
 -- misc
 
 ['´ÖÉş×Ó'] = {
-  iname = '´ÖÉş×Ó',
 	name = '´ÖÉş×Ó',
   id = 'cu shengzi',
   value = 1000,
 },
 
 ['»ğÕÛ'] = {
-  iname = '»ğÕÛ',
 	name = '»ğÕÛ',
   id = 'fire',
   weight = 80,
@@ -2325,7 +2154,6 @@ local item = {
 },
 
 ['Ã«Ìº#WD'] = {
-  iname = 'Ã«Ìº#WD',
 	name = 'Ã«Ìº',
   id = 'mao tan',
   alternate_id = { 'tan' },
@@ -2338,7 +2166,6 @@ local item = {
 },
 
 ['Ò©³ú'] = {
-  iname = 'Ò©³ú',
 	name = 'Ò©³ú',
   id = 'yao chu',
   alternate_id = { 'chu' },
@@ -2350,7 +2177,6 @@ local item = {
 },
 
 ['Éş×Ó'] = {
-  iname = 'Éş×Ó',
 	name = 'Éş×Ó',
   id = 'sheng zi',
   alternate_id = { 'sheng' },
@@ -2362,7 +2188,6 @@ local item = {
 },
 
 ['Á·ĞÄÊ¯'] = {
-  iname = 'Á·ĞÄÊ¯',
 	name = 'Á·ĞÄÊ¯',
   id = 'lianxin shi',
   alternate_id = { 'lianxin', 'shi' },
@@ -2373,7 +2198,6 @@ local item = {
 },
 
 ['Ğ¡Ê÷Ö¦'] = {
-  iname = 'Ğ¡Ê÷Ö¦',
 	name = 'Ğ¡Ê÷Ö¦',
   id = 'xiao shuzhi',
   alternate_id = { 'shuzhi' },
@@ -2390,7 +2214,6 @@ local item = {
 },
 
 ['Í¨ĞĞÁîÅÆ'] = {
-  iname = 'Í¨ĞĞÁîÅÆ',
 	name = 'Í¨ĞĞÁîÅÆ',
   id = 'ling pai',
   weight = 20,
@@ -2402,7 +2225,6 @@ local item = {
 },
 
 ['½ğÍŞÍŞ'] = {
-  iname = '½ğÍŞÍŞ',
 	name = '½ğÍŞÍŞ',
   id = 'jin wawa',
   alternate_id = { 'jin', 'wawa', 'yu' },
@@ -2413,7 +2235,6 @@ local item = {
 },
 
 ['ÌúÖÛ'] = {
-  iname = 'ÌúÖÛ',
 	name = 'ÌúÖÛ',
   id = 'tie zhou',
   alternate_id = { 'zhou', 'boat' },
@@ -2424,7 +2245,6 @@ local item = {
 },
 
 ['Ê÷ÌÙ'] = {
-  iname = 'Ê÷ÌÙ',
 	name = 'Ê÷ÌÙ',
   id = 'teng',
   alternate_id = { 'shuteng' },
@@ -2435,7 +2255,6 @@ local item = {
 },
 
 ['ÌÙ¿ğ'] = {
-  iname = 'ÌÙ¿ğ',
 	name = 'ÌÙ¿ğ',
   id = 'teng kuang',
   alternate_id = { 'kuang', 'tengkuang' },
@@ -2446,7 +2265,6 @@ local item = {
 },
 
 ['ºÚÔ¿³×'] = {
-  iname = 'ºÚÔ¿³×',
 	name = 'ºÚÔ¿³×',
   id = 'hei yaoshi',
   alternate_id = { 'yaoshi', 'key' },
@@ -2457,7 +2275,6 @@ local item = {
 },
 
 ['ÌúÇÂ'] = {
-  iname = 'ÌúÇÂ',
 	name = 'ÌúÇÂ',
   id = 'tie qiao',
   alternate_id = { 'qiao' },
@@ -2466,7 +2283,6 @@ local item = {
 },
 
 ['Áò»Ç'] = {
-  iname = 'Áò»Ç',
 	name = 'Áò»Ç',
   id = 'liu huang',
   alternate_id = { 'liuhuang' },
@@ -2475,7 +2291,6 @@ local item = {
 },
 
 ['Ì³×Ó'] = {
-  iname = 'Ì³×Ó',
 	name = 'Ì³×Ó',
   id = 'tan zi',
   alternate_id = { 'tanzi' },
@@ -2484,7 +2299,6 @@ local item = {
 },
 
 ['ÌìÉñÆª'] = {
-  iname = 'ÌìÉñÆª',
 	name = 'ÌìÉñÆª',
   id = 'tianshen pian',
   alternate_id = { 'shu', 'book' },
@@ -2495,7 +2309,6 @@ local item = {
 },
 
 ['ÁúÉñÆª'] = {
-  iname = 'ÁúÉñÆª',
 	name = 'ÁúÉñÆª',
   id = 'longshen pian',
   alternate_id = { 'shu', 'book' },
@@ -2506,7 +2319,6 @@ local item = {
 },
 
 ['Ò¹²æÆª'] = {
-  iname = 'Ò¹²æÆª',
 	name = 'Ò¹²æÆª',
   id = 'yecha pian',
   alternate_id = { 'shu', 'book' },
@@ -2517,7 +2329,6 @@ local item = {
 },
 
 ['Ç¬´ïÆÅÆª'] = {
-  iname = 'Ç¬´ïÆÅÆª',
 	name = 'Ç¬´ïÆÅÆª',
   id = 'qiandapo pian',
   alternate_id = { 'shu', 'book' },
@@ -2528,7 +2339,6 @@ local item = {
 },
 
 ['°¢ĞŞÂŞÆª'] = {
-  iname = '°¢ĞŞÂŞÆª',
 	name = '°¢ĞŞÂŞÆª',
   id = 'axiuluo pian',
   alternate_id = { 'shu', 'book' },
@@ -2539,7 +2349,6 @@ local item = {
 },
 
 ['åÈÂ¥ÂŞÆª'] = {
-  iname = 'åÈÂ¥ÂŞÆª',
 	name = 'åÈÂ¥ÂŞÆª',
   id = 'jialouluo pian',
   alternate_id = { 'shu', 'book' },
@@ -2550,7 +2359,6 @@ local item = {
 },
 
 ['½ôÄÇÂŞÆª'] = {
-  iname = '½ôÄÇÂŞÆª',
 	name = '½ôÄÇÂŞÆª',
   id = 'jinnaluo pian',
   alternate_id = { 'shu', 'book' },
@@ -2561,7 +2369,6 @@ local item = {
 },
 
 ['Ä¦ºôÂŞåÈÆª'] = {
-  iname = 'Ä¦ºôÂŞåÈÆª',
 	name = 'Ä¦ºôÂŞåÈÆª',
   id = 'mohuluojia pian',
   alternate_id = { 'shu', 'book' },

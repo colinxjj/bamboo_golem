@@ -69,17 +69,27 @@ local drop_patt = lpeg.P 'drop ' * lpeg.C( lpeg.R '09'^1 ) * ' ' * lpeg.C( lpeg.
 local function parse_drop( _, t )
   local name, count = extract_name_count( t[ 2 ] )
   local it = player.inventory[ name ]
-  if not it then return end
-  -- drop amount unclear?
-  if string.find( t[ 2 ], '^һЩ' ) then -- try to get drop amount by parsing last cmd sent
-    local c, id = cmd.get_last()
-    if not c then return end
-    count, id = drop_patt:match( c.cmd )
-    if not count or it.id ~= id then it.count_is = 'max'; return end -- mark item's current count as a upper limit
+  if it then
+    -- drop amount unclear?
+    if string.find( t[ 2 ], '^һЩ' ) and cmd.get_last() then -- try to get drop amount by parsing last cmd sent
+      local ccount, id = drop_patt:match( cmd.get_last().cmd )
+      -- mark item's current count as a upper limit if drop count is unclear
+      if not ccount or ( it.id ~= id and not item.has_id( name, id ) ) then
+        it.count_is = 'max'
+      else
+        count = ccount
+      end
+    end
+    it.count = it.count and it.count - count or 0
+    -- remove item if all is dropped
+    if it.count < 1 then player.inventory[ name ] = nil end
   end
-  it.count = it.count and it.count - count or 0
-  -- remove item if all is dropped
-  if it.count < 1 then player.inventory[ name ] = nil end
+  -- update room object count
+  local list = room.get().object
+  local object = list[ name ] or { name = name, id = it and it.id or item.get_id( name ), count = 0 }
+  list[ name ] = object
+  object.count = object.count + count
+  -- raise event
   event.new 'inventory_update'
 end
 
@@ -90,13 +100,23 @@ local function parse_get( _, t )
   player.inventory[ name ] = player.inventory[ name ] or { name = name, id = item.get_id( name ), count = 0, type = item.get_type( name ) }
   local it = player.inventory[ name ]
   -- get amount unclear?
-  if string.find( t[ 2 ], '^һЩ' ) then -- try to get get amount by parsing last cmd sent
-    local c, id = cmd.get_last()
-    if not c then return end
-    count, id = get_patt:match( c.cmd )
-    if not count or it.id ~= id then it.count_is = 'min'; return end -- mark item's current count as a lower limit
+  if string.find( t[ 2 ], '^һЩ' ) and cmd.get_last() then -- try to get get amount by parsing last cmd sent
+    local ccount, id = get_patt:match( cmd.get_last().cmd )
+    -- mark item's current count as a lower limit if get count is unclear
+    if not ccount or ( it.id ~= id and not item.has_id( name, id ) ) then
+      it.count_is = 'min'
+    else
+      count = ccount
+    end
   end
   it.count = it.count + count
+  -- update room object count
+  local object = room.get().object[ name ]
+  if object then
+    object.count = object.count - count
+    if object.count < 1 then room.get().object[ name ] = nil end
+  end
+  -- raise event
   event.new 'inventory_update'
 end
 

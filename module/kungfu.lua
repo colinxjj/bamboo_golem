@@ -10,7 +10,7 @@ local index = require 'data.kungfu'
 -- add skill sources based on item data (books only)
 do
   local cond_checker = {} -- for memoization
-  local list = item.get_by_type 'book'
+  local list = item.get_all 'book'
   for _, it in pairs( list ) do
     if it.skill then
       local cond = ( 'return %splayer.exp >= %d and player.int >= %d' ):format( it.cond and ( it.cond .. ' and ' ) or '', it.read.exp_required or 0, it.read.difficulty or 0 )

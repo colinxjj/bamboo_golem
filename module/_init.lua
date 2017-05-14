@@ -21,7 +21,6 @@ end
 
 -- load data
 dofile( CWD .. 'data/constant.lua' )
-npc = require 'data.npc'
 
 -- load default config
 dofile( CWD .. 'data/default_config.txt' )
@@ -48,6 +47,7 @@ taskmaster = require 'module.taskmaster'
 bigword = require 'module.bigword'
 gag = require 'module.gag'
 session = require 'module.session'
+npc = require 'module.npc'
 item = require 'module.item'
 room = require 'module.room'
 inventory = require 'module.inventory'
