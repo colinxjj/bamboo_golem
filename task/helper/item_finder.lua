@@ -162,7 +162,7 @@ function finder:auto_get()
   self:newweaksub{ class = 'kill_time', duration = 3, complete_func = self.check_inventory }
 end
 
--- get tea at ÌÒ»¨µº²è·¿, ¹éÔÆ×¯²è·¿ and ÆÎÌïÉÙÁÖÁ¹Í¤, and get food at ÌÒ»¨µº·¹Ìü and ¹éÔÆ×¯·¹Ìü
+-- get tea at ÌÒ»¨µº²è·¿, ¹éÔÆ×¯²è·¿ and ÆÎÌïÉÙÁÖÁ¹Í¤, or get food at ÌÒ»¨µº·¹Ìü and ¹éÔÆ×¯·¹Ìü
 function finder:sit_and_wait( source )
   self:send{ 'sit chair' }
 end

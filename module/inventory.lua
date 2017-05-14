@@ -75,6 +75,20 @@ function inventory.get_total_weight()
 	return math.ceil( player.encumbrance_max * player.encumbrance / 100 )
 end
 
+function inventory.is_worn( itype )
+	assert( type( itype ) == 'string', 'inventory.is_worn - param must be a string' )
+	for iname, it in pairs( player.inventory ) do
+		if item.is_type( iname, itype ) and it.is_equiped then return true end
+	end
+end
+
+function inventory.get_worn( itype )
+	assert( type( itype ) == 'string', 'inventory.get_worn - param must be a string' )
+	for iname, it in pairs( player.inventory ) do
+		if item.is_type( iname, itype ) and it.is_equiped then return it end
+	end
+end
+
 --------------------------------------------------------------------------------
 -- End of module
 --------------------------------------------------------------------------------

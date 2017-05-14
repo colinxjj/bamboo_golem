@@ -5,11 +5,6 @@ local cmd = {}
 -- This module handles command queueing and sending
 --------------------------------------------------------------------------------
 
--- a list to store all commands (queue and history)
-local list, list_startpos, list_endpos, list_curpos = {}, 0, 0, 1
-
---------------------------------------------------------------------------------
-
 -- extract the core command. e.g. the core command for 'ask di about 神照经' is 'ask'
 local core_patt = lpeg.C( ( lpeg.R 'az' + '#' )^1 ) * ( lpeg.P ' ' + -1 )
 
@@ -48,8 +43,8 @@ local unit_patt = ( waitp + askp + cmdp )^1
 -- pattern used to remove leading and trailing '|'
 local extra_sep_patt = lpeg.Cs( nsep^-1 / '' * ( ( ( nsep * -1 ) / '' ) + 1 )^1 )
 
--- pattern used to determine if a string contains '|' or not
-local has_sep = ( 1 - nsep )^0 * nsep
+-- pattern used to determine the number of '|' a string contains
+local sep_count_patt = lpeg.Ct( lpeg.C( ( 1 - nsep )^0 * nsep )^1 )
 
 -- a list of commands that can penetrate busy / lasting action
 local penetrate_cmd_tbl = {
@@ -84,15 +79,20 @@ local function convert_to_unit( t )
   local result = { unit_patt:match( s ) } -- split commands into units
   for i, unit in ipairs( result ) do
     unit = extra_sep_patt:match( unit ) -- remove leading and trailing '|'
-    local type = has_sep:match( unit ) and 'batch' or cmd.extract_core( unit )
+    local sep_count = sep_count_patt:match( unit ) -- parse cmd count of the unit
+    sep_count = sep_count and #sep_count or 0
+    local type = sep_count > 0 and 'batch' or cmd.extract_core( unit )
     local can_penetrate = is_penetratable( type, unit )
     unit = type == 'batch' and ( 'ado ' .. unit ) or unit
-    result[ i ] = { cmd = unit, status = 'pending', type = type, can_penetrate = can_penetrate, complete_func = ( i == #result and t.complete_func or false ) } -- make sure only the last unit in a batch triggers the complete_func
+    result[ i ] = { cmd = unit, count = sep_count + 1, status = 'pending', type = type, can_penetrate = can_penetrate, complete_func = ( i == #result and t.complete_func or false ) } -- make sure only the last unit in a batch triggers the complete_func
     setmetatable( result[ i ], t ) -- units inherit values from the original table, .e.g add_time, ignore_result
   end
   return result
 end
 --------------------------------------------------------------------------------
+
+-- a list to store all commands (queue and history)
+local list, list_startpos, list_endpos, list_curpos = {}, 0, 0, 1
 
 -- add command to list
 local function add_to_list( c )
@@ -136,6 +136,41 @@ function cmd.get_last()
 end
 
 --------------------------------------------------------------------------------
+-- cmd load stuff, to avoid cmd spamming
+
+local load_graph = {}
+local hbcount_per_sec = 1 / HEARTBEAT_INTERVAL
+for i = 1, hbcount_per_sec do load_graph[ i ] = 0 end
+local last_update_hbcount = 0
+local load_of_last_sec = 0
+
+local function flush_load( adjust )
+  local offset = get_heartbeat_count() - last_update_hbcount
+  if offset == 0 then return end
+  last_update_hbcount, load_of_last_sec = get_heartbeat_count(), 0
+  for i = 1, hbcount_per_sec do
+    load_graph[ i ] = load_graph[ i + offset + adjust ] or 0
+    load_of_last_sec = load_of_last_sec + load_graph[ i ] -- calculate new load of last sec
+  end
+end
+
+local function add_load( count )
+  flush_load( 1 )
+  load_graph[ hbcount_per_sec ] = load_graph[ hbcount_per_sec ] + count
+  load_of_last_sec = load_of_last_sec + count
+  --print( table.concat( load_graph, ', ' ) )
+end
+
+local function get_anti_spam_delay( count )
+  flush_load( 0 )
+  local substract = 0
+  for i = 0, hbcount_per_sec do
+    substract = substract + ( load_graph[ i ] or 0 )
+    if load_of_last_sec - substract + count <= CMD_SPAM_LIMIT_PER_SEC then return i end
+  end
+end
+
+--------------------------------------------------------------------------------
 
 local is_possibly_still_busy, is_waiting_for_cmd_result, cmd_timeout_hbc
 
@@ -164,14 +199,14 @@ local function send( c )
   elseif is_possibly_still_busy and c.type == 'batch' and not c.ignore_result and not c.can_penetrate then -- try halting first if might still be in busy and next command is a batch
     if is_possibly_still_busy == true then
       is_possibly_still_busy = 'halt_sent'
-      world.Send( 'halt' )
+      world.Send 'halt'
     end
   elseif player.lasting_action and not c.ignore_result and not c.can_penetrate then
     if player.lasting_action ~= 'halt_sent' then
       player.lasting_action = 'halt_sent'
       c.status = 'encountered_busy'
       addbusy( 1.5 )
-      world.Send( 'halt' )
+      world.Send 'halt'
     end
   else
     is_possibly_still_busy = false
@@ -185,6 +220,7 @@ local function send( c )
       if c.fail_msg then trigger.update{ name = 'cmd_fail', match = c.fail_msg, enabled = true } end
       start_waiting_for_cmd_result()
     end
+    add_load( c.count )
     if c.no_echo then
       world.SendNoEcho( c.cmd )
     else
@@ -235,8 +271,18 @@ function cmd.dispatch()
       c = list[ list_curpos ]
       if not c then return end -- return if no further commands
 
-      send( c )
-      return true -- let heartbeat know that a cmd was processed
+      -- get and set anti spam delay to avoid spamming
+      local delay = get_anti_spam_delay( c.count )
+      if delay > 0 then
+        local anti_spam_hbcount = get_heartbeat_count() + delay
+        if not c.target_hbcount or c.target_hbcount < anti_spam_hbc then
+          c.target_hbcount = anti_spam_hbcount
+          message.debug( ( '反溢出延迟：%d 毫秒' ):format( delay * HEARTBEAT_INTERVAL * 1000 ) )
+        end
+      else -- no delay is needed, send the cmd
+        send( c )
+        return true -- let heartbeat know that a cmd was processed
+      end
     end
   end
 end

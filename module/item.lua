@@ -63,17 +63,15 @@ do
 end
 
 local weapon_type = {
-	blade = '刀', sword = '剑', dagger = '匕首', flute = '箫', hook = '钩', axe = '斧', brush = '笔',
-	staff = '杖', club = '棍', stick = '棒', hammer = '锤', whip = '鞭', throwing = '暗器' }
+	blade = '刀', sword = '剑', dagger = '匕首', flute = '箫', hook = '钩', axe = '斧', brush = '笔', staff = '杖', club = '棍', stick = '棒', hammer = '锤', whip = '鞭', throwing = '暗器' }
 
-local armor_type = { cloth = '衣服', armor = '护甲', shoes = '鞋子', helm = '头盔', mantle = '披风', waist = '腰带', wrist = '护腕', neck = '项链' }
+local armor_type = { cloth = '衣服', armor = '护甲', shoes = '鞋子', helm = '头盔', mantle = '披风', waist = '腰带', wrist = '护腕', neck = '项链', glove = '手套' }
 
 local sharp_weapon_type = { blade = true, sword = true, dagger = true, hook = true, axe = true, }
 
 local valid_type = { food = '食物', drink = '饮水', drink_container = '盛水容器', drug = '药物', weapon = '武器', armor = '防具', sharp_weapon = '锋利武器',
-	blade = '刀', sword = '剑', dagger = '匕首', flute = '箫', hook = '钩', axe = '斧', brush = '笔',
-	staff = '杖', club = '棍', stick = '棒', hammer = '锤', whip = '鞭', throwing = '暗器',
-	cloth = '衣服', armor = '护甲', shoes = '鞋子', helm = '头盔', mantle = '披风', waist = '腰带', wrist = '护腕', neck = '项链'
+	blade = '刀', sword = '剑', dagger = '匕首', flute = '箫', hook = '钩', axe = '斧', brush = '笔', staff = '杖', club = '棍', stick = '棒', hammer = '锤', whip = '鞭', throwing = '暗器',
+	cloth = '衣服', armor = '护甲', shoes = '鞋子', helm = '头盔', mantle = '披风', waist = '腰带', wrist = '护腕', neck = '项链', glove = '手套'
 }
 
 local stackable_item = {
@@ -101,10 +99,11 @@ local item_type_name_patt = {
 	throwing = lpeg.P '镖',
 
 	cloth = lpeg.P '袈裟' + '衣' + '袍' + '皮' + '裳' + '衫',
-	armor = lpeg.P '甲' + '背心',
+	armor = lpeg.P '甲' + '背心' + '甲胄',
 	shoes = lpeg.P '鞋' + '靴' + '履',
 	helm = lpeg.P '盔' + '帽',
 	mantle = lpeg.P '披风',
+	glove = lpeg.P '手套',
 }
 
 -- generate actual patterns
@@ -269,7 +268,7 @@ function item.get_all_source( name, item_filter )
 	assert( type( name ) == 'string', 'item.get_all_source - param must be a string' )
 	if not item.is_valid_type( name ) then -- get sources for a specific item
 		local it = item.get( name )
-		cleanup_temp_source( it.source )
+		cleanup_temp_source( it.source or {} )
 		return it.source
 	else -- get sources for a type of items
 		local item_list = item.get_by_type( name )

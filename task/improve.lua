@@ -81,12 +81,14 @@ function task:handle_skill_source( source )
   elseif source.item then -- item based source
     if not inventory.has_item( source.item ) then self:newsub{ class = 'get_item', item = source.item } return end
   end
-  if source.item then
-    self:read_book( source.item, source.cost )
-  elseif source.handler then
+  if source.handler then
     self:enable_trigger_group( 'skill_improver.' .. source.handler )
     skill_improver[ source.handler ]( self, source )
-  elseif source.cmd then
+  else
+    if source.item and not source.cmd then
+      local it = item.get( source.item )
+      source.cmd = it.read.cmd or 'read ' .. it.id
+    end
     self:handle_cmd( source.cmd, source.cost )
   end
 end
@@ -106,16 +108,9 @@ function task:handle_cmd( cmd, cost )
   else -- send cmds
     local c = { complete_func = self.resume }
     for i = 1, count do c[ i ] = cmd end
-    c[ #c + 1 ] = '#wa ' .. 30 * count
     self.has_updated_hp = false
     self:send( c )
   end
-end
-
-function task:read_book( book, cost )
-  local it = item.get( book )
-  local cmd = it.read.cmd or 'read ' .. it.id
-  self:handle_cmd( cmd, cost )
 end
 
 function task:raise_neili_jingli()

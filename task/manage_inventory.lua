@@ -69,9 +69,13 @@ function task:wield()
     self.has_updated_info = false
     -- otherwise, unwield the currently wielded item first
     self:send{ 'unwield ' .. wielded_item.id; complete_func = self.resume }
+  elseif inventory.is_worn 'glove' then -- remove glove if it's currenly worn
+    self.has_updated_info = false
+    local glove = inventory.get_worn 'glove'
+    self:send{ 'remove ' .. glove.id; complete_func = self.resume }
   else
     local id
-    if item.is_valid_type( self.item ) then -- equip any inventory item of the wanted type
+    if item.is_valid_type( self.item ) then -- equip any inventory item of the desired type
       for iname in pairs( player.inventory ) do
         if item.is_type( iname, self.item ) then id = inventory.get_item_id( iname ) or item.get_id( iname ); break end
       end

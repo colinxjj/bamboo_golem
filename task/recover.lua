@@ -126,7 +126,7 @@ local function is_tuna_needed( self )
   -- if there won't be enough jing to dazuo even after yun jing, don't tuna
   if not kungfu.is_tuna_value_safe_for_subsequent_dazuo( 10 ) then return false end
   -- tuna when maxmized organic recovery is wanted and conditions are met
-  if self.maximize_organic_recovery and not self.jing and player.jing - kungfu.get_tuna_rate() >= player.jing_max * 0.7 then return true end
+  if self.maximize_organic_recovery and not self.jing and self.jingli and player.jing - kungfu.get_tuna_rate() >= player.jing_max * 0.7 then return true end
   -- tuna only if jingli is full or force level is so low that yun jingli is inefficient (otherwise yun jingli with neili is more efficient)
   if not has_reached_target( self, 'jingli' ) and ( is_full 'jingli' or player.enable.force.level < 100 ) then return true end
 end
@@ -329,7 +329,7 @@ function task:tuna()
   if map.is_at_dazuo_tuna_loc() then
     local tgt, lower_only
     -- exploit available jing to tuna when conditions are met
-    if self.maximize_organic_recovery and not self.jing and has_reached_target( self, 'jingli' ) then
+    if self.maximize_organic_recovery and not self.jing and self.jingli and has_reached_target( self, 'jingli' ) then
       tgt = player.jingli + player.jing - player.jing_max * 0.7
       lower_only = true -- to avoid lowering jing to less than 70% of max
     else

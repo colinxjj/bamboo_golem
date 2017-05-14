@@ -185,7 +185,7 @@ local map = {
   desc =  [[这里落脚似乎是一个大院了，四周堆满了杂物，似乎很久没有人来，远远望去是馆主冬暖阁的窗口。只是四周墙壁似乎有些奇怪。东面墙总感觉像新砌的一样；西面墙确是下面一小半陷落，似乎可以从洞口钻过去。]],
   exit = {
     hidden1 = { to = '武馆破祠堂', cmd = 'zuan dong', },
-    hidden2 = { to = '武馆冬暖阁', cmd = 'tiao chuang', cond = 'player.enable.dodge and player.enable.dodge.level >= 100', },
+    hidden2 = { to = '武馆冬暖阁', cmd = 'tiao chuang;#wb 3500', cond = 'player.enable.dodge and player.enable.dodge.level >= 100', },
   },
 },
 
@@ -260,7 +260,7 @@ local map = {
   desc =  [[这里是武馆馆主万震山的卧室，房子并不大，很整洁简朴，被子叠的整整齐齐，帐子挂了起来，靠窗边摆了一盘盆景，一张小桌，放着几本书。几缕阳光透过窗外的绿荫中直射进来。]],
   exit = {
     s = { to = '武馆走廊#2', },
-    hidden = { to = '武馆后院#E', cmd = 'tiao chuang', cond = 'player.enable.dodge and player.enable.dodge.level >= 100', },
+    hidden = { to = '武馆后院#E', cmd = 'tiao chuang;#wb 3500', cond = 'player.enable.dodge and player.enable.dodge.level >= 100', },
   },
 },
 
@@ -16625,7 +16625,7 @@ local map = {
   desc =  [[这里是小龙女以前居住的卧室，房中空空洞洞，还保持着以前老模样。一块长条青石作床（bed)，床上铺了张草席，一幅白布当作薄被，此外除了一根人高的绳索横过室中，别无他物。]],
   exit = {
     s = { to = '终南山后堂', },
-    hidden = { to = '终南山石室#1D', cmd = 'tang bed;move shiban', },
+    hidden = { to = '终南山石室#1D', cmd = 'tang bed;move shiban', cond = 'player.neili_max >= 300 and player.exp >= 100000', neili_cost = 500, },
   },
 },
 
@@ -26168,7 +26168,7 @@ local map = {
   name = '竹林',
   desc = [[竹林无路，绿荫森森，幽静无比，令人烦俗尽消，林中栖息着各种鸟儿，啼声婉转，多少添了点喜气，其中隐着两间石屋。]],
   exit = {
-    e = { to = '桃源县青石小径', },
+    e = { to = '桃源县青石小径#3', },
     n = { to = '桃源县石屋正房', },
   },
 },

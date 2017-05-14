@@ -234,9 +234,9 @@ local function get_best_multiple( base, lower, upper )
 end
 
 function kungfu.get_best_dazuo_value( target, lower_only )
-  local gap, max = target - player.neili, player.qi - 10 -- always leave at least 10 qi to avoid death by illness
+  local gap = target - player.neili
   assert( gap > 0, 'kungfu.get_best_dazuo_value - dazuo neili target must be greater than current neili' )
-  local min = kungfu.get_min_dazuo_value()
+  local min, max = kungfu.get_min_dazuo_value(), player.qi - 10 -- always leave at least 10 qi to avoid death by illness
   local tick, best_val = kungfu.get_dazuo_rate()
   -- calculate best value
   local count = math.ceil( gap / tick ) - ( lower_only and 1 or 0 )
@@ -265,8 +265,9 @@ function kungfu.is_tuna_value_safe_for_subsequent_dazuo( val )
 end
 
 function kungfu.get_best_tuna_value( target, lower_only )
-  local gap, min, max = target - player.jingli, 10, player.jing - 10 -- always leave at least 10 jing to avoid death by illness
+  local gap = target - player.jingli
   assert( gap > 0, 'kungfu.get_best_tuna_value - tuna jingli target must be greater than current jingli' )
+  local min, max = 10, player.jing - 10 -- always leave at least 10 jing to avoid death by illness
   local tick, best_val = kungfu.get_tuna_rate()
   -- calculate best value
   local count = math.ceil( gap / tick ) - ( lower_only and 1 or 0 )

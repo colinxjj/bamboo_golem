@@ -213,7 +213,8 @@ cli.register{ cmd = 'pct', desc = '列出当前所有触发器。', func = parse_pct, no_p
 -- test
 
 local function parse_t( _, input )
-  print( kungfu.get_dazuo_rate() )
+  local manual = taskmaster.current_manual_task
+  manual:newweaksub{ class = 'manage_inventory', action = 'unwield', item = 'weapon' }
 end
 
 cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }
@@ -223,7 +224,8 @@ cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }
 
 local function parse_tt()
   local manual = taskmaster.current_manual_task
-  manual:newweaksub{ class = 'improve', skill = '本草术理', skill_target = 100, fail_func = manual.fail_catcher }
+  --manual:newweaksub{ class = 'improve', skill = '基本轻功', skill_target = 101, fail_func = manual.fail_catcher }
+  manual:newweaksub{ class = 'manage_inventory', action = 'wield', item = 'weapon' }
 end
 
 cli.register{ cmd = 'tt', desc = '测试', func = parse_tt, no_prefix = true }

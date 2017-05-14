@@ -65,9 +65,6 @@ function task:check( evt )
 end
 
 function task:check_for_action( obj )
-  if self.is_found then return end
-  self.is_found = true
-
   self:takeover() -- take over control from subtask
 
   if self.action then

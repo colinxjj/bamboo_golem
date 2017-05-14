@@ -166,7 +166,6 @@ function task:next_step()
     self:newsub{ class= 'recover', jingli = total_jingli_cost, neili = total_neili_cost, jing = total_jing_cost, qi = total_qi_cost, stay_here = true }
   else -- otherwise, go ahead
     local count = i - self.step_num
-    if count > 4 then cmd_list[ #cmd_list + 1 ] = '#wa ' .. 40 * count end -- wait a bit after each batch
     self.step_num = self.step_num + 1
     self.batch_step_num = count > 1 and i or nil
     -- adjust player hp
