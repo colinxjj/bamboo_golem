@@ -18,8 +18,8 @@ local kungfu = {
 	id = 'dodge',
 	source = {
 		{ min = 0, max = 31, location = '曼佗罗山庄闺房', attr = 'int', cmd = 'ta sign', cost = { jing = 15 } },
-		{ min = 20, max = 59, location = '归云庄练武场', attr = 'int', cmd = 'jump zhuang;jump down', cost = { jingli = 55 } },
-		{ min = 50, max = 99, location = '桃花岛练武场', attr = 'int', cmd = 'jump zhuang;jump down', cost = { jingli = 50 } },
+		{ min = 20, max = 59, location = '归云庄练武场', attr = 'int', gain = 1.1, cmd = 'jump zhuang;jump down', handler = 'thd_practice', cost = { jingli = 35 } },
+		{ min = 50, max = 99, location = '桃花岛练武场', attr = 'int', gain = 2, cmd = 'jump zhuang;jump down', handler = 'thd_practice', cost = { jingli = 55 } },
 		{ min = 20, max = 100, location = '曼佗罗山庄树上', attr = 'int', cmd = 'yue tree', cost = { jingli = 25 } },
 		{ min = 30, max = 100, location = '明教碧水寒潭', attr = 'int', cmd = 'walk', cost = { jing = 25 } },
 		{ min = 0, max = 100, location = '峨嵋山八十四盘#1', attr = 'dex', cmd = 'sw;ne', cost = { jingli = 20 } },
@@ -50,7 +50,10 @@ local kungfu = {
 	type = 'basic',
 	id = 'strike',
 	source = {
-		{ min = 30, max = 101, location = '扬州城中央广场', jingli_cost = 50, handler = 'yz_tree' },
+		{ min = 0, max = 39, location = '峨嵋山十二盘#3', attr = 'str', cmd = 'clap', cost = { jingli = 15 } },
+		{ min = 30, max = 100, location = '扬州城中央广场', attr = 'int', cmd = 'strike tree', handler = 'yz_tree', cost = { jingli = 50 } },
+		{ min = 0, max = 101, location = '福州城巨岩', attr = 'str', gain = 1.2, cmd = 'strike rock', handler = 'fz_rock', cost = { jingli = 50 }, cond = 'player.neili_max > 300' }, -- in fact this one is based on str and con, with bonus if player is drunk
+		{ min = 30, max = 100, location = '嵩山少林无相牌', attr = 'int', gain = 1.5, cmd = 'strike shui', cost = { jing = 30 } },
 	}
 },
 

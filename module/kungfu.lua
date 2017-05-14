@@ -7,10 +7,26 @@ local kungfu = {}
 
 local index = require 'data.kungfu'
 
--- add skill sources based on item data (books only)
+-- compile source cond to functions
 do
   local cond_checker = {} -- for memoization
+  for _, skill in pairs( index ) do
+    if skill.source then
+      for _, source in pairs( skill.source ) do
+        if source.cond then
+          local f = cond_checker[ source.cond ] or loadstring( 'return ' .. source.cond )
+	        if not f then error( 'error compiling function for skill source cond: ' .. source.cond ) end
+	        cond_checker[ source.cond ], source.cond = f, f
+        end
+      end
+    end
+  end
+end
+
+-- add skill sources based on item data (books only), and compile their cond to functions
+do
   local list = item.get_all 'book'
+  local cond_checker = {} -- for memoization
   for _, it in pairs( list ) do
     if it.skill then
       local cond = ( 'return %splayer.exp >= %d and player.int >= %d' ):format( it.cond and ( it.cond .. ' and ' ) or '', it.read.exp_required or 0, it.read.difficulty or 0 )
@@ -309,11 +325,15 @@ end
 
 local function calculate_source_score( source )
 	local score = 0
-  --print( source.location )
+  print( '\n' .. source.location )
 
-  -- attribute score
-  if source.attr then score = score + player[ source.attr ] * 2 end
-  --print( 'attribute score: ' .. player[ source.attr ] * 2 )
+  -- efficiency score, based on attr, gain, and cost
+  local efficiency = ( source.attr and player[ source.attr ] or 20 ) * 10
+  local total_cost = 0
+  for attr, cost in pairs( source.cost ) do total_cost = total_cost + cost end
+  efficiency = efficiency / total_cost * ( source.gain or 1 )
+  score = score + efficiency
+  print( 'efficiency score: ' .. efficiency )
 
   -- distance score
   if source.location then
@@ -322,20 +342,21 @@ local function calculate_source_score( source )
     -- give inaccessible sources a very low score
   	if not path_cost then return -1000000 end
     score = score - path_cost * 0.01
-    --print( 'distance score: -' .. path_cost * 0.01 )
+    print( 'distance score: -' .. path_cost * 0.01 )
   end
 
-  -- cost score
-  local min_count, max, count = math.huge
+  -- capacity score, i.e. the ratio of cost / attribute_max
+  local capacity, max, count = math.huge
   for attr, cost in pairs( source.cost ) do
     max = player[ attr .. '_max' ]
     max = max > 0 and max or 1
     count = max / cost
-    min_count = count < min_count and count or min_count
+    capacity = count < capacity and count or capacity
   end
-  score = score + min_count * 0.1
-  --print( 'cost score: ' .. min_count * 0.1 )
+  score = score + capacity * 0.01
+  print( 'capacity score: ' .. capacity * 0.01 )
 
+  print( 'total score: ', score )
   return score
 end
 

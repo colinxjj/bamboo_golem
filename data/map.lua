@@ -10354,7 +10354,7 @@ local map = {
   name = '水中',
   desc =  [[四周白蒙蒙的一片，水花飞溅，你感到一阵寒意袭上心来。]],
   exit = {
-    hidden = { to = '襄阳城汉水西岸', handler = 'wait', },
+    hidden = { to = '襄阳城汉水西岸', handler = 'idle', },
   },
 },
 
@@ -21934,8 +21934,8 @@ local map = {
   name = '半空中',
   desc =  [[你从一团团云雾中穿过，急速向下坠落。]],
   exit = {
-    hidden1 = { to = '峨嵋山万年松', handler = 'wait', },
-    hidden2 = { to = '峨嵋山水潭', handler = 'wait', },
+    hidden1 = { to = '峨嵋山万年松', handler = 'idle', },
+    hidden2 = { to = '峨嵋山水潭', handler = 'idle', },
   },
 },
 
@@ -26442,7 +26442,7 @@ local map = {
   name = '后山',
   desc =  [[这是华山后山里的一个山谷，两边是陡峭光滑的山壁。谷底阴暗潮湿，似乎很适合蛇类动物生长，高耸的峭壁上偶尔传来几声鹰鸣。]],
   exit = {
-    hidden = { to = '华山岩石', handler = 'wait', },
+    hidden = { to = '华山岩石', handler = 'idle', },
   },
 },
 
@@ -26583,7 +26583,7 @@ local map = {
   name = '峭壁',
   desc = [[由于这里实在是太陡峭，你无法立足。玉女峰高高的在上面，思过崖时隐时现。]],
   exit = {
-    hidden = { to = '华山山涧#EU', handler = 'wait', },
+    hidden = { to = '华山山涧#EU', handler = 'idle', },
   },
 },
 
@@ -31621,7 +31621,7 @@ local map = {
   desc =  [[这是神龙教劫来的一艘海船。舱内陈设富丽，脚下铺着厚厚的地毡，桌上摆满茶果细点，便如王公大官之家的花厅一般。]],
   label = { no_fight = true, },
   exit = {
-    hidden = { to = '神龙岛渡口', handler = 'wait', cost = 50, },
+    hidden = { to = '神龙岛渡口', handler = 'idle', cost = 50, },
   },
 },
 

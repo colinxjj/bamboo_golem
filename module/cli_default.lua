@@ -207,7 +207,7 @@ cli.register{ cmd = 'pct', desc = '列出当前所有触发器。', func = parse_pct, no_p
 -- test
 
 local function parse_t( _, input )
-  print( item.has_id( '长剑', 'changjian' ) )
+  kungfu.get_best_source( '基本掌法' )
 end
 
 cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }
