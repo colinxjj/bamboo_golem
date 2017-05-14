@@ -34155,7 +34155,7 @@ local map = {
   area = '伊犁城',
   name = '客栈二楼',
   desc =  [[这里是伊犁城最大客栈的二楼，楼下人声沸腾，不时飘上来一阵阵香喷喷的烤羊肉味。你如果累了可以在床上舒舒服服地睡一觉。]],
-  label = { sleep = true, no_fight = true, hotel = true, },
+  label = { sleep = true, no_fight = true },
   exit = {
     d = { to = '伊犁城客栈', },
   },
@@ -34188,7 +34188,7 @@ local map = {
   name = '客栈',
   desc =  [[这里是伊犁城的客栈，客栈的门口放有一个大茶桶(tong)，有免费的茶水供应，一个维吾尔族小姑娘正在买烤熟的羊肉。你如果累了可以到楼上睡一觉。]],
   exit = {
-    u = { to = '伊犁城客栈二楼', handler = 'hotel', no_wander = true, req = { ['白银'] = { 5, 15 } }, },
+    u = { to = '伊犁城客栈二楼', },
     se = { to = '伊犁城城中心', },
   },
 },

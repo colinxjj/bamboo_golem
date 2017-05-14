@@ -277,7 +277,7 @@ function cmd.dispatch()
         local anti_spam_hbcount = get_heartbeat_count() + delay
         if not c.target_hbcount or c.target_hbcount < anti_spam_hbc then
           c.target_hbcount = anti_spam_hbcount
-          message.debug( ( '·´Òç³öÑÓ³Ù£º%d ºÁÃë' ):format( delay * HEARTBEAT_INTERVAL * 1000 ) )
+          message.debug( ( '·ÀÒç³öÑÓ³Ù£º%d ºÁÃë' ):format( delay * HEARTBEAT_INTERVAL * 1000 ) )
         end
       else -- no delay is needed, send the cmd
         send( c )

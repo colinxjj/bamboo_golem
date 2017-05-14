@@ -164,8 +164,8 @@ local function parse_person_left( _, t )
   end
 end
 
-trigger.new{ name = 'room_person_came', match = '^(> )*(\\S+)从\\S+走了过来。$', func = parse_person_came, enabled = true }
-trigger.new{ name = 'room_person_left', match = '^(> )*(\\S+)往\\S+离开。$', func = parse_person_left, enabled = true }
+trigger.new{ name = 'room_person_came', match = '^(> )*(\\S+)(从|急急忙忙)\\S+走了过来。$', func = parse_person_came, enabled = true }
+trigger.new{ name = 'room_person_left', match = '^(> )*(\\S+)(往|急急忙忙)\\S+离开了?。$', func = parse_person_left, enabled = true }
 
 --------------------------------------------------------------------------------
 

@@ -101,16 +101,20 @@ function task:handle_cmd( cmd, cost )
     min_count = count < min_count and count or min_count
   end
   min_count = min_count - 1
-  count = min_count > 10 and 10 or math.floor( min_count )
+  count = min_count > 15 and 15 or math.floor( min_count )
 
   if count <= 1 then -- recover
-    self:newsub{ class = 'recover', maximize_organic_recovery = true, jing = cost.jing and 'half', jingli = cost.jingli and 'half', qi = ( kungfu.is_dazuo_positive_loop() and has_recently_slept() or cost.qi ) and 'half', neili = cost.neili and 'half' or 'best_effort' }
+    self:recover( cost )
   else -- send cmds
     local c = { complete_func = self.resume }
     for i = 1, count do c[ i ] = cmd end
     self.has_updated_hp = false
     self:send( c )
   end
+end
+
+function task:recover( cost )
+  self:newsub{ class = 'recover', maximize_organic_recovery = true, jing = cost.jing and 'half', jingli = cost.jingli and 'half', qi = ( kungfu.is_dazuo_positive_loop() and has_recently_slept() or cost.qi ) and 'half', neili = cost.neili and 'half' or 'best_effort' }
 end
 
 function task:raise_neili_jingli()

@@ -53,7 +53,7 @@ local kungfu = {
 		{ min = 0, max = 39, location = '峨嵋山十二盘#3', attr = 'str', cmd = 'clap', cost = { jingli = 15 } },
 		{ min = 30, max = 100, location = '扬州城中央广场', attr = 'int', cmd = 'strike tree', handler = 'yz_tree', cost = { jingli = 50 } },
 		{ min = 0, max = 101, location = '福州城巨岩', attr = 'str', gain = 1.2, cmd = 'strike rock', handler = 'fz_rock', cost = { jingli = 50 }, cond = 'player.neili_max > 300' }, -- in fact this one is based on str and con, with bonus if player is drunk
-		{ min = 30, max = 100, location = '嵩山少林无相牌', attr = 'int', gain = 1.5, cmd = 'strike shui', cost = { jing = 30 } },
+		--{ min = 30, max = 100, location = '嵩山少林无相牌', attr = 'int', gain = 1.5, cmd = 'strike shui', cost = { jing = 30 } },
 	}
 },
 

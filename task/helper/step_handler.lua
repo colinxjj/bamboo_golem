@@ -146,6 +146,8 @@ end
 -- 客栈
 local hotel_waiter_tbl = {
 	default = { name = '店小二', id = 'xiao er' },
+	['福州城吉祥客栈'] = { name = '小二', id = 'xiao er' },
+	['襄阳城江湖客栈'] = { name = '小二', id = 'xiao er' },
 	['大雪山招财大车店'] = { name = '李招财', id = 'li zhaocai' },
 }
 function handler:hotel( t )
