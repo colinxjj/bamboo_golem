@@ -54,10 +54,8 @@ function task:_fail()
   message.verbose( '未能取得物品：'  ..  ' ' .. self.count .. ' ' .. self.item )
 end
 
-local current_source
-
 function task:handle_source( source )
-  current_source = source
+  self.current_source = source
   -- first go to the source location if we're not already there
   local loc = map.get_current_location()[ 1 ]
   if source.location and loc.id ~= source.location then
@@ -70,12 +68,10 @@ function task:handle_source( source )
         return
       end
     end
-    -- go to source location
-    self:newsub{ class = 'go', to = source.location }
+    -- go to source location, if this fails, will mark the source as invalid
+    self:newsub{ class = 'go', to = source.location, fail_func = self.switch_source }
   elseif source.npc and not room.has_object( source.npc ) then
-    message.debug( ( '未能从来源“%s@%s”取得物品“%s”' ):format( source.npc, source.location, source.item ) )
-    item.mark_invalid_source( source )
-    self:resume()
+    self:switch_source( source )
   elseif source.type == 'get' then
     self:get( source )
   elseif source.type == 'cmd' then
@@ -98,9 +94,7 @@ function task:get( source )
     local c = count ~= 1 and ( count .. ' ' ) or ''
     self:send{ 'get ' .. c .. item.get_id( source.item ); complete_func = self.check_source_result }
   else
-    message.debug( '未能从来源“' .. current_source.location .. '”取得物品“' .. current_source.item .. '”' )
-    item.mark_invalid_source( source )
-    self:resume()
+    self:switch_source( source )
   end
 end
 
@@ -115,19 +109,24 @@ function task:check_inventory()
 end
 
 function task:check_source_result()
-  -- disable triggers for the source
-  if current_source.handler then self:disable_trigger_group( 'item_finder.' .. current_source.handler ) end
+  local source = self.current_source
   if inventory.has_item( self.item, self.count_min or self.count ) then
-    self.result = current_source.item
-    -- if a source is available  only once per session, mark it as invalid until session reset
-    if current_source.is_once_per_session then current_source.is_invalid = true end
+    self.result = source.item
+    -- if a source is available only once per session, mark it as invalid until session reset
+    if source.is_once_per_session then item.mark_invalid_source( source ) end
     -- complete the task
     self:complete()
   else
-    message.debug( ( '未能从来源“%s”取得物品“%s”' ):format( current_source.location or current_source.npc or current_source.handler, current_source.item ) )
-    item.mark_invalid_source( current_source )
-    self:resume()
+    self:switch_source( source )
   end
+end
+
+function task:switch_source( source )
+  -- disable triggers for the source
+  if source.handler then self:disable_trigger_group( 'item_finder.' .. source.handler ) end
+  message.debug( ( '未能从来源“%s”取得物品“%s”' ):format( source.npc or source.location or source.handler, source.item ) )
+  item.mark_failed_source( source )
+  self:resume()
 end
 
 --------------------------------------------------------------------------------

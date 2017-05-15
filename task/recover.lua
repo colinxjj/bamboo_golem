@@ -292,10 +292,11 @@ function task:go_to_sleep()
     self.has_updated_hp, self.pending_sleep = false, false
     self:send{ 'sleep' }
   else
-    self.pending_sleep = true
     local loc = map.get_current_location()[ 1 ]
     local dest = map.find_nearest( loc, is_valid_sleep_room )
-    self:newsub{ class = 'go', to = dest }
+    self.pending_sleep = dest
+    if not dest then return true end -- to skip action
+    self:newsub{ class = 'go', to = dest, fail_func = self.go_to_sleep }
   end
 end
 

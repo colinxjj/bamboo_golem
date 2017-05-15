@@ -207,7 +207,8 @@ cli.register{ cmd = 'pct', desc = '列出当前所有触发器。', func = parse_pct, no_p
 -- test
 
 local function parse_t( _, input )
-  kungfu.get_best_source( '基本掌法' )
+  player.skill[ '基本轻功' ].level = 65
+  kungfu.get_best_source( '基本轻功' )
 end
 
 cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }
@@ -216,7 +217,7 @@ cli.register{ cmd = 't', desc = '测试', func = parse_t, no_prefix = true }
 -- test2
 
 local function parse_tt()
-  newsub_manual{ class = 'improve', skill = '基本掌法', skill_target = 101 }
+  newsub_manual{ class = 'improve', skill = '基本掌法', skill_target = 102 }
 end
 
 cli.register{ cmd = 'tt', desc = '测试', func = parse_tt, no_prefix = true }

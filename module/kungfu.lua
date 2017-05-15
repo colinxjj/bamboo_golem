@@ -365,14 +365,10 @@ local function sort_by_score( a, b )
 end
 
 function kungfu.get_best_source( skill )
-  -- filtering sources by skill level
-  local lvl = player.skill[ skill ] and player.skill[ skill ].level or 0
   local slist = {}
   for _, source in pairs( index[ skill ].source ) do
-    if source.min <= lvl and lvl <= source.max then
-      source.score = calculate_source_score( source ) -- calculate source scores
-      if source.score > -1000 and ( not source.cond or source.cond() ) then slist[ #slist + 1 ] = source end
-    end
+    source.score = calculate_source_score( source ) -- calculate source scores
+    if kungfu.is_valid_source( skill, source ) then slist[ #slist + 1 ] = source end
   end
 
   -- sorting sources by scores
@@ -384,7 +380,22 @@ end
 
 function kungfu.is_valid_source( skill, source )
   local lvl = player.skill[ skill ] and player.skill[ skill ].level or 0
-  return source.min <= lvl and lvl <= source.max
+  local is_valid = not source.is_invalid
+               and ( source.min <= lvl and lvl <= source.max )
+							 and ( not source.last_fail_time or os.time() - source.last_fail_time > 200 ) -- if last try at a source failed, then only retry that source at least 200 seconds later
+							 and ( not source.cond or source.cond() ) -- always check source cond in case player status changed, e.g. bank balance update could result in all bank sources not being valid any more
+							 and source.score > -1000 -- ignore soure with very low scores
+	return is_valid
+end
+
+function kungfu.mark_invalid_source( source )
+	source.is_invalid = true
+end
+
+function kungfu.mark_failed_source( source )
+	source.first_fail_time = source.first_fail_time or os.time()
+	source.last_fail_time = os.time()
+	source.fail_count = source.fail_count and source.fail_count + 1 or 1
 end
 
 --------------------------------------------------------------------------

@@ -363,6 +363,10 @@ function item.is_valid_source( source )
 end
 
 function item.mark_invalid_source( source )
+	source.is_invalid = true
+end
+
+function item.mark_failed_source( source )
 	source.first_fail_time = source.first_fail_time or os.time()
 	source.last_fail_time = os.time()
 	source.fail_count = source.fail_count and source.fail_count + 1 or 1

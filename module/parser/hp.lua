@@ -4,8 +4,8 @@
 
 local function parse_line_1( _, t )
   player.jing = tonumber( t[ 1 ] )
-  player.jing_max = tonumber( t[ 2 ] )
   player.jing_perc = tonumber( t[ 3 ] )
+  player.jing_max = math.ceil( tonumber( t[ 2 ] ) / player.jing_perc * 100 )
   player.jingli = tonumber( t[ 4 ] )
   player.jingli_max = tonumber( t[ 5 ] )
   player.jingli_limit = tonumber( t[ 6 ] )
@@ -14,8 +14,8 @@ end
 
 local function parse_line_2( _, t )
   player.qi = tonumber( t[ 1 ] )
-  player.qi_max = tonumber( t[ 2 ] )
   player.qi_perc = tonumber( t[ 3 ] )
+  player.qi_max = math.ceil( tonumber( t[ 2 ] ) / player.qi_perc * 100 )
   player.neili = tonumber( t[ 4 ] )
   player.neili_max = tonumber( t[ 5 ] )
   player.jiali = tonumber( t[ 6 ] )

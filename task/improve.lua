@@ -70,12 +70,10 @@ function task:handle_skill_source( source )
   if source.location then -- location based source
     local loc = map.get_current_location()[ 1 ]
     if loc.id ~= source.location then
-      self:newsub{ class = 'go', to = source.location }
+      self:newsub{ class = 'go', to = source.location, fail_func = self.switch_source }
       return
     elseif source.npc and not room.has_object( source.npc ) then
-      message.debug( ( '未能从来源“%s@%s”提升武功“%s”' ):format( source.npc, source.location, self.skill ) )
-      kungfu.mark_invalid_source( source )
-      self:resume()
+      self:switch_source( source )
       return
     end
   elseif source.item then -- item based source
@@ -91,6 +89,14 @@ function task:handle_skill_source( source )
     end
     self:handle_cmd( source.cmd, source.cost )
   end
+end
+
+function task:switch_source( source )
+  -- disable triggers for the source
+  if source.handler then self:disable_trigger_group( 'skill_improver.' .. source.handler ) end
+  message.debug( ( '未能从来源“%s”提升武功“%s”' ):format( source.npc or source.location, self.skill ) )
+  kungfu.mark_failed_source( source )
+  self:resume()
 end
 
 function task:handle_cmd( cmd, cost )
