@@ -73,7 +73,7 @@ function task:handle_skill_source( source )
       self:newsub{ class = 'go', to = source.location, fail_func = self.switch_source }
       return
     elseif source.npc and not room.has_object( source.npc ) then
-      self:switch_source( source )
+      self:switch_source()
       return
     end
   elseif source.item then -- item based source
@@ -91,7 +91,8 @@ function task:handle_skill_source( source )
   end
 end
 
-function task:switch_source( source )
+function task:switch_source()
+  local source = self.current_source
   -- disable triggers for the source
   if source.handler then self:disable_trigger_group( 'skill_improver.' .. source.handler ) end
   message.debug( ( '未能从来源“%s”提升武功“%s”' ):format( source.npc or source.location, self.skill ) )
@@ -119,8 +120,14 @@ function task:handle_cmd( cmd, cost )
   end
 end
 
+local function make_recovery_target_updater( self )
+  return function( target )
+    target.qi = ( kungfu.is_dazuo_positive_loop() and has_recently_slept() or self.current_source.cost.qi ) and 'half'
+  end
+end
+
 function task:recover( cost )
-  self:newsub{ class = 'recover', maximize_organic_recovery = true, jing = cost.jing and 'half', jingli = cost.jingli and 'half', qi = ( kungfu.is_dazuo_positive_loop() and has_recently_slept() or cost.qi ) and 'half', neili = cost.neili and 'half' or 'best_effort' }
+  self:newsub{ class = 'recover', maximize_organic_recovery = true, jing = cost.jing and 'half', jingli = cost.jingli and 'half', qi = ( kungfu.is_dazuo_positive_loop() and has_recently_slept() or cost.qi ) and 'half', neili = cost.neili and 'half' or 'best_effort', target_updater = make_recovery_target_updater( self ) }
 end
 
 function task:raise_neili_jingli()

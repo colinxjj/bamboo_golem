@@ -10,6 +10,7 @@ food = 'full', 'half', 'a_little', -- 'all' doesn't cover this and it needs to b
 water = 'double', 'full', 'half', 'a_little', 'all' doesn't cover this and it needs to be set explicitly (optional)
 stay_here = true -- should player stay where he/she is during the recover process? (optional, default: false)
 maximize_organic_recovery = true -- keep attributes from being full whenever possbile, to maximize organic recovery (optional, default: false)
+target_updater = a_func -- a function to dynamically update the target parameters whenever the task is resumed (optional)
 ----------------------------------------------------------------------------]]--
 
 task.class = 'recover'
@@ -141,11 +142,16 @@ local function is_dazuo_needed( self )
 end
 
 function task:_resume()
+  -- update target parameters if an updater is provided
+  if self.target_updater then self:target_updater() end
+  -- check if param values are valid and convert the "all" param
+  if not self.is_param_validated then
+    validate_recover_param( self )
+    self.is_param_validated = true
+  end
   -- update hp as needed
   if not self.has_updated_hp then
     self.has_updated_hp = true
-    -- check if param values are valid and convert the "all" param
-    validate_recover_param( self )
     self:newsub{ class = 'get_info', hp = true }
     return
   end

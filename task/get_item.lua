@@ -71,7 +71,7 @@ function task:handle_source( source )
     -- go to source location, if this fails, will mark the source as invalid
     self:newsub{ class = 'go', to = source.location, fail_func = self.switch_source }
   elseif source.npc and not room.has_object( source.npc ) then
-    self:switch_source( source )
+    self:switch_source()
   elseif source.type == 'get' then
     self:get( source )
   elseif source.type == 'cmd' then
@@ -94,7 +94,7 @@ function task:get( source )
     local c = count ~= 1 and ( count .. ' ' ) or ''
     self:send{ 'get ' .. c .. item.get_id( source.item ); complete_func = self.check_source_result }
   else
-    self:switch_source( source )
+    self:switch_source()
   end
 end
 
@@ -117,11 +117,12 @@ function task:check_source_result()
     -- complete the task
     self:complete()
   else
-    self:switch_source( source )
+    self:switch_source()
   end
 end
 
-function task:switch_source( source )
+function task:switch_source()
+  local source = self.current_source
   -- disable triggers for the source
   if source.handler then self:disable_trigger_group( 'item_finder.' .. source.handler ) end
   message.debug( ( '未能从来源“%s”取得物品“%s”' ):format( source.npc or source.location or source.handler, source.item ) )
