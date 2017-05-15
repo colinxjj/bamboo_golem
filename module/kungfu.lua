@@ -237,7 +237,7 @@ function kungfu.get_tuna_rate()
 end
 
 function kungfu.get_min_dazuo_value()
-  return player.qi_max > 1000 and math.floor( player.qi_max / 5 ) or 10
+  return player.qi_real_max > 1000 and math.floor( player.qi_real_max / 5 ) or 10
 end
 
 local function get_best_multiple( base, lower, upper )
@@ -277,7 +277,7 @@ end
 -- if tuna X value, will player (with yun jing) be able to dazuo after tuna?
 function kungfu.is_tuna_value_safe_for_subsequent_dazuo( val )
   local total_jing = kungfu.get_current_total_converted_jing()
-  return total_jing - val >= player.jing_max * 0.7
+  return total_jing - val >= player.jing_real_max * 0.7
 end
 
 function kungfu.get_best_tuna_value( target, lower_only )
@@ -298,7 +298,7 @@ function kungfu.get_best_tuna_value( target, lower_only )
 
   -- if there won't be enough jing to dazuo after tuna, then adjust tuna value
   if not kungfu.is_tuna_value_safe_for_subsequent_dazuo( best_val or alt_val ) then
-    best_val = math.floor( kungfu.get_current_total_converted_jing() - player.jing_max * 0.7 )
+    best_val = math.floor( kungfu.get_current_total_converted_jing() - player.jing_real_max * 0.7 )
     if best_val < min or best_val > max then best_val, alt_val = nil end
   end
 
@@ -306,11 +306,19 @@ function kungfu.get_best_tuna_value( target, lower_only )
 end
 
 function kungfu.has_enough_qi_for_dazuo()
-  if player.qi_max > 1000 then
-    return player.qi / player.qi_max >= 0.2
+  if player.qi_real_max > 1000 then
+    return player.qi >= player.qi_real_max * 0.2
   else
     return player.qi >= 10
   end
+end
+
+function kungfu.has_enough_jing_for_dazuo()
+  return player.jing >= player.jing_real_max * 0.7
+end
+
+function kungfu.has_enough_qi_for_tuna()
+  return player.qi >= player.qi_real_max * 0.7
 end
 
 function kungfu.is_dazuo_positive_loop()

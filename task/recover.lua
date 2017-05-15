@@ -101,7 +101,7 @@ local function is_sleep_needed( self )
   local is_in_sleep_room = room.get().label and room.get().label.sleep
   if self.stay_here and player.party ~= 'Ø¤°ï' and not is_in_sleep_room then return false end
   -- if not enough jing to dazuo and no neili to recover it
-  if player.neili < 20 and player.jing / player.jing_max < 0.7 then return true end
+  if player.neili < 20 and not kungfu.has_enough_jing_for_dazuo() then return true end
   -- if qi is depleted and no neili, or no positive loop dazuo, go to sleep
   if not kungfu.has_enough_qi_for_dazuo() and ( not kungfu.is_dazuo_positive_loop() or player.neili < 20 ) then return true end
 end
@@ -114,27 +114,27 @@ local function is_exert_needed( self )
     if attr == 'jing' then
       if not has_reached_target( self, 'jingli' ) then
         if not is_full 'jing' and is_full 'jingli' then return true end
-        if player.jing < player.jing_max * 0.7 and player.qi >= kungfu.get_min_dazuo_value() then return true end
+        if not kungfu.has_enough_jing_for_dazuo() and kungfu.has_enough_qi_for_dazuo() then return true end
       end
-      if not has_reached_target( self, 'neili' ) and player.jing < player.jing_max * 0.7 then return true end
+      if not has_reached_target( self, 'neili' ) and not kungfu.has_enough_jing_for_dazuo() then return true end
     end
   end
 end
 
 local function is_tuna_needed( self )
   -- if not enough qi or jing, don't tuna
-  if player.qi / player.qi_max < 0.7 or player.jing < 10 then return false end
+  if not kungfu.has_enough_qi_for_tuna() or player.jing < 10 then return false end
   -- if there won't be enough jing to dazuo even after yun jing, don't tuna
   if not kungfu.is_tuna_value_safe_for_subsequent_dazuo( 10 ) then return false end
   -- tuna when maxmized organic recovery is wanted and conditions are met
-  if self.maximize_organic_recovery and not self.jing and self.jingli and player.jing - kungfu.get_tuna_rate() >= player.jing_max * 0.7 then return true end
+  if self.maximize_organic_recovery and not self.jing and self.jingli and player.jing - kungfu.get_tuna_rate() >= player.jing_real_max * 0.7 then return true end
   -- tuna only if jingli is full or force level is so low that yun jingli is inefficient (otherwise yun jingli with neili is more efficient)
   if not has_reached_target( self, 'jingli' ) and ( is_full 'jingli' or player.enable.force.level < 100 ) then return true end
 end
 
 local function is_dazuo_needed( self )
   -- if not enough qi or jing, don't dazuo
-  if player.jing / player.jing_max < 0.7 or player.qi < kungfu.get_min_dazuo_value() then return false end
+  if not kungfu.has_enough_jing_for_dazuo() or not kungfu.has_enough_qi_for_dazuo() then return false end
   if not has_reached_target( self, 'neili' ) then return true end
   for _, attr in pairs( convertable_attr ) do
     if self[ attr ] and not has_reached_target( self, attr ) and not is_full( attr ) and player.neili < 20 then return true end
@@ -276,8 +276,8 @@ function task:exert()
     if ( self[ attr ] and not has_reached_target( self, attr ) and not is_full( attr ) )
     or ( attr == 'qi' and not is_full 'qi' and kungfu.is_dazuo_positive_loop() and not has_reached_target( self, 'neili' ) )
     or ( attr == 'jing' and not has_reached_target( self, 'jingli' ) and not is_full 'jing' and is_full 'jingli' )
-    or ( attr == 'jing' and not has_reached_target( self, 'jingli' ) and player.jing < player.jing_max * 0.7 and player.qi >= kungfu.get_min_dazuo_value() )
-    or ( attr == 'jing' and not has_reached_target( self, 'neili' ) and player.jing < player.jing_max * 0.7 ) then
+    or ( attr == 'jing' and not has_reached_target( self, 'jingli' ) and not kungfu.has_enough_jing_for_dazuo() and player.qi >= kungfu.get_min_dazuo_value() )
+    or ( attr == 'jing' and not has_reached_target( self, 'neili' ) and not kungfu.has_enough_jing_for_dazuo() ) then
       c[ #c + 1 ] = 'yun ' .. attr
     end
   end
@@ -337,7 +337,7 @@ function task:tuna()
     local tgt, lower_only
     -- exploit available jing to tuna when conditions are met
     if self.maximize_organic_recovery and not self.jing and self.jingli and has_reached_target( self, 'jingli' ) then
-      tgt = player.jingli + player.jing - player.jing_max * 0.7
+      tgt = player.jingli + player.jing - player.jing_real_max * 0.7
       lower_only = true -- to avoid lowering jing to less than 70% of max
     else
       tgt = convert_tgt_to_num( self, 'jingli' )
