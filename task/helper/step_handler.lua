@@ -582,6 +582,17 @@ trigger.new{ name = 'sl_entrance_fail', group = 'step_handler.sl_entrance', matc
 
 -- 嵩山少林断崖坪
 
+-- 福州城南门, 福州城西门, 伊犁城南城门, 华山思过崖, 归云庄小酒馆, 扬州城珠宝店, 扬州城瘦西湖酒馆
+function handler:check_gate( t )
+	if room.get().exit[ t.cmd ] then
+		self:send{ t.cmd }
+	else
+		-- TODO if the gate will soon open, wait instead of fail
+		map.block_exit( t.from, t.to, 60 )
+		self:fail()
+	end
+end
+
 --------------------------------------------------------------------------------
 -- Maze handlers
 

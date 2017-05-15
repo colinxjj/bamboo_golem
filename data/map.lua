@@ -6515,7 +6515,7 @@ local map = {
   desc = { [[一条湖滨的小路，往东面看远处似乎横着一条小河。往北面看是一条不知有多长的小路。南面是一家开着的小酒馆。]], [[一条湖滨的小路，往东面看远处似乎横着一条小河。往北面看是一条不知有多长的小路。南面是一家打烊了的小酒馆。]] },
   exit = {
     e = { to = '归云庄小河西岸', },
-    s = { to = '归云庄小酒馆', unstable = true, cond = 'time.get_current_hour() >= 6 and time.get_current_hour() < 21', },
+    s = { to = '归云庄小酒馆', unstable = true, handler = 'check_gate', cond = 'time.get_current_hour() >= 6 and time.get_current_hour() < 21', },
     n = { to = '归云庄湖滨小路#M', },
   },
 },
@@ -23625,7 +23625,7 @@ local map = {
   desc = { [[这是福州南面的一座吊桥，从傍着晋江而建的城楼大门上以两个滑轮维系。日出放下吊，日落绞起。过了桥向西南走可达岭南广东。现在行人还多，来来往往异常繁忙。]], [[这里是福州的南门，往西南方向可以通往佛山镇，可惜近日劫匪四起，民不聊生，故现在福州城外的吊桥已经放下，来往的过路人只能等到次日才能进入城池。]] },
   exit = {
     s = { to = '佛山镇林间道#6E', },
-    n = { to = '福州城南门', unstable = true, cond = 'time.get_current_hour() >= 0 and time.get_current_hour() < 18', },
+    n = { to = '福州城南门', unstable = true, handler = 'check_gate', cond = 'time.get_current_hour() >= 0 and time.get_current_hour() < 18', },
   },
 },
 
@@ -23635,7 +23635,7 @@ local map = {
   name = '南门',
   desc = { [[这里是福州的南门，往西南方向可以通往佛山镇，可惜近日劫匪四起，民不聊生，故现在夜晚时把吊桥放下，不准任何人等出入。]], [[这里是福州的南门，往西南方向可以通往佛山镇，可惜近日劫匪四起，民不聊生，故夜晚的吊桥放下，不准任何人等出入。现在行人还多，来来往往异常繁忙。]] },
   exit = {
-    s = { to = '福州城南门吊桥', unstable = true, cond = 'time.get_current_hour() >= 0 and time.get_current_hour() < 18', },
+    s = { to = '福州城南门吊桥', unstable = true, handler = 'check_gate', cond = 'time.get_current_hour() >= 0 and time.get_current_hour() < 18', },
     n = { to = '福州城南街', },
   },
 },
@@ -23789,7 +23789,7 @@ local map = {
   desc = { [[这是西门外的一条山路。时值春日，路旁的山坡上到处开满了金黄色的油菜花。一阵阵山风吹来，空气里弥漫着油菜花的香味。由这里向北则进入福建武夷山区。西北方向有条小路。]], [[这是福州城西门外的一条山路。由于是晚上，现在城门已经关了，所以来往的过路人只能等到天亮才能进城了。由此向北则进入福建武夷山区。西北方向还有条小路。]] },
   exit = {
     nw = { to = '福州城小路', },
-    e = { to = '福州城西门', unstable = true, cond = 'time.get_current_hour() >= 0 and time.get_current_hour() < 18', },
+    e = { to = '福州城西门', unstable = true, handler = 'check_gate', cond = 'time.get_current_hour() >= 0 and time.get_current_hour() < 18', },
   },
 },
 
@@ -23904,7 +23904,7 @@ local map = {
   name = '西门',
   desc = {[[这里是福州府的西门，城墙不是很高，有一座中等规模的城门。出此门向西北可往湘赣，进而入川；西南可达两广，直抵云贵；因此出入往来的客商一向很多。城门旁边的城墙上张贴着一纸告示(gaoshi)。]], [[这里是福州府的西门，城墙不是很高，有一座中等规模的城门。出此门向西北可往湘赣，进而入川；西南可达两广，直抵云贵；因此出入往来的客商一向很多。因为现在是夜晚，城门已经关了，所以暂时无法出城。城门旁边的城墙上张贴着一纸告示(gaoshi)。]]},
   exit = {
-    w = { to = '福州城山路#1W', unstable = true, cond = 'time.get_current_hour() >= 0 and time.get_current_hour() < 18', },
+    w = { to = '福州城山路#1W', unstable = true, handler = 'check_gate', cond = 'time.get_current_hour() >= 0 and time.get_current_hour() < 18', },
     e = { to = '福州城西街#2', },
   },
 },
@@ -26359,7 +26359,7 @@ local map = {
   desc =  { [[这是华山的思过崖。危崖上有个山洞，是华山派历代弟子犯规后囚禁受罚之所。崖上光秃秃的寸草不生，更无一株树木。这危崖自来自来相传是玉女发钗上的一颗珍珠，当年华山派的祖师以此危崖为惩罚弟子之所，主要是便此一处无草无木，无虫无鸟，受罚的弟子在面壁思过之时，不致为外物所扰，心有旁鹜。]], [[这是华山的思过崖。危崖上有个山洞，是华山派历代弟子犯规后囚禁受罚之所。崖上光秃秃的寸草不生，更无一株树木。天色灰暗，你已看不清四周的景物。]], },
   exit = {
     ed = { to = '华山小山路#2', },
-    enter = { to = '华山思过崖洞口', unstable = true, cond = 'time.get_current_hour() >= 6 and time.get_current_hour() < 21', },
+    enter = { to = '华山思过崖洞口', unstable = true, handler = 'check_gate', cond = 'time.get_current_hour() >= 6 and time.get_current_hour() < 21', },
   },
 },
 
@@ -28541,9 +28541,9 @@ local map = {
   desc = { [[你走在西大街上，感到这里的街面要比别处的干净、整洁。街上的行人比以前也多了许多，东面是扬州的著名风景“瘦西湖”，西边是西城门。南边是一家珠宝店，而北边则是一座大酒楼，挂着“太白遗风”的招帘，门额上悬挂一方横匾，“瘦西湖酒馆”五字擦得闪闪发亮, 乃是顾炎武的手笔。阵阵酒香肉香让你垂涎欲滴。]], [[你走在西大街上，感到这里的街面要比别处的干净、整洁。街上的行人比以前也多了许多，东面是扬州的著名风景“瘦西湖”，西边是西城门。南边是一家已经关门了的珠宝店，而北边则是一座已经打烊了的大酒楼，挂着一幅招帘，门额上悬挂一方横匾，黑暗之中看不太清匾上的字迹。]] },
   exit = {
     e = { to = '扬州城西大街#2', },
-    s = { to = '扬州城珠宝店', unstable = true, cond = 'time.get_current_hour() >= 6 and time.get_current_hour() < 21', },
+    s = { to = '扬州城珠宝店', unstable = true, handler = 'check_gate', cond = 'time.get_current_hour() >= 6 and time.get_current_hour() < 21', },
     w = { to = '扬州城西门', },
-    n = { to = '扬州城瘦西湖酒馆', unstable = true, cond = 'time.get_current_hour() >= 6 and time.get_current_hour() < 21', },
+    n = { to = '扬州城瘦西湖酒馆', unstable = true, handler = 'check_gate', cond = 'time.get_current_hour() >= 6 and time.get_current_hour() < 21', },
   },
 },
 
@@ -34168,7 +34168,7 @@ local map = {
   desc = { [[伊犁又名惠远，西通波斯，南到天竺，东与阳关、玉门相连，扼中西交通的要冲，是横贯东西的丝绸之路上十分重要的地区，汉代这里就属于安西都护府的辖区。伊犁城在平坦的伊犁河北岸度地而筑，城高一丈四，地势险要。城墙上满布着炮台、枪眼，戒备森严。]], [[伊犁又名惠远，西通波斯，南到天竺，东与阳关、玉门相连，扼中西交通的要冲，是横贯东西的丝绸之路上十分重要的地区，汉代这里就属于安西都护府的辖区。伊犁城在平坦的伊犁河北岸度地而筑，城高一丈四，地势险要。城墙上满布着炮台、枪眼，戒备森严。现在是夜间，城门已关，只有几个回族士兵在城门口守夜。]]},
   exit = {
     s = { to = '伊犁城伊犁河', },
-    n = { to = '伊犁城城中心', unstable = true, cond = 'time.get_current_hour() >= 0 and time.get_current_hour() < 18', },
+    n = { to = '伊犁城城中心', unstable = true, handler = 'check_gate', cond = 'time.get_current_hour() >= 0 and time.get_current_hour() < 18', },
   },
 },
 
@@ -34212,7 +34212,7 @@ local map = {
   name = '城中心',
   desc = { [[这里是伊犁城中心，人来人往，十分热闹。只是都是维吾尔族人，他们很少说汉语，所以你听不懂。大街小巷上商铺林立百货云屯市肆繁华。街西边是一家大商铺，东面住的则是一个大财主，往北边是城内最大的客栈，南面便是伊犁城门了。]], [[这里是伊犁城中心，人来人往，十分热闹。只是都是维吾尔族人，他们很少说汉语，所以你听不懂。大街小巷上商铺林立百货云屯市肆繁华。街西边是一家大商铺，东面住的则是一个大财主，往北边是城内最大的客栈，南面的伊犁城门已经掩上了。]] },
   exit = {
-    s = { to = '伊犁城南城门', unstable = true, cond = 'time.get_current_hour() >= 0 and time.get_current_hour() < 18', },
+    s = { to = '伊犁城南城门', unstable = true, handler = 'check_gate', cond = 'time.get_current_hour() >= 0 and time.get_current_hour() < 18', },
     e = { to = '伊犁城巴依家院', },
     w = { to = '伊犁城商铺', },
     nw = { to = '伊犁城客栈', },
