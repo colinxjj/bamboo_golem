@@ -56,22 +56,14 @@ end
 
 function task:handle_source( source )
   self.current_source = source
-  -- first go to the source location if we're not already there
-  local loc = map.get_current_location()[ 1 ]
-  if source.location and loc.id ~= source.location then
-    -- prepare money first for shop sources
-    if source.type == 'shop' then
-      local value = item.get_value( source.item )
-      if not inventory.has_cash( value ) then
-        local money, count = item.get_approx_money_by_cash( value * 5 )
-        self:newsub{ class = 'get_item', item = money, count = count }
-        return
-      end
-    end
-    -- go to source location, if this fails, will mark the source as invalid
+  if source.type == 'shop' and not inventory.has_cash( item.get_value( source.item ) ) then -- prepare money first for shop sources
+    local money, count = item.get_approx_money_by_cash( value * 5 )
+    self:newsub{ class = 'get_item', item = money, count = count, fail_func = self.switch_source }
+  elseif source.location and not map.is_at_location( source.location ) then -- go to the location
     self:newsub{ class = 'go', to = source.location, fail_func = self.switch_source }
-  elseif source.npc and not room.has_object( source.npc ) then
-    self:switch_source()
+  elseif source.npc and self.has_tried_to_find_npc ~= source.npc then -- find the npc
+    self.has_tried_to_find_npc = source.npc
+    self:newsub{ class = 'find', object = source.npc, fail_func = self.switch_source }
   elseif source.type == 'get' then
     self:get( source )
   elseif source.type == 'cmd' then

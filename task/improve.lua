@@ -67,23 +67,18 @@ function task:_fail()
 end
 
 function task:handle_skill_source( source )
-  if source.location then -- location based source
-    local loc = map.get_current_location()[ 1 ]
-    if loc.id ~= source.location then
-      self:newsub{ class = 'go', to = source.location, fail_func = self.switch_source }
-      return
-    elseif source.npc and not room.has_object( source.npc ) then
-      self:switch_source()
-      return
-    end
-  elseif source.item then -- item based source
-    if not inventory.has_item( source.item ) then self:newsub{ class = 'get_item', item = source.item } return end
-  end
-  if source.handler then
+  if source.location and not map.is_at_location( source.location ) then -- go to the location
+    self:newsub{ class = 'go', to = source.location, fail_func = self.switch_source }
+  elseif source.npc and self.has_tried_to_find_npc ~= source.npc then -- find the npc
+    self.has_tried_to_find_npc = source.npc
+    self:newsub{ class = 'find', object = source.npc, fail_func = self.switch_source }
+  elseif source.item and not inventory.has_item( source.item ) then -- find the item
+    self:newsub{ class = 'get_item', item = source.item, fail_func = self.switch_source }
+  elseif source.handler then
     self:enable_trigger_group( 'skill_improver.' .. source.handler )
     skill_improver[ source.handler ]( self, source )
   else
-    if source.item and not source.cmd then
+    if source.item and not source.cmd then -- compose cmd for item based sources
       local it = item.get( source.item )
       source.cmd = it.read.cmd or 'read ' .. it.id
     end

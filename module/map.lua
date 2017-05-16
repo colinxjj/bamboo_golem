@@ -486,15 +486,35 @@ function map.is_reachable_from_prev_location_with_cmd( map_room, cmd )
   return is_reachable
 end
 
+-- player is at a location where they can sleep?
 function map.is_at_sleep_loc()
-  local loc = map.get_current_location()[ 1 ]
-  if player.party == 'Ø¤°ï' and ( not loc.label or not loc.label.no_sleep ) then return true end
-  return loc.label and loc.label.sleep
+  local loc_list, is_loc_ok = map.get_current_location(), true
+  for _, loc in pairs( loc_list ) do
+    if ( player.party == 'Ø¤°ï' and loc.label and loc.label.no_sleep )
+    or ( player.party ~= 'Ø¤°ï' and ( not loc.label or not loc.label.sleep ) ) then
+      is_loc_ok = false
+    end
+  end
+  return is_loc_ok
 end
 
+-- player is at a location where they can dazuo or tuna?
 function map.is_at_dazuo_tuna_loc()
-  local loc = map.get_current_location()[ 1 ]
-  return not loc.label or ( not loc.label.sleep and not loc.label.no_fight )
+  local loc_list, is_loc_ok = map.get_current_location(), true
+  for _, loc in pairs( loc_list ) do
+    if loc.label and ( loc.label.sleep or loc.label.no_fight ) then is_loc_ok = false end
+  end
+  return is_loc_ok
+end
+
+-- player is at a certain location?
+function map.is_at_location( loc )
+  loc = type( loc ) == 'string' and index[ loc ] or loc
+  assert( loc and loc.id, 'map.is_at_loc - invalid param' )
+  local curr_loc_list = map.get_current_location()
+  for _, curr_loc in pairs( curr_loc_list ) do
+    if curr_loc == loc then return true end
+  end
 end
 
 --------------------------------------------------------------------------------
