@@ -2563,7 +2563,7 @@ local map = {
   desc =  [[这里是海边的一个小渔港，附近唯一可以出海的地方就是这里了。正要出海的渔民忙碌地来来往往，一个船老大摸样的人正在拼命呼喝着在船上做帮工的渔家孩子。]],
   exit = {
     w = { to = '牛家村土路#1E', },
-    hidden = { to = '牛家村船上', cmd = 'ask lao da about 桃花岛;ask lao da about 价钱;give 3 gold to lao da', no_wander= true, req = { ['黄金'] = 3, thd_coord = true, }, },
+    hidden = { to = '牛家村船上', handler = 'thd_onboard', no_wander= true, req = { ['黄金'] = 3, thd_coord = true, }, },
   },
 },
 

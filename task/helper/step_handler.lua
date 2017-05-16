@@ -221,25 +221,26 @@ function handler:gyz_river( t )
 end
 
 -- 航海到桃花岛
-function handler:thd_sail( t )
-	t.x, t.y = 1, 1
-	self:send{ 'turn e' }
+function handler:thd_onboard()
+	handler.data.thd_curr_coord = { x = 1, y = 1 }
+	self:send{ 'ask lao da about 桃花岛;ask lao da about 价钱;give 3 gold to lao da' }
 end
-function handler:thd_sail_progress( _, tbl )
-	local t, dir, dest = self.step, tbl[ 2 ], player.temp_flag.thd_coord
-	t.x = dir == '西' and t.x - 1 or dir == '东' and t.x + 1 or t.x
-	t.y = dir == '北' and t.y - 1 or dir == '南' and t.y + 1 or t.y
-	if dest.x > t.x then
+function handler:thd_sail( _, tbl )
+	local dir, curr, dest = tbl and tbl[ 2 ], handler.data.thd_curr_coord, player.temp_flag.thd_coord
+	if not curr then return end
+	curr.x = dir == '西' and curr.x - 1 or dir == '东' and curr.x + 1 or curr.x
+	curr.y = dir == '北' and curr.y - 1 or dir == '南' and curr.y + 1 or curr.y
+	if dest.x > curr.x then
 		if dir ~= '东' then self:send{ 'turn e' } end
-	elseif dest.x < t.x then
+	elseif dest.x < curr.x then
 		if dir ~= '西' then self:send{ 'turn w' } end
-	elseif dest.y > t.y then
+	elseif dest.y > curr.y then
 		if dir ~= '南' then self:send{ 'turn s' } end
-	elseif dest.y < t.y then
+	elseif dest.y < curr.y then
 		if dir ~= '北' then self:send{ 'turn n' } end
 	end
 end
-trigger.new{ name = 'thd_sail_progress', group = 'step_handler.thd_sail', match = '^(> )*小船正向着(\\S+)方前进。$', func = handler.thd_sail_progress }
+trigger.new{ name = 'thd_sail', group = 'step_handler.thd_sail', match = '^(> )*小船正向着(\\S+)方前进。$', func = handler.thd_sail }
 
 -- 离开桃花岛
 function handler:thd_leave( t )
